@@ -1,0 +1,82 @@
+{% load static %}
+
+<ul class="nav position-relative">
+    <a class="navbar-brand" href="#">
+        <img src="{% static '/logo.png' %}" alt="" width="250" height="110">
+      </a>
+      {% if request.user.is_authenticated %}
+      <li class="nav-item dropdown position-absolute top-0 end-0">
+        
+        <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #12473e;">
+         {{ user.username }}
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+          <li><a class="dropdown-item" href="">Добавить </a></li>
+          <li><a class="dropdown-item" href="">Добавить </a> </li> 
+          <li><a class="dropdown-item" href="">Добавить </a></li>
+          <li><a class="dropdown-item" href="">Добавить </a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <form action="{% url 'logoutuser' %}" method="POST">
+              {% csrf_token %}
+              <li><button type="submit" class="btn btn-light">Выйти</button></li>
+            </form>
+          </li>        
+        </ul>
+      </li>
+    {% else %}
+      <li class="nav-item dropdown position-absolute top-0 end-0">
+        <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" style="color: #cca35d;">
+          Личный кабинет
+        </a>
+        <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+          <li><a class="dropdown-item" href="{% url 'signupuser' %}">Регистрация</a></li>
+          <li><a class="dropdown-item" href="{% url 'loginuser' %}">Авторизация</a></li>
+        </ul>
+      </li>
+    {% endif %}  
+    </li>
+  
+  </ul>
+
+  <nav class="navbar navbar-light bg-light" >
+    <div class="container-fluid">
+      <a class="navbar-brand"></a>
+      <form class="d-flex" action="" method="get" > 
+        {% comment %}
+        {% url 'search' %}
+        {% endcomment %}
+          <input class="form-control me-2" name="q"  type="search" placeholder="Поиск" aria-label="Search" style="background-color: #cca35d;">
+          <button type="submit" class="btn btn-light btn-outline-primary" style="background-color: #cca35d;">Поиск</button>
+        </form>
+
+    </div>
+  </nav>
+
+  <!-- background-color: #cca35d; -->
+  
+  <nav class="navbar navbar-expand-lg navbar-dark "  style="background-color:#007c84;">
+    <div class="container-fluid " >
+      <div class="collapse navbar-collapse" id="navbarScroll">
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist" style="background-color:#133057;">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="pills-home-tab" data-bs-toggle="pill" data-bs-target="#pills-home" type="button" role="tab" aria-controls="pills-home" aria-selected="true">Антимонопольная служба</button>
+            </li>
+            <li class="nav-item" role="presentation" >
+              <button class="nav-link" id="pills-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-profile" type="button" role="tab" aria-controls="pills-profile" aria-selected="false">Суды</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="pills-contact-tab" data-bs-toggle="pill" data-bs-target="#pills-contact" type="button" role="tab" aria-controls="pills-contact" aria-selected="false">Прокуратура</button>
+            </li>
+        </ul>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">1...</div>
+            <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">2...</div>
+            <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab">3...</div>
+          </div>
+ 
+
+      </div>
+    </div>
+  </nav>
+  
