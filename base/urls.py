@@ -5,6 +5,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('', views.Home, name="home"),
+    path('fas/', views.Fas, name="fas"),
         # -----> For User
     path('signup/', views.signupuser, name='signupuser'),
     path('logout/', views.logoutuser, name='logoutuser'),

@@ -70,10 +70,12 @@ def logoutuser(request):
 
 
 def Home (request):
-    user = User.objects.all()
-    # name = user.username.name
-    print('!! ', user.values_list )
     return render(request, 'base/index.html')
+
+def Fas (request):
+    return render(request, 'base/fas.html')
+
+
 # class HomeView(ListView):
     
 #     # model = 
