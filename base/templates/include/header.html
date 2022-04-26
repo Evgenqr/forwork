@@ -16,9 +16,13 @@
               {{ user.username }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-              <li><a class="dropdown-item" href="">Добавить </a></li>
-              <li><a class="dropdown-item" href="">Добавить </a> </li> 
-              <li><a class="dropdown-item" href="">Добавить </a></li>
+              <li><a class="dropdown-item" href=" {% url 'createcategory' %} ">Добавить категорию</a></li>
+         
+              {% comment %}
+              <li><a class="dropdown-item" href="{% url 'createlaw' %} ">Добавить закон</a> </li> 
+              {% endcomment %}
+               
+                 <li><a class="dropdown-item" href="{% url 'createdocument' %} ">Добавить документ</a></li>  
               <li><a class="dropdown-item" href="">Добавить </a></li>
               <li><hr class="dropdown-divider"></li>
               <li>

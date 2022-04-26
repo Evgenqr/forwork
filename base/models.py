@@ -42,7 +42,7 @@ class Law(models.Model):
     
     
 class Document(models.Model):
-    title = models.CharField(verbose_name="Документ", max_length=250)
+    title = models.CharField(verbose_name="Заголовок", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
     user = models.ForeignKey(User,
                             verbose_name="Пользователь",

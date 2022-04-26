@@ -17,4 +17,6 @@ class LawForm(ModelForm):
 class DocumentForm(ModelForm):
     class Meta:
         model = Document
-        fields = ['title']
+        fields = ['title', 'category', 'law', 'text', 'file']
+
+

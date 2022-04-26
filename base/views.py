@@ -177,13 +177,13 @@ def createdocument(request):
             category = form.cleaned_data.get('category')
             newidocument = form.save(commit=False)
             newidocument.user = request.user
-            newidocument.slug = translit(newidocument.name,
+            newidocument.slug = translit(newidocument.title,
                                     language_code='ru',
                                     reversed=True)
             newidocument.slug = slugify(newidocument.slug)
             newidocument.save()
-            for cat in category:
-                newidocument.category.add(cat)
+            # for cat in category:
+            #     newidocument.category.add(cat)
             return redirect('home')
     else:
         form = DocumentForm()
@@ -226,3 +226,17 @@ def deletedocument(request, slug):
 # ---- Document END
 
 
+class CourtsView(ListView):
+    model = Document
+    template_name = 'base/courts.html'
+    context_object_name = 'courts'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+        return context
+
+    def get_queryset(self):
+        slug = Document.objects.get(slug=self.kwargs['slug'])
+        if slug:
+            return Document.objects.filter(category=slug)

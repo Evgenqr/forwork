@@ -18,7 +18,17 @@ urlpatterns = [
          views.deletecategory,
          name='deletecategory'),
     #  <---- End Category
-    
+
+            # -----> Document
+    path('document/create', views.createdocument, name='createdocument'),
+    path('document/<str:slug>/view/', views.viewdocument, name='viewdocument'),
+    path('document/<str:slug>/delete',
+         views.deletecategory,
+         name='deletedocument'),
+    #  <---- End Document
+    path('document/courts/<str:slug>/',
+         views.CourtsView.as_view(),
+         name='courts'),
     # path('search/', views.SearchView.as_view(), name='search'),
 ]
 

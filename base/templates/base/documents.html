@@ -1,0 +1,25 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}
+Главная страница :: {{ block.super }}
+{% endblock %}
+
+{% block content %} 
+    <div class="col-md-12">
+        <div class="row">
+            {% for location in locations %} 
+  <div class="card col-md-2 p-0 mb-3 mt-3">
+            <img src="{{ location.local_img.url }}" alt="image" class="img-fluid rounded-start" />
+            <div class="card-body text-center">
+                <h6 class="card-title"> <a href="location/{{ location.slug }}" class="text-decoration-none">
+                {{location.name}}  </a></h5>
+            </div>
+            <div class="card-body text-center">
+            <a href="/location/{{ location.slug }}" class="btn btn-primary">Подробнее</a>
+           </div>
+        </div>
+    {% endfor %}    
+    </div>                                           
+</div>
+{% endblock content %} 
