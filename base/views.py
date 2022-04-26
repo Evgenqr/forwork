@@ -11,6 +11,10 @@ from django.http import HttpResponse
 from django.db.models import Q
 from django.views import View
 from itertools import chain
+from .models import Category, Law, Document
+from .forms import CategoryForm, LawForm, DocumentForm
+from django.utils.text import slugify
+from transliterate import translit
 
 
 # ---- User
@@ -68,21 +72,157 @@ def logoutuser(request):
         return redirect('/')
 # ---- User END
 
-
+# ---- ?????
 def Home (request):
     return render(request, 'base/index.html')
 
 def Fas (request):
     return render(request, 'base/fas.html')
+# ---- ?????
 
 
-# class HomeView(ListView):
-    
-#     # model = 
-#     template_name = 'base/index.html'
-#     # context_object_name = 'locations'
+# ---- Category
+@login_required
+def createcategory(request):
+    if request.method == 'GET':
+        return render(request, 'base/createcategory.html',
+                      {'form': CategoryForm()})
+    else:
+        try:
+            form = CategoryForm(request.POST, request.FILES)
+            newcategory = form.save(commit=False)
+            # newlocaltion.slug = request.user
+            newcategory.user = request.user
+            newcategory.slug = translit(newcategory.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newcategory.slug = slugify(newcategory.slug)
+            newcategory.save()
+            return redirect('home')
+        except ValueError:
+            return render(request, 'base/createcategory.html', {
+                'form': CategoryForm(),
+                'error': 'Bad data passed in'
+            })
 
-#     # def get_context_data(self, **kwargs):
-#     #     context = super().get_context_data(**kwargs)
-#     #     context['name'] = 'Главная страница'
-#     #     return context
+
+@login_required
+def viewcategory(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    if request.method == 'GET':
+        form = CategoryForm(instance=category)
+        return render(request, 'base/viewcategory.html', {
+            'category': category,
+            'form': form
+        })
+    else:
+        try:
+            form = CategoryForm(request.POST,
+                                request.FILES,
+                                instance=category)
+            form.save()
+            return redirect('home')
+        except ValueError:
+            return render(
+                request, 'base/viewcategory.html', {
+                    'category': category,
+                    'form': CategoryForm(),
+                    'error': 'Bad info'
+                })
+
+@login_required
+def deletecategory(request, slug):
+    category = get_object_or_404(Category, slug=slug)
+    if request.method == 'POST':
+        category.delete()
+        return redirect('/')
+    return redirect('/')
+# ---- Category END
+
+
+
+# ---- Document
+class DocumentViews(ListView):
+    model = Document
+    template_name = 'base/document_detail.html'
+    context_object_name = 'documents'
+
+    # def get_context_data(self, **kwargs):
+    #     context = super().get_context_data(**kwargs)
+    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+    #     return context
+
+    # def get_queryset(self):
+    #     slug = Document.objects.get(slug=self.kwargs['slug'])
+    #     if slug:
+    #         return Item.objects.filter(monster=slug)
+
+
+class DocumentView(DetailView):
+    model = Document
+    template_name = 'base/document_detail.html'
+    context_object_name = 'documents'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+        return context
+
+
+@login_required
+def createdocument(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+            category = form.cleaned_data.get('category')
+            newidocument = form.save(commit=False)
+            newidocument.user = request.user
+            newidocument.slug = translit(newidocument.name,
+                                    language_code='ru',
+                                    reversed=True)
+            newidocument.slug = slugify(newidocument.slug)
+            newidocument.save()
+            for cat in category:
+                newidocument.category.add(cat)
+            return redirect('home')
+    else:
+        form = DocumentForm()
+    return render(request, 'base/createdocument.html', {'form': form})
+
+
+@login_required
+def viewdocument(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    if document.user == request.user or request.user.has_perm('auth.change_user'):
+        if request.method == 'GET':
+            form = DocumentForm(instance=document)
+            return render(request, 'base/viewdocument.html', {
+                'document': document,
+                'form': form
+            })
+        else:
+            try:
+                form = DocumentForm(request.POST, request.FILES, instance=document)
+                form.save()
+                return redirect('home')
+            except ValueError:
+                return render(request, 'base/viewdocument.html', {
+                    'document': document,
+                    'form': DocumentForm(),
+                    'error': 'Bad info'
+                })
+    else:
+        return redirect('/')
+
+@login_required
+def deletedocument(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    if document.user == request.user or request.user.has_perm('auth.change_user'):
+        if request.method == 'POST':
+            document.delete()
+            return redirect('home')
+    else:
+        return redirect('/')
+# ---- Document END
+
+

@@ -1,3 +1,6 @@
 from django.contrib import admin
+from .models import Category, Law, Document
 
-# Register your models here.
+admin.site.register(Document)
+admin.site.register(Law)
+admin.site.register(Category)

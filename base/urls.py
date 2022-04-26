@@ -11,12 +11,14 @@ urlpatterns = [
     path('logout/', views.logoutuser, name='logoutuser'),
     path('login/', views.loginuser, name="loginuser"),
     #  <---- End For User
-
-    # # -----> For User
-    # path('signup/', views.signupuser, name='signupuser'),
-    # path('logout/', views.logoutuser, name='logoutuser'),
-    # path('login/', views.loginuser, name="loginuser"),
-    # #  <---- End For User
+        # -----> Category
+    path('category/create', views.createcategory, name='createcategory'),
+    path('category/<str:slug>/view/', views.viewcategory, name='viewcategory'),
+    path('category/<str:slug>/delete',
+         views.deletecategory,
+         name='deletecategory'),
+    #  <---- End Category
+    
     # path('search/', views.SearchView.as_view(), name='search'),
 ]
 
