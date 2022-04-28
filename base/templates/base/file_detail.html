@@ -1,0 +1,24 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}
+Главная страница :: {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h5 class="card-title"> 
+        {{documents.title}}
+    </h5>    <br>
+    {{documents.text}}
+    <br><br>
+    Приложения: 
+    {{ files }}
+    <a class="dropdown-item" href="{{documents.file.url}}">{{documents.filename}} </a> ({{ documents.file.size|filesizeformat }}) <br>
+    11: {{documents.has_changed}}    <br>
+    Создан: {{documents.date_create}}    <br>
+    Обновлён: {{documents.date_update}}    <br>
+    Автор: {{documents.user}}
+      
+                                         
+
+{% endblock content %} 

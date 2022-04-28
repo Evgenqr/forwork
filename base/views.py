@@ -1,20 +1,20 @@
-from urllib import request
 from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView
-from django.views.generic.edit import FormView
-from django.http import HttpResponse
-from django.db.models import Q
-from django.views import View
-from itertools import chain
-from .models import Category, Law, Document
-from .forms import CategoryForm, LawForm, DocumentForm
+# from django.views.generic.edit import FormView
+# from django.http import HttpResponse
+# from django.db.models import Q
+# from django.views import View
+# from itertools import chain
+from .models import Category, Document, File
+from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
+from django.views.generic.edit import FormView
 
 
 # ---- User
@@ -73,10 +73,13 @@ def logoutuser(request):
 # ---- User END
 
 # ---- ?????
-def Home (request):
+
+
+def Home(request):
     return render(request, 'base/index.html')
 
-def Fas (request):
+
+def Fas(request):
     return render(request, 'base/fas.html')
 # ---- ?????
 
@@ -130,6 +133,7 @@ def viewcategory(request, slug):
                     'error': 'Bad info'
                 })
 
+
 @login_required
 def deletecategory(request, slug):
     category = get_object_or_404(Category, slug=slug)
@@ -140,12 +144,11 @@ def deletecategory(request, slug):
 # ---- Category END
 
 
-
 # ---- Document
-class DocumentViews(ListView):
-    model = Document
-    template_name = 'base/document_detail.html'
-    context_object_name = 'documents'
+# class DocumentViews(ListView):
+#     model = Document
+#     template_name = 'base/document_detail.html'
+#     context_object_name = 'documents'
 
     # def get_context_data(self, **kwargs):
     #     context = super().get_context_data(**kwargs)
@@ -174,12 +177,12 @@ def createdocument(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            category = form.cleaned_data.get('category')
+            file = form.cleaned_data.get('file')
             newidocument = form.save(commit=False)
             newidocument.user = request.user
             newidocument.slug = translit(newidocument.title,
-                                    language_code='ru',
-                                    reversed=True)
+                                         language_code='ru',
+                                         reversed=True)
             newidocument.slug = slugify(newidocument.slug)
             newidocument.save()
             # for cat in category:
@@ -189,11 +192,59 @@ def createdocument(request):
         form = DocumentForm()
     return render(request, 'base/createdocument.html', {'form': form})
 
+# @login_required
+# def createdocument(request):
+#     if request.method == 'POST':
+#         form = DocumentForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             # category = form.cleaned_data.get('category')
+#             # files = form.cleaned_data['attachments']
+#             newdocument = form.save(commit=False)
+#             newdocument.user = request.user
+#             newdocument.slug = translit(newdocument.title,
+#                                         language_code='ru',
+#                                         reversed=True)
+#             newdocument.slug = slugify(newdocument.slug)
+#             newdocument.save()
+#             # for cat in category:
+#             #     newidocument.category.add(cat)
+#             return redirect('home')
+#     else:
+#         form = DocumentForm()
+#     return render(request, 'base/createdocument.html', {'form': form})
+
+
+class FileFieldView(FormView):
+    form_class = DocumentForm
+    context_object_name = 'files'
+    template_name = 'base/createdocument.html'  # Replace with your template.
+    success_url = '/'  # Replace with your URL or reverse().
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        files = request.FILES.getlist('file_field')
+        if form.is_valid():
+            for f in files:
+                newidocument = form.save(commit=False)
+                newidocument.user = request.user
+                newidocument.slug = translit(newidocument.title,
+                                             language_code='ru',
+                                             reversed=True)
+                newidocument.slug = slugify(newidocument.slug)
+                newidocument.save()
+                return redirect('document_detail', slug=newidocument.slug)
+                # return redirect('home')
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
 
 @login_required
 def viewdocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
-    if document.user == request.user or request.user.has_perm('auth.change_user'):
+    if document.user == request.user:
+        #  or request.user.has_perm('auth.change_user')
         if request.method == 'GET':
             form = DocumentForm(instance=document)
             return render(request, 'base/viewdocument.html', {
@@ -202,7 +253,8 @@ def viewdocument(request, slug):
             })
         else:
             try:
-                form = DocumentForm(request.POST, request.FILES, instance=document)
+                form = DocumentForm(
+                    request.POST, request.FILES, instance=document)
                 form.save()
                 return redirect('home')
             except ValueError:
@@ -214,10 +266,12 @@ def viewdocument(request, slug):
     else:
         return redirect('/')
 
+
 @login_required
 def deletedocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
-    if document.user == request.user or request.user.has_perm('auth.change_user'):
+    if document.user == request.user:
+        #  or request.user.has_perm('auth.change_user')
         if request.method == 'POST':
             document.delete()
             return redirect('home')
@@ -230,7 +284,7 @@ class CourtsView(ListView):
     model = Document
     template_name = 'base/courts.html'
     context_object_name = 'courts'
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])

@@ -1,0 +1,34 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}
+{{title}} :: {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <h5 class="card-title"> 
+        {{documents.title}}
+    </h5>    <br>
+    {{documents.text}}
+    <br><br>
+    Приложения: 
+    <br>
+    {{documents.file.url}}
+    {% for file in documents.file.all %}
+    <h6 class="card-title">   
+       1  {{ file.title }}  <br>
+       2  {{ file.filename }}  <br>
+       3  {{filename}} <br>
+        4 {{file.size}} <br>
+    </h6>
+{% endfor %}
+    {{ files }}
+    <a class="dropdown-item" href="{{documents.file.url}}">{{documents.filename}} </a> ({{ documents.file.size|filesizeformat }}) <br>
+ <br>
+    Создан: {{documents.date_create}}    <br>
+    Обновлён: {{documents.date_update}}    <br>
+    Автор: {{documents.user}}
+      
+                                         
+
+{% endblock content %} 
