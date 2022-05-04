@@ -10,11 +10,11 @@ from django.views.generic import ListView, DetailView
 # from django.db.models import Q
 # from django.views import View
 # from itertools import chain
-from .models import Category, Document, File
+from .models import Category, Document, Law
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
-from django.views.generic.edit import FormView
+# from django.views.generic.edit import FormView
 
 
 # ---- User
@@ -160,16 +160,35 @@ def deletecategory(request, slug):
     #     if slug:
     #         return Item.objects.filter(monster=slug)
 
+class DocumentListView(ListView):
+    template_name = 'base/index.html'
+    context_object_name = 'documents_list'
 
-class DocumentView(DetailView):
-    model = Document
-    template_name = 'base/document_detail.html'
-    context_object_name = 'documents'
+    def get_queryset(self):
+        return Document.objects.order_by('date_create')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(DocumentListView, self).get_context_data(**kwargs)
+    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+    #     return context
+
+
+class LawListView(ListView):
+    # model = Law
+    # template_name = 'incude/header.html'
+    template_name = 'base/index.html'
+    context_object_name = 'laws'
+
+    def get_queryset(self):
+        return Law.objects.order_by('title')
+    # print('111ggg', Law.objects.all())
+
+    #  def get_context_data(self, **kwargs):
+    #     context = super(DocumentListView, self).get_context_data(**kwargs)
+    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+    #     return context
+
+    # return render(request, 'base/index.html')
 
 
 @login_required
@@ -177,7 +196,7 @@ def createdocument(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            file = form.cleaned_data.get('file')
+            # category = form.cleaned_data.get('category')
             newidocument = form.save(commit=False)
             newidocument.user = request.user
             newidocument.slug = translit(newidocument.title,
@@ -192,52 +211,18 @@ def createdocument(request):
         form = DocumentForm()
     return render(request, 'base/createdocument.html', {'form': form})
 
-# @login_required
-# def createdocument(request):
-#     if request.method == 'POST':
-#         form = DocumentForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             # category = form.cleaned_data.get('category')
-#             # files = form.cleaned_data['attachments']
-#             newdocument = form.save(commit=False)
-#             newdocument.user = request.user
-#             newdocument.slug = translit(newdocument.title,
-#                                         language_code='ru',
-#                                         reversed=True)
-#             newdocument.slug = slugify(newdocument.slug)
-#             newdocument.save()
-#             # for cat in category:
-#             #     newidocument.category.add(cat)
-#             return redirect('home')
-#     else:
-#         form = DocumentForm()
-#     return render(request, 'base/createdocument.html', {'form': form})
 
+class DocumentView(DetailView):
+    model = Document
+    template_name = 'base/document_detail.html'
+    # slug_url_kwarg = 'documents_slug'
+    context_object_name = 'documents'
 
-class FileFieldView(FormView):
-    form_class = DocumentForm
-    context_object_name = 'files'
-    template_name = 'base/createdocument.html'  # Replace with your template.
-    success_url = '/'  # Replace with your URL or reverse().
-
-    def post(self, request, *args, **kwargs):
-        form_class = self.get_form_class()
-        form = self.get_form(form_class)
-        files = request.FILES.getlist('file_field')
-        if form.is_valid():
-            for f in files:
-                newidocument = form.save(commit=False)
-                newidocument.user = request.user
-                newidocument.slug = translit(newidocument.title,
-                                             language_code='ru',
-                                             reversed=True)
-                newidocument.slug = slugify(newidocument.slug)
-                newidocument.save()
-                return redirect('document_detail', slug=newidocument.slug)
-                # return redirect('home')
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+        # context['law'] = Law.objects.get(slug=self.kwargs['slug'])
+        return context
 
 
 @login_required

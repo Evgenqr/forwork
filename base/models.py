@@ -41,7 +41,8 @@ class Law(models.Model):
 
 
 class File(models.Model):
-    title = models.CharField(verbose_name="Название файла", max_length=100)
+    title = models.CharField(verbose_name="Название файла", max_length=100,
+                             blank=True, null=True)
     file = models.FileField(verbose_name="Вложения", blank=True,
                             null=True, max_length=200,
                             upload_to=category_directory_path)
@@ -63,28 +64,19 @@ class Document(models.Model):
     user = models.ForeignKey(User,
                              verbose_name="Пользователь",
                              on_delete=models.CASCADE)
-    category = models.ForeignKey(Category,
-                                 verbose_name="Категория",
-                                 on_delete=models.CASCADE)
-    law = models.ManyToManyField(Law,
-                                 verbose_name="Закон",
-                                 related_name="document_law", blank=True)
+    category = models.ForeignKey(
+        Category, verbose_name="Категория", related_name="categories",
+        on_delete=models.CASCADE)
+    law = models.ManyToManyField(
+        Law, verbose_name="Закон",
+        blank=True)
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
-    date_create = models.DateTimeField(auto_now_add=True,
-                                       verbose_name="Дата создания")
-    date_update = models.DateTimeField(auto_now=True,
-                                       verbose_name="Дата обновления")
-    file = models.ForeignKey(File, verbose_name="Файл", blank=True, null=True,
-                             on_delete=models.CASCADE)
-    # file = models.FileField(verbose_name="Вложения", blank=True,
-    #                         null=True, upload_to=category_directory_path)
-    # file_name = models.CharField(verbose_name="Заголовок", max_length=250)
-    # category = models.ForeignKey(Category,
-    #                              verbose_name="Категория",
-    #                              on_delete=models.CASCADE)
-
-    # def filename(self):
-    #     return os.path.basename(self.file.name)
+    file = models.FileField(verbose_name="Вложения", blank=True,
+                            null=True, upload_to=category_directory_path)
+    date_create = models.DateTimeField(
+        auto_now_add=True, verbose_name="Дата создания")
+    date_update = models.DateTimeField(
+        auto_now=True, verbose_name="Дата обновления")
 
     class Meta:
         verbose_name = "Документ"
@@ -95,3 +87,44 @@ class Document(models.Model):
 
     def get_absolute_url(self):
         return reverse("document_detail", kwargs={"slug": self.slug})
+
+
+# class Document(models.Model):
+#     title = models.CharField(verbose_name="Заголовок", max_length=250)
+#     slug = models.SlugField("Ссылка", max_length=250, unique=True)
+#     user = models.ForeignKey(User,
+#                              verbose_name="Пользователь",
+#                              on_delete=models.CASCADE)
+#     category = models.ForeignKey(Category,
+#                                  verbose_name="Категория",
+#                                  on_delete=models.CASCADE)
+#     law = models.ManyToManyField(Law,
+#                                  verbose_name="Закон",
+#                                  related_name="document_law", blank=True)
+#     text = models.TextField(verbose_name="Текст", blank=True, null=True)
+#     date_create = models.DateTimeField(auto_now_add=True,
+#                                        verbose_name="Дата создания")
+#     date_update = models.DateTimeField(auto_now=True,
+#                                        verbose_name="Дата обновления")
+#     file = models.ForeignKey(File, verbose_name="Файл", blank=True,
+#                              null=True,
+#                              on_delete=models.CASCADE)
+    # file = models.FileField(verbose_name="Вложения", blank=True,
+    #                         null=True, upload_to=category_directory_path)
+    # file_name = models.CharField(verbose_name="Заголовок", max_length=250)
+    # category = models.ForeignKey(Category,
+    #                              verbose_name="Категория",
+    #                              on_delete=models.CASCADE)
+
+    # def filename(self):
+    #     return os.path.basename(self.file.name)
+
+    # class Meta:
+    #     verbose_name = "Документ"
+    #     verbose_name_plural = "Документы"
+
+    # def __str__(self):
+    #     return self.title
+
+    # def get_absolute_url(self):
+    #     return reverse("document_detail", kwargs={"slug": self.slug})

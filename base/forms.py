@@ -25,7 +25,7 @@ class FileForm(ModelForm):
 
 class DocumentForm(ModelForm):
     file = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
-    
+
     class Meta:
         model = Document
         file_field = forms.FileField(

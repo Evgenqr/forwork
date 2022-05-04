@@ -6,11 +6,30 @@
 {% endblock %}
 
 {% block content %}
-    <h5 class="card-title"> 
+    <h4 class="card-title"> 
         {{documents.title}}
-    </h5>    <br>
+    </h4>    <br>
+    Категория: {{documents.category.title}}
+
+{{ law.title }}
+    {% for l in law.all %}
+    {{l.shorttitle}}dd</a> <br>
+    {% endfor %}<br>11f<br>
+    Закон: {{documents.law.title}} dd 
+
+    <br><br>
     {{documents.text}}
     <br><br>
+
+    {% for doc in document %}
+    {% for d in doc.law_set.all %}
+{{d.title}}
+    {% endfor %}
+
+    {% endfor %}
+
+
+    {% comment %}
     Приложения: 
     <br>
     {{documents.file.url}}
@@ -25,6 +44,7 @@
     {{ files }}
     <a class="dropdown-item" href="{{documents.file.url}}">{{documents.filename}} </a> ({{ documents.file.size|filesizeformat }}) <br>
  <br>
+{% endcomment %}
     Создан: {{documents.date_create}}    <br>
     Обновлён: {{documents.date_update}}    <br>
     Автор: {{documents.user}}
