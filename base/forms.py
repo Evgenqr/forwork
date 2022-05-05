@@ -17,20 +17,19 @@ class LawForm(ModelForm):
 
 
 class FileForm(ModelForm):
-
     class Meta:
         model = File
-        fields = ['file']
+        fields = ['title', 'document', 'file']
 
 
 class DocumentForm(ModelForm):
-    file = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
+    # file = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
 
     class Meta:
         model = Document
-        file_field = forms.FileField(
-            widget=forms.ClearableFileInput(attrs={'multiple': True}))
-        fields = ['title', 'category', 'law', 'text', 'file']
+        # file_field = forms.FileField(
+        #     widget=forms.ClearableFileInput(attrs={'multiple': True}))
+        fields = ['title', 'category', 'law', 'text']
 
         # def save(self, commit=True):
         #     instance = super(DocumentForm, self).save(commit=False)

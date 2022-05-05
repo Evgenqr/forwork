@@ -1,3 +1,6 @@
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -10,11 +13,12 @@ from django.views.generic import ListView, DetailView
 # from django.db.models import Q
 # from django.views import View
 # from itertools import chain
-from .models import Category, Document, Law
-from .forms import CategoryForm, DocumentForm
+from .models import Category, Document, Law, File
+from .forms import CategoryForm, DocumentForm, FileForm
 from django.utils.text import slugify
 from transliterate import translit
 # from django.views.generic.edit import FormView
+from django.http import HttpResponseRedirect
 
 
 # ---- User
@@ -193,23 +197,89 @@ class LawListView(ListView):
 
 @login_required
 def createdocument(request):
+    # POST - обязательный метод
+    if request.method == 'POST' and request.FILES:
+        # получаем загруженный файл
+        file = request.FILES['myfile']
+        fs = FileSystemStorage()
+        # сохраняем на файловой системе
+        filename = fs.save(file.name, file)
+        # получение адреса по которому лежит файл
+        file_url = fs.url(filename)
+        return render(request, 'base/createdocument.html', {
+            'file_url': file_url
+        })
+    return render(request, 'base/createdocument.html')
+
+
+class DocumentCreate(LoginRequiredMixin, CreateView):
+    # Модель куда выполняется сохранение
+    model = DocumentForm
+    # Класс на основе которого будет валидация полей
+    form_class = DocumentForm
+    # Выведем все существующие записи на странице
+    extra_context = {'documents': Document.objects.all()}
+    # Шаблон с помощью которого
+    # будут выводиться данные
+    template_name = 'base/createdocument.html'
+    # На какую страницу будет перенаправление
+    # в случае успешного сохранения формы
+    success_url = '/'
+
+
+
+@login_required
+def createdocument1(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
+            instance = DocumentForm(file=request.FILES['file'])
+            instance.save()
+            newdocument = form.save(commit=False)
+            newdocument.user = request.user
+            newdocument.slug = translit(newdocument.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newdocument.slug = slugify(newdocument.slug)
+            newdocument.save()
+            return redirect('home')
+    else:
+        form = DocumentForm()
+    return render(request, 'base/createdocument.html', {'form': form})
+
+
+@login_required
+def createdocumen2t(request):
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, request.FILES)
+        if form.is_valid():
+
             # category = form.cleaned_data.get('category')
-            newidocument = form.save(commit=False)
-            newidocument.user = request.user
-            newidocument.slug = translit(newidocument.title,
-                                         language_code='ru',
-                                         reversed=True)
-            newidocument.slug = slugify(newidocument.slug)
-            newidocument.save()
+            newdocument = form.save(commit=False)
+            newdocument.user = request.user
+            newdocument.slug = translit(newdocument.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newdocument.slug = slugify(newdocument.slug)
+            newdocument.save()
             # for cat in category:
             #     newidocument.category.add(cat)
             return redirect('home')
     else:
         form = DocumentForm()
     return render(request, 'base/createdocument.html', {'form': form})
+
+
+def document_detail_view(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    files = File.objects.filter(document=document)
+    laws = Law.objects.filter(document=document)
+    context = {
+        'document': document,
+        'files': files,
+        'laws': laws
+    }
+    return render(request, 'base/document_detail.html', context)
 
 
 class DocumentView(DetailView):

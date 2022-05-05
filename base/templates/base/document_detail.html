@@ -2,52 +2,42 @@
 {% load static %}
 
 {% block title %}
-{{title}} :: {{ block.super }}
+{{document.title}} :: {{ block.super }}
 {% endblock %}
 
 {% block content %}
     <h4 class="card-title"> 
-        {{documents.title}}
+        {{document.title}}
     </h4>    <br>
-    Категория: {{documents.category.title}}
+    Категория: {{document.category.title}}<br>
 
-{{ law.title }}
-    {% for l in law.all %}
-    {{l.shorttitle}}dd</a> <br>
-    {% endfor %}<br>11f<br>
-    Закон: {{documents.law.title}} dd 
-
-    <br><br>
-    {{documents.text}}
-    <br><br>
-
-    {% for doc in document %}
-    {% for d in doc.law_set.all %}
-{{d.title}}
+    Закон: 
+    
+    {% for l in laws %}
+        {{l.title}}
     {% endfor %}
-
-    {% endfor %}
-
-
-    {% comment %}
-    Приложения: 
+    
     <br>
-    {{documents.file.url}}
-    {% for file in documents.file.all %}
+
+
+    Приложения: 
+    {% for file in files %}
     <h6 class="card-title">   
-       1  {{ file.title }}  <br>
-       2  {{ file.filename }}  <br>
-       3  {{filename}} <br>
-        4 {{file.size}} <br>
+      <a class="" href="{{file.file.url}}">  {{ file.title }}</a> ({{file.file.size|filesizeformat }}) 
     </h6>
 {% endfor %}
+
+
+    <br>
+    {% comment %}
+
     {{ files }}
-    <a class="dropdown-item" href="{{documents.file.url}}">{{documents.filename}} </a> ({{ documents.file.size|filesizeformat }}) <br>
+    
  <br>
 {% endcomment %}
-    Создан: {{documents.date_create}}    <br>
-    Обновлён: {{documents.date_update}}    <br>
-    Автор: {{documents.user}}
+    Создан: {{document.date_create}}    <br>
+    Обновлён: {{document.date_update}}    <br>
+    Автор: {{document.user}}
       
                                          
 

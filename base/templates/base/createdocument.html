@@ -2,12 +2,14 @@
 {% block content %}
     <h1> Создание документа</h1>
     <h2>{{error}}</h2>
+
+
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-            <p>{{ form.as_p }}</p>
-        <button type="submit">Создать</button> 
+        <!-- Выводим каждое поле формы в отдельном параграфе -->
+        {{ form.as_p }}
+        <button type="submit">Загрузка</button>
     </form>
-
 
 
 {% endblock content %} 
