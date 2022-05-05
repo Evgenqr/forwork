@@ -22,9 +22,12 @@ urlpatterns = [
     #  <---- End Category
     # -----> Document
     # path('document/<str:slug>/',
-    #      views.DocumentView.as_view(),
+    #      views.UploadView.as_view(),
     #      name='document'),
     path('document/<str:slug>/', views.document_detail_view, name='document'),
+    # path('create/',
+    #      views.createdocument,
+    #      name='createdocument'),
     path('create/',
          views.DocumentCreate.as_view(),
          name='createdocument'),

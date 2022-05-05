@@ -19,13 +19,12 @@
     
     <br>
 
-
     Приложения: 
-    {% for file in files %}
     <h6 class="card-title">   
-      <a class="" href="{{file.file.url}}">  {{ file.title }}</a> ({{file.file.size|filesizeformat }}) 
+      <a class="" href="{{document.file.url}}">  {{ document.filename }}</a> ({{document.file.size|filesizeformat }}) 
     </h6>
-{% endfor %}
+
+
 
 
     <br>

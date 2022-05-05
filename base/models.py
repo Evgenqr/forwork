@@ -42,6 +42,25 @@ class Law(models.Model):
         return reverse("law_detail", kwargs={"slug": self.slug})
 
 
+class File(models.Model):
+    title = models.CharField(verbose_name="Название файла", max_length=100,
+                             blank=True, null=True)
+    # document = models.ForeignKey(Document, default=None, on_delete=models.CASCADE)
+    file = models.FileField(verbose_name="Вложения", blank=True,
+                            null=True, max_length=200,
+                            upload_to=file_directory_path)
+
+    def filename(self):
+        return os.path.basename(self.file.name)
+
+    class Meta:
+        verbose_name = "Вложение"
+        verbose_name_plural = "Вложения"
+
+    def __str__(self):
+        return self.title
+
+
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -55,14 +74,10 @@ class Document(models.Model):
         Law, verbose_name="Закон",
         blank=True)
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
-    # file = models.FileField(verbose_name="Вложения", blank=True,
-    #                         null=True, upload_to=file_directory_path)
-                            # validators=[
-                            #     validators.FileExtensionValidator(
-                            #         ['txt', 'doc', 'docx', 'odt',
-                            #             'odt', 'zip', 'rar'],
-                            #         message='Расширения файлов: .txt, .doc, .docx, .odt, .zip, .rar'
-                            #     )])
+    file = models.FileField(verbose_name="Вложения", blank=True,
+                            null=True, upload_to=file_directory_path)
+    # file = models.ForeignKey(File, verbose_name="Вложения", blank=True,
+    #                          null=True, on_delete=models.CASCADE)
     date_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания")
     date_update = models.DateTimeField(
@@ -78,24 +93,9 @@ class Document(models.Model):
     def get_absolute_url(self):
         return reverse("document_detail", kwargs={"slug": self.slug})
 
-
-class File(models.Model):
-    title = models.CharField(verbose_name="Название файла", max_length=100,
-                             blank=True, null=True)
-    document = models.ForeignKey(Document, default=None, on_delete=models.CASCADE)
-    file = models.FileField(verbose_name="Вложения", blank=True,
-                            null=True, max_length=200,
-                            upload_to=file_directory_path)
-
     def filename(self):
         return os.path.basename(self.file.name)
 
-    class Meta:
-        verbose_name = "Вложение"
-        verbose_name_plural = "Вложения"
-
-    def __str__(self):
-        return self.title
 
 # class Document(models.Model):
 #     title = models.CharField(verbose_name="Заголовок", max_length=250)

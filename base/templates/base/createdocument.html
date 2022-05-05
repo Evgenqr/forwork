@@ -2,14 +2,9 @@
 {% block content %}
     <h1> Создание документа</h1>
     <h2>{{error}}</h2>
-
-
-    <form method="POST" enctype="multipart/form-data">
+    <form enctype="multipart/form-data" method="POST" >
         {% csrf_token %}
-        <!-- Выводим каждое поле формы в отдельном параграфе -->
-        {{ form.as_p }}
-        <button type="submit">Загрузка</button>
+            <p>{{ form.as_p }}</p>
+        <button type="submit">Создать</button> 
     </form>
-
-
 {% endblock content %} 

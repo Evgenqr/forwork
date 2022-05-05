@@ -1,7 +1,6 @@
 from django.forms import ModelForm
 from .models import Category, Law, Document, File
 from django import forms
-from multiupload.fields import MultiFileField
 
 
 class CategoryForm(ModelForm):
@@ -19,17 +18,20 @@ class LawForm(ModelForm):
 class FileForm(ModelForm):
     class Meta:
         model = File
-        fields = ['title', 'document', 'file']
+        fields = ['title', 'file']
 
 
 class DocumentForm(ModelForm):
-    # file = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
+    # file = MultiFileField(min_num=1, max_num=7, max_file_size=1024*1024*5,
+    #                       label=Document._meta.get_field_by_name(
+    #                            'file')[0].verbose_name)
+    # files = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
 
     class Meta:
         model = Document
-        # file_field = forms.FileField(
-        #     widget=forms.ClearableFileInput(attrs={'multiple': True}))
-        fields = ['title', 'category', 'law', 'text']
+        file = forms.FileField(
+            widget=forms.ClearableFileInput(attrs={'multiple': True}))
+        fields = ['title', 'category', 'law', 'text', 'file']
 
         # def save(self, commit=True):
         #     instance = super(DocumentForm, self).save(commit=False)

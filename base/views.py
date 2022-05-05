@@ -1,3 +1,4 @@
+from pydoc import Doc
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.files.storage import FileSystemStorage
@@ -195,47 +196,40 @@ class LawListView(ListView):
     # return render(request, 'base/index.html')
 
 
-@login_required
-def createdocument(request):
-    # POST - обязательный метод
-    if request.method == 'POST' and request.FILES:
-        # получаем загруженный файл
-        file = request.FILES['myfile']
-        fs = FileSystemStorage()
-        # сохраняем на файловой системе
-        filename = fs.save(file.name, file)
-        # получение адреса по которому лежит файл
-        file_url = fs.url(filename)
-        return render(request, 'base/createdocument.html', {
-            'file_url': file_url
-        })
-    return render(request, 'base/createdocument.html')
-
-
-class DocumentCreate(LoginRequiredMixin, CreateView):
-    # Модель куда выполняется сохранение
+class DocumentCreate(CreateView):
     model = DocumentForm
-    # Класс на основе которого будет валидация полей
     form_class = DocumentForm
-    # Выведем все существующие записи на странице
     extra_context = {'documents': Document.objects.all()}
-    # Шаблон с помощью которого
-    # будут выводиться данные
     template_name = 'base/createdocument.html'
-    # На какую страницу будет перенаправление
-    # в случае успешного сохранения формы
     success_url = '/'
 
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        if form.is_valid():
+            newdocument = form.save(commit=False)
+            newdocument.user = request.user
+            newdocument.slug = translit(newdocument.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newdocument.slug = slugify(newdocument.slug)
+            newdocument.save()
+        else:
+            return self.form_invalid(form)
+
+
 
 
 @login_required
-def createdocument1(request):
+def createdocument(request):
     if request.method == 'POST':
         form = DocumentForm(request.POST, request.FILES)
         if form.is_valid():
-            instance = DocumentForm(file=request.FILES['file'])
-            instance.save()
             newdocument = form.save(commit=False)
+            # file = request.FILES.getlist('file')[0]
+            
+            # newdocument = Document.objects.create(file=file)
+            # newdocument.save()
             newdocument.user = request.user
             newdocument.slug = translit(newdocument.title,
                                         language_code='ru',
@@ -272,11 +266,11 @@ def createdocumen2t(request):
 
 def document_detail_view(request, slug):
     document = get_object_or_404(Document, slug=slug)
-    files = File.objects.filter(document=document)
+    # files = File.objects.filter(document=document)
     laws = Law.objects.filter(document=document)
     context = {
         'document': document,
-        'files': files,
+        # 'files': files,
         'laws': laws
     }
     return render(request, 'base/document_detail.html', context)
