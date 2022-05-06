@@ -4,7 +4,54 @@
     <h2>{{error}}</h2>
     <form enctype="multipart/form-data" method="POST" >
         {% csrf_token %}
-            <p>{{ form.as_p }}</p>
-        <button type="submit">Создать</button> 
+        <div class="col-sm-3">
+           Заголовок: <br>{{form.title}}  </div>
+            <div class="col-sm-3">Категория:<br> {{form.category}}  </div>
+            <div class="col-sm-3">Закон: <br>{{form.law}}  </div>
+            <div class="col-sm-3">Текст: <br> {{form.text}}  </div>
+             <div class="col-sm-3">Приложения:<br>
+            <input name="file" type="file" multiple class="form-control" >         
+        </div>
+        <br>
+        <div class="col-sm-3">
+        <button type="submit">Создать</button></div>
     </form>
+
+
+
+        <form enctype="multipart/form-data" method="POST" >
+            {% csrf_token %}
+            {% comment %}
+            {{ form.as_p }}
+            <div class="col-sm-3">
+                <input type="text"  placeholder="Заголовок" maxlength="100" required class="form-control"></p>
+
+                <input  type="text"  placeholder="Категория" maxlength="100" required class="form-control"></p>
+
+                <input type="text" placeholder="Закон" maxlength="100" required class="form-control"></p>
+            </div>
+            <div class="col-sm-8">  
+                <textarea name="text" placeholder="Тест" required class="form-control"></textarea></p>
+            </div>
+            <div class="col-sm-3">  
+                <p><label for="files">Приложения:</label>
+                <input name="files" type="file" multiple class="form-control" > 
+            </div>
+            <div class="col-sm-3">
+                <button type="submit">Создать</button> 
+            </div>
+        </form>
+        
+        {% comment %}
+
+        <form enctype="multipart/form-data" method="POST" >
+            {% csrf_token %}
+                <p>{{ form.as_p }}</p>
+                
+            <button type="submit">Создать</button> 
+        </form>
+        
+     <br>
+    {% endcomment %}
+    
 {% endblock content %} 

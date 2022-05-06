@@ -92,10 +92,10 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# FILE_UPLOAD_HANDLERS = [
-#     'django.core.files.uploadhandler.MemoryFileUploadHandler',
-#     'django.core.files.uploadhandler.TemporaryFileUploadHandler',
-# ]
+FILE_UPLOAD_HANDLERS = [
+    'django.core.files.uploadhandler.MemoryFileUploadHandler',
+    'django.core.files.uploadhandler.TemporaryFileUploadHandler',
+]
 
 
 # Internationalization

@@ -18,7 +18,11 @@
     {% endfor %}
     
     <br>
-
+11
+    {% for f in document.file.all %}
+    {{f.file.filename}}dd
+    {% endfor %}22
+    <br>
     Приложения: 
     <h6 class="card-title">   
       <a class="" href="{{document.file.url}}">  {{ document.filename }}</a> ({{document.file.size|filesizeformat }}) 

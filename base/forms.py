@@ -22,10 +22,10 @@ class FileForm(ModelForm):
 
 
 class DocumentForm(ModelForm):
-    # file = MultiFileField(min_num=1, max_num=7, max_file_size=1024*1024*5,
-    #                       label=Document._meta.get_field_by_name(
-    #                            'file')[0].verbose_name)
-    # files = MultiFileField(min_num=0, max_num=5, max_file_size=1024*1024*5)
+
+    file = forms.FileField(
+                           widget=forms.ClearableFileInput(
+                               attrs={'multiple': True}))
 
     class Meta:
         model = Document

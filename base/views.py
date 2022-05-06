@@ -1,7 +1,7 @@
-from pydoc import Doc
+# from pydoc import Doc
 from django.views.generic import CreateView
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.core.files.storage import FileSystemStorage
+# from django.contrib.auth.mixins import LoginRequiredMixin
+# from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -14,12 +14,11 @@ from django.views.generic import ListView, DetailView
 # from django.db.models import Q
 # from django.views import View
 # from itertools import chain
-from .models import Category, Document, Law, File
-from .forms import CategoryForm, DocumentForm, FileForm
+from .models import Category, Document, Law
+from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
 # from django.views.generic.edit import FormView
-from django.http import HttpResponseRedirect
 
 
 # ---- User
@@ -186,18 +185,12 @@ class LawListView(ListView):
 
     def get_queryset(self):
         return Law.objects.order_by('title')
-    # print('111ggg', Law.objects.all())
 
-    #  def get_context_data(self, **kwargs):
-    #     context = super(DocumentListView, self).get_context_data(**kwargs)
-    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
-    #     return context
-
-    # return render(request, 'base/index.html')
+from django.views.generic.edit import FormView
+# class DocumentCreate(CreateView):
 
 
-class DocumentCreate(CreateView):
-    model = DocumentForm
+class DocumentCreate(FormView):
     form_class = DocumentForm
     extra_context = {'documents': Document.objects.all()}
     template_name = 'base/createdocument.html'
@@ -206,71 +199,48 @@ class DocumentCreate(CreateView):
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
+        files = request.FILES.getlist('file')
         if form.is_valid():
-            newdocument = form.save(commit=False)
-            newdocument.user = request.user
-            newdocument.slug = translit(newdocument.title,
-                                        language_code='ru',
-                                        reversed=True)
-            newdocument.slug = slugify(newdocument.slug)
-            newdocument.save()
+            for f in files:
+                newdocument = form.save(commit=False)
+                newdocument.user = request.user
+                newdocument.slug = translit(newdocument.title,
+                                            language_code='ru',
+                                            reversed=True)
+                newdocument.slug = slugify(newdocument.slug)
+                newdocument.save()
+            return self.form_valid(form)
         else:
             return self.form_invalid(form)
 
 
+# class DocumentCreates(CreateView):
+#     model = DocumentForm
+#     form_class = DocumentForm
+#     extra_context = {'documents': Document.objects.all()}
+#     template_name = 'base/createdocument.html'
+#     success_url = '/'
 
-
-@login_required
-def createdocument(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-            newdocument = form.save(commit=False)
-            # file = request.FILES.getlist('file')[0]
-            
-            # newdocument = Document.objects.create(file=file)
-            # newdocument.save()
-            newdocument.user = request.user
-            newdocument.slug = translit(newdocument.title,
-                                        language_code='ru',
-                                        reversed=True)
-            newdocument.slug = slugify(newdocument.slug)
-            newdocument.save()
-            return redirect('home')
-    else:
-        form = DocumentForm()
-    return render(request, 'base/createdocument.html', {'form': form})
-
-
-@login_required
-def createdocumen2t(request):
-    if request.method == 'POST':
-        form = DocumentForm(request.POST, request.FILES)
-        if form.is_valid():
-
-            # category = form.cleaned_data.get('category')
-            newdocument = form.save(commit=False)
-            newdocument.user = request.user
-            newdocument.slug = translit(newdocument.title,
-                                        language_code='ru',
-                                        reversed=True)
-            newdocument.slug = slugify(newdocument.slug)
-            newdocument.save()
-            # for cat in category:
-            #     newidocument.category.add(cat)
-            return redirect('home')
-    else:
-        form = DocumentForm()
-    return render(request, 'base/createdocument.html', {'form': form})
+#     def post(self, request, *args, **kwargs):
+#         form_class = self.get_form_class()
+#         form = self.get_form(form_class)
+#         if form.is_valid():
+#             newdocument = form.save(commit=False)
+#             newdocument.user = request.user
+#             newdocument.slug = translit(newdocument.title,
+#                                         language_code='ru',
+#                                         reversed=True)
+#             newdocument.slug = slugify(newdocument.slug)
+#             newdocument.save()
+#         else:
+#             return self.form_invalid(form)
 
 
 def document_detail_view(request, slug):
     document = get_object_or_404(Document, slug=slug)
-    # files = File.objects.filter(document=document)
     laws = Law.objects.filter(document=document)
     context = {
         'document': document,
-        # 'files': files,
         'laws': laws
     }
     return render(request, 'base/document_detail.html', context)

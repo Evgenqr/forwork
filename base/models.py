@@ -1,9 +1,9 @@
 import os
-from pydoc import Doc
+# from pydoc import Doc
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.core import validators
+# from django.core import validators
 
 
 def file_directory_path(instance, filename):
@@ -45,7 +45,6 @@ class Law(models.Model):
 class File(models.Model):
     title = models.CharField(verbose_name="Название файла", max_length=100,
                              blank=True, null=True)
-    # document = models.ForeignKey(Document, default=None, on_delete=models.CASCADE)
     file = models.FileField(verbose_name="Вложения", blank=True,
                             null=True, max_length=200,
                             upload_to=file_directory_path)
@@ -76,8 +75,6 @@ class Document(models.Model):
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
     file = models.FileField(verbose_name="Вложения", blank=True,
                             null=True, upload_to=file_directory_path)
-    # file = models.ForeignKey(File, verbose_name="Вложения", blank=True,
-    #                          null=True, on_delete=models.CASCADE)
     date_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания")
     date_update = models.DateTimeField(
@@ -90,11 +87,12 @@ class Document(models.Model):
     def __str__(self):
         return self.title
 
-    def get_absolute_url(self):
-        return reverse("document_detail", kwargs={"slug": self.slug})
-
+    @property
     def filename(self):
         return os.path.basename(self.file.name)
+
+    def get_absolute_url(self):
+        return reverse("document_detail", kwargs={"slug": self.slug})
 
 
 # class Document(models.Model):
