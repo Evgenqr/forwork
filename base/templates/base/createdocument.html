@@ -1,5 +1,24 @@
 {% extends 'base.html' %}  
 {% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <h3>Add New product</h3>
+            <hr>
+            <form action="" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.as_p}}
+                <button class="btn btn-info">Submit Data</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %} 
+
+
+
+{% comment %}
     <h1> Создание документа</h1>
     <h2>{{error}}</h2>
     <form enctype="multipart/form-data" method="POST" >
@@ -10,18 +29,18 @@
             <div class="col-sm-3">Закон: <br>{{form.law}}  </div>
             <div class="col-sm-3">Текст: <br> {{form.text}}  </div>
              <div class="col-sm-3">Приложения:<br>
-            <input name="file" type="file" multiple class="form-control" >         
+            <input name="files" type="file" multiple class="form-control" >         
         </div>
         <br>
         <div class="col-sm-3">
-        <button type="submit">Создать</button></div>
+        <button type="submit" class="btn btn-primary m-3">Создать</button></div>
     </form>
 
 
 
         <form enctype="multipart/form-data" method="POST" >
             {% csrf_token %}
-            {% comment %}
+            
             {{ form.as_p }}
             <div class="col-sm-3">
                 <input type="text"  placeholder="Заголовок" maxlength="100" required class="form-control"></p>
@@ -42,7 +61,7 @@
             </div>
         </form>
         
-        {% comment %}
+  
 
         <form enctype="multipart/form-data" method="POST" >
             {% csrf_token %}
@@ -52,6 +71,7 @@
         </form>
         
      <br>
-    {% endcomment %}
+
     
 {% endblock content %} 
+{% endcomment %}

@@ -1,4 +1,5 @@
 import os
+from statistics import mode
 # from pydoc import Doc
 from django.db import models
 from django.urls import reverse
@@ -7,7 +8,7 @@ from django.contrib.auth.models import User
 
 
 def file_directory_path(instance, filename):
-    return 'uploads/{0}/{1}'.format(instance.title, filename)
+    return 'uploads/{0}/{1}'.format(instance.document.title, filename)
 
 
 class Category(models.Model):
@@ -73,8 +74,8 @@ class Document(models.Model):
         Law, verbose_name="Закон",
         blank=True)
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
-    file = models.FileField(verbose_name="Вложения", blank=True,
-                            null=True, upload_to=file_directory_path)
+    # file = models.FileField(verbose_name="Вложения", blank=True,
+    #                         null=True, upload_to=file_directory_path)
     date_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания")
     date_update = models.DateTimeField(
@@ -87,13 +88,21 @@ class Document(models.Model):
     def __str__(self):
         return self.title
 
-    @property
-    def filename(self):
-        return os.path.basename(self.file.name)
-
     def get_absolute_url(self):
         return reverse("document_detail", kwargs={"slug": self.slug})
 
+
+class DocumentFile(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE)
+    file = models.FileField(verbose_name="Вложения", blank=True,
+                            null=True, upload_to=file_directory_path)
+
+    def __str__(self):
+        return self.document.title
+
+    @property
+    def filename(self):
+        return os.path.basename(self.file.name)
 
 # class Document(models.Model):
 #     title = models.CharField(verbose_name="Заголовок", max_length=250)

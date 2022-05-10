@@ -46,7 +46,7 @@ ROOT_URLCONF = 'forwork.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [BASE_DIR / "templates"],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -123,7 +123,7 @@ STATICFILESDIRS = [STATIC_DIR]
 STATIC_ROOT = os.path.join(BASE_DIR, 'statcifiles')
 
 MEDIA_URL = '/media/'
-MEDIA_DIR = os.path.join(BASE_DIR, 'media')
+# MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 

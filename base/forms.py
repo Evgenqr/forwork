@@ -22,16 +22,22 @@ class FileForm(ModelForm):
 
 
 class DocumentForm(ModelForm):
-
-    file = forms.FileField(
-                           widget=forms.ClearableFileInput(
-                               attrs={'multiple': True}))
+    files = forms.FileField(required=False, widget=forms.FileInput(attrs={
+        "class": "form-control",
+        "multiple": True
+    }))
+    # file = forms.FileField(
+    #                        widget=forms.ClearableFileInput(
+    #                            attrs={'multiple': True}))
 
     class Meta:
         model = Document
-        file = forms.FileField(
-            widget=forms.ClearableFileInput(attrs={'multiple': True}))
-        fields = ['title', 'category', 'law', 'text', 'file']
+        # file = forms.FileField(
+        #     widget=forms.ClearableFileInput(attrs={'multiple': True}))
+        fields = ['title', 'category', 'law', 'text']
+        # widgets = {"file": forms.ClearableFileInput(attrs={
+        #                 "class": "form-control"
+        #             })}
 
         # def save(self, commit=True):
         #     instance = super(DocumentForm, self).save(commit=False)

@@ -1,4 +1,5 @@
 # from pydoc import Doc
+from django.views.generic.edit import FormView
 from django.views.generic import CreateView
 # from django.contrib.auth.mixins import LoginRequiredMixin
 # from django.core.files.storage import FileSystemStorage
@@ -14,7 +15,7 @@ from django.views.generic import ListView, DetailView
 # from django.db.models import Q
 # from django.views import View
 # from itertools import chain
-from .models import Category, Document, Law
+from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
@@ -186,8 +187,51 @@ class LawListView(ListView):
     def get_queryset(self):
         return Law.objects.order_by('title')
 
-from django.views.generic.edit import FormView
-# class DocumentCreate(CreateView):
+
+class AdminRequiredMixin(object):
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            pass
+        else:
+            return redirect("/login/")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class DocumentCreateView(CreateView):
+    template_name = 'base/createdocument.html'
+    form_class = DocumentForm
+    extra_context = {'documents': Document.objects.all()}
+    success_url = '/'
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        newdocument = form.save(commit=False)
+        newdocument.user = request.user
+        print('ss111sss', newdocument.user)
+        newdocument.slug = translit(newdocument.title,
+                                    language_code='ru',
+                                    reversed=True)
+        newdocument.slug = slugify(newdocument.slug)
+        newdocument.save()
+        files = self.request.FILES.getlist("files")
+        for f in files:
+            DocumentFile.objects.create(
+                document=newdocument, file=f)
+        return self.form_valid(form)
+
+    # def form_valid(self, form):
+    #     newdocument = form.save()
+    #     newdocument.user = "admin"
+    #     newdocument.slug = translit(newdocument.title,
+    #                                 language_code='ru',
+    #                                 reversed=True)
+    #     newdocument.slug = slugify(newdocument.slug)
+    #     newdocument.save()
+    #     files = self.request.FILES.getlist("files")
+    #     for f in files:
+    #         DocumentFile.objects.create(document=newdocument, file=f)
+    #     return super().form_valid(form)
 
 
 class DocumentCreate(FormView):
@@ -199,30 +243,58 @@ class DocumentCreate(FormView):
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        files = request.FILES.getlist('file')
         if form.is_valid():
-            for f in files:
-                newdocument = form.save(commit=False)
-                newdocument.user = request.user
-                newdocument.slug = translit(newdocument.title,
-                                            language_code='ru',
-                                            reversed=True)
-                newdocument.slug = slugify(newdocument.slug)
-                newdocument.save()
+            newdocument = form.save(commit=False)
+            newdocument.user = request.user
+            newdocument.slug = translit(newdocument.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newdocument.slug = slugify(newdocument.slug)
+            newdocument.save()
+            print('ss111sss')
             return self.form_valid(form)
         else:
+            print('sssss')
             return self.form_invalid(form)
+#     def post(self, request, *args, **kwargs):
+#         form_class = DocumentForm
+#         form = self.get_form(form_class)
+#         files = request.FILES.getlist('files')
+#         if form.is_valid():
+#             print('bbb')
+#             newdocument = form.save(commit=False)
+#             newdocument.user = request.user
+#             newdocument.slug = translit(newdocument.title,
+#                                         language_code='ru',
+#                                         reversed=True)
+#             newdocument.slug = slugify(newdocument.slug)
+#             newdocument.save()
+#             k = 0
+#             # for f in files:
+#             #     k += 1
+#             #     print('f', f)
+#             #     Document.objects.create(slug=newdocument.slug,
+#             #                             file=f, category=newdocument.category,
+#             #                             user=newdocument.user)
+#             #     print('bbb')
+
+#             print('ss111sss', k)
+#             return self.form_valid(form)
+#         else:
+#             print('sssss')
+#             return self.form_invalid(form)
 
 
-# class DocumentCreates(CreateView):
-#     model = DocumentForm
-#     form_class = DocumentForm
-#     extra_context = {'documents': Document.objects.all()}
+# class DocumentCreate(CreateView):
+#     model = Document
+#     # form_class = DocumentForm
+#     # extra_context = {'documents': Document.objects.all()}
 #     template_name = 'base/createdocument.html'
 #     success_url = '/'
 
 #     def post(self, request, *args, **kwargs):
 #         form_class = self.get_form_class()
+#         # form_class = DocumentForm(request.POST, request.FILES)
 #         form = self.get_form(form_class)
 #         if form.is_valid():
 #             newdocument = form.save(commit=False)
@@ -238,10 +310,12 @@ class DocumentCreate(FormView):
 
 def document_detail_view(request, slug):
     document = get_object_or_404(Document, slug=slug)
+    files = DocumentFile.objects.filter(document=document)
     laws = Law.objects.filter(document=document)
     context = {
         'document': document,
-        'laws': laws
+        'laws': laws,
+        'files': files
     }
     return render(request, 'base/document_detail.html', context)
 
