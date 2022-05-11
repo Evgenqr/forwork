@@ -1,10 +1,8 @@
 import os
-from statistics import mode
-# from pydoc import Doc
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-# from django.core import validators
+from django.core.validators import FileExtensionValidator, validate_image_file_extension
 
 
 def file_directory_path(instance, filename):
@@ -43,22 +41,25 @@ class Law(models.Model):
         return reverse("law_detail", kwargs={"slug": self.slug})
 
 
-class File(models.Model):
-    title = models.CharField(verbose_name="Название файла", max_length=100,
-                             blank=True, null=True)
-    file = models.FileField(verbose_name="Вложения", blank=True,
-                            null=True, max_length=200,
-                            upload_to=file_directory_path)
+# class File(models.Model):
+#     title = models.CharField(verbose_name="Название файла", max_length=100,
+#                              blank=True, null=True)
+#     file = models.FileField(verbose_name="Вложения", blank=True,
+#                             null=True, max_length=200,
+#                             upload_to=file_directory_path,
+#                             validators=[validate_image_file_extension])
+#     # validators=[FileExtensionValidator(
+#     #     allowed_extensions=['pdf'])])
 
-    def filename(self):
-        return os.path.basename(self.file.name)
+#     def filename(self):
+#         return os.path.basename(self.file.name)
 
-    class Meta:
-        verbose_name = "Вложение"
-        verbose_name_plural = "Вложения"
+#     class Meta:
+#         verbose_name = "Вложение"
+#         verbose_name_plural = "Вложения"
 
-    def __str__(self):
-        return self.title
+#     def __str__(self):
+#         return self.title
 
 
 class Document(models.Model):
@@ -95,7 +96,14 @@ class Document(models.Model):
 class DocumentFile(models.Model):
     document = models.ForeignKey(Document, on_delete=models.CASCADE)
     file = models.FileField(verbose_name="Вложения", blank=True,
-                            null=True, upload_to=file_directory_path)
+                            null=True, upload_to=file_directory_path,
+                            help_text="Максимальный размер файла: 500 МБ. /n Разрешённые типы файлов: txt doc docx xls xlsx pdf png jpg rar zip ppt pptx rtf gif.",
+                            validators=[FileExtensionValidator(
+                                allowed_extensions=('pdf',))])
+
+    class Meta:
+        verbose_name = "Приложение"
+        verbose_name_plural = "Приложения"
 
     def __str__(self):
         return self.document.title
@@ -103,6 +111,24 @@ class DocumentFile(models.Model):
     @property
     def filename(self):
         return os.path.basename(self.file.name)
+
+    def css_class(self):
+        extension = os.path.splitext(self.file.name)
+        if extension == 'pdf':
+            return 'pdf'
+        if extension == 'doc' or extension == 'docx' or extension == 'rtf':
+            return 'word'
+        if extension == 'xls' or extension == 'xlsx':
+            return 'excel'
+        if extension == 'ppt' or extension == 'pptx':
+            return 'powpoint'
+        if extension == 'png' or extension == 'jpg' or extension == 'gif':
+            return 'fileimg'
+        if extension == 'zip' or extension == 'rar':
+            return 'archive'
+        if extension == 'txt':
+            return 'textfile'
+        return 'other'
 
 # class Document(models.Model):
 #     title = models.CharField(verbose_name="Заголовок", max_length=250)

@@ -1,6 +1,6 @@
 from csv import list_dialects
 from django.contrib import admin
-from .models import Category, Law, Document, File, DocumentFile
+from .models import Category, Law, Document, DocumentFile
 
 # admin.site.register(Document)
 admin.site.register(Law)

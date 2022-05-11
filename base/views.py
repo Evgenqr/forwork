@@ -196,6 +196,8 @@ class AdminRequiredMixin(object):
             return redirect("/login/")
         return super().dispatch(request, *args, **kwargs)
 
+import os
+
 
 class DocumentCreateView(CreateView):
     template_name = 'base/createdocument.html'
@@ -216,6 +218,8 @@ class DocumentCreateView(CreateView):
         newdocument.save()
         files = self.request.FILES.getlist("files")
         for f in files:
+            extension = os.path.splitext(f.name)
+            print('vvvvv', extension)
             DocumentFile.objects.create(
                 document=newdocument, file=f)
         return self.form_valid(form)

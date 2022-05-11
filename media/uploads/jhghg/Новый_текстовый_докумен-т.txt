@@ -1,0 +1,72 @@
+{
+    "git.autofetch": true,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "files.autoSave": "afterDelay"
+}
+
+
+
+
+
+
+
+
+
+
+wget ftp://sourceware.org/pub/libffi/libffi-3.2.1.tar.gz
+tar -xf libffi-3.2.1.tar.gz && cd libffi-3.2.1
+ evgenqdc@evgenqdc.beget.tech
+
+
+./configure --prefix $HOME/.local LDFLAGS="-L/usr/local/lib"
+
+make -j33 && make install
+
+mkdir -p ~/.local/include
+cp x86_64-unknown-linux-gnu/include/ffi.h ~/.local/include/
+cp x86_64-unknown-linux-gnu/include/ffitarget.h ~/.local/include/
+
+
+wget https://www.python.org/ftp/python/3.9.4/Python-3.9.4.tgz
+
+tar -xf Python-3.9.4.tgz && cd Python-3.9.4 
+./configure --prefix=$HOME/.local LDFLAGS="-L/usr/local/lib"
+make -j33 && make install
+
+
+
+~/.local/bin/python3.9 -V
+
+~/.local/bin/pip3.9 -V
+
+cd ~/evgenqdc.beget.tech
+cd ~/r2items
+
+~/.local/bin/pip3.9 install virtualenv
+
+/home/e/evgenqdc/.local/bin/python3.9 -m pip install --upgrade pip
+
+python -m virtualenv  venv_django --python=/usr/bin/python3.6
+
+python -m virtualenv venv_r2items
+~/.local/bin/python3.9 -m virtualenv venvr2items
+
+python -m virtualenv  r2items_venv--python=/usr/bin/python3.9
+
+source venvr2items/bin/activate
+source r2localvenv/bin/activate
+
+=== ~/.local/bin/python3.9 -m virtualenv r2localvenv
+
+
+django-admin.py startproject r2items
+
+cd ~/evgenqdc.beget.tech
+
+source r2itemsvenv/bin activate
+cd ~/home/e/r2itemsvenv/.local/bin/python3.9
+
+
+mkdir tmp; touch tmp/restart.txt
+
