@@ -4,13 +4,29 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10 mx-auto">
-            <h3>Add New product</h3>
+            <h3>Создание документа</h3>
             <hr>
             <form action="" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
                 {{form.as_p}}
-                <button class="btn btn-info">Submit Data</button>
-            </form>
+                {% comment %}
+                <div class="col-sm-8">Заголовок: <br>{{form.title}}  </div>
+                <div class="col-sm-12">Категория:<br> {{form.category}}  </div>
+                <div class="col-sm-6">Закон: <br>{{form.law}}  </div>
+                <div class="col-sm-8">Текст: <br> {{form.text}}  </div>
+                <div class="col-sm-4">Приложения:<br>
+                    <input name="files" type="file" multiple class="form-control">         
+                 </div>
+                 {% endcomment %}
+                <div class="description">Максимальный размер файла: <strong>50 МБ</strong>.<br>Разрешённые типы файлов: <strong>txt doc docx xls xlsx pdf png jpg rar zip ppt pptx rtf gif</strong>.</div>
+                <br>
+                <div class="col-sm-4"><button class="btn btn-info">Создать</button></div>
+                <br>
+                {% for message in messages %}
+   <span style="color:red;"> {{ message }} </span>
+{% endfor %}
+
+           </form>
         </div>
     </div>
 </div>
@@ -28,15 +44,15 @@
             <div class="col-sm-3">Категория:<br> {{form.category}}  </div>
             <div class="col-sm-3">Закон: <br>{{form.law}}  </div>
             <div class="col-sm-3">Текст: <br> {{form.text}}  </div>
-             <div class="col-sm-3">Приложения:<br>
+             11<div class="col-sm-3">Приложения44:<br>вв
             <input name="files" type="file" multiple class="form-control" >         
-        </div>
+        </div>22
         <br>
         <div class="col-sm-3">
         <button type="submit" class="btn btn-primary m-3">Создать</button></div>
     </form>
 
-
+   
 
         <form enctype="multipart/form-data" method="POST" >
             {% csrf_token %}

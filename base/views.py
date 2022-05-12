@@ -1,4 +1,7 @@
 # from pydoc import Doc
+from django.contrib import messages
+from django.forms import ValidationError
+from django.http import HttpResponse
 from django.views.generic.edit import FormView
 from django.views.generic import CreateView
 # from django.contrib.auth.mixins import LoginRequiredMixin
@@ -19,6 +22,7 @@ from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
+import os
 # from django.views.generic.edit import FormView
 
 
@@ -196,8 +200,6 @@ class AdminRequiredMixin(object):
             return redirect("/login/")
         return super().dispatch(request, *args, **kwargs)
 
-import os
-
 
 class DocumentCreateView(CreateView):
     template_name = 'base/createdocument.html'
@@ -206,36 +208,39 @@ class DocumentCreateView(CreateView):
     success_url = '/'
 
     def post(self, request, *args, **kwargs):
+        FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
+                              '.xls', '.xlsx', '.ppt', '.pptx', '.png',
+                              '.jpg', '.gif', '.zip', '.rar', '.txt']
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        newdocument = form.save(commit=False)
-        newdocument.user = request.user
-        print('ss111sss', newdocument.user)
-        newdocument.slug = translit(newdocument.title,
-                                    language_code='ru',
-                                    reversed=True)
-        newdocument.slug = slugify(newdocument.slug)
-        newdocument.save()
         files = self.request.FILES.getlist("files")
+        print('vvvvv', files)
+        # entry = h.exists():
+        #     print("Entry contained in queryset")
         for f in files:
-            extension = os.path.splitext(f.name)
-            print('vvvvv', extension)
-            DocumentFile.objects.create(
-                document=newdocument, file=f)
+            extension = os.path.splitext(f.name)[1]
+            print('vvvvddsv', f)
+            if extension not in FILE_EXT_WHITELIST:
+                print('1111', bool(f))
+                files.remove(f)
+                print('dds', extension)
+                messages.add_message(request,
+                                     messages.INFO,
+                                     'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                form = form
+                return render(request, self.template_name, {'form': form})
+            else:
+                newdocument = form.save(commit=False)
+                newdocument.user = request.user
+                newdocument.slug = translit(newdocument.title,
+                                            language_code='ru',
+                                            reversed=True)
+                newdocument.slug = slugify(newdocument.slug)
+                newdocument.save()
+                # for f in files:
+                DocumentFile.objects.create(
+                    document=newdocument, file=f)
         return self.form_valid(form)
-
-    # def form_valid(self, form):
-    #     newdocument = form.save()
-    #     newdocument.user = "admin"
-    #     newdocument.slug = translit(newdocument.title,
-    #                                 language_code='ru',
-    #                                 reversed=True)
-    #     newdocument.slug = slugify(newdocument.slug)
-    #     newdocument.save()
-    #     files = self.request.FILES.getlist("files")
-    #     for f in files:
-    #         DocumentFile.objects.create(document=newdocument, file=f)
-    #     return super().form_valid(form)
 
 
 class DocumentCreate(FormView):
