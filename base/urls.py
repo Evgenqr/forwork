@@ -21,13 +21,7 @@ urlpatterns = [
          name='deletecategory'),
     #  <---- End Category
     # -----> Document
-    # path('document/<str:slug>/',
-    #      views.UploadView.as_view(),
-    #      name='document'),
     path('document/<str:slug>/', views.document_detail_view, name='document'),
-    # path('create/',
-    #      views.addPhoto,
-    #      name='createdocument'),
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
@@ -36,7 +30,8 @@ urlpatterns = [
          views.deletecategory,
          name='deletedocument'),
 
-    #  <---- End Document
+    #  <---- End Document  
+    path('laws/<str:slug>/', views.law_detail_view, name='law'),
     # path('search/', views.SearchView.as_view(), name='search'),
 ]
 

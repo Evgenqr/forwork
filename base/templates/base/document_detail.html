@@ -20,7 +20,13 @@
     <br>
     Приложения: 
     <h6 class="card-title">  
-        {% for f in files %}<br>
+        {% if files %}
+        {{ f.filename }}fff
+        {% else %}
+        re
+        {% endif %}
+       
+        {% comment %}    {% for f in files %}<br>
         <br>   ssss {{ f.css_class}}ssss
         <span style="color: #007c84;">
         <a class="text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;">
@@ -30,7 +36,7 @@
 {{ f.filename }}
               </a>
             ({{f.file.size|filesizeformat }}) </span> <br>
-        {% endfor %}
+        {% endfor %} {% endcomment %}
     </h6>
     <br>
      Создан: {{document.date_create}}    <br>

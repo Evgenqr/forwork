@@ -1,0 +1,26 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}
+Главная страница :: {{ block.super }}
+{% endblock %}
+
+{% block content %} 
+
+            <h1>Главная страница</h1> <br>
+          
+            <ul class="list-group list-group-flush col-sm-3">
+                {% for l in law %}
+                    {{ l.title }}
+                {% endfor %}
+
+                {% for document in documents %}
+                <li class="list-group-item" >
+                  <a class="list-group-item list-group-item-action list-group-item-info" href="/document/{{document.slug}}/" >
+                    {{ document.title }}
+                  </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+            
+{% endblock content %} 

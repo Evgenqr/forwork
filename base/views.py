@@ -1,11 +1,7 @@
-# from pydoc import Doc
+from pickle import NONE
 from django.contrib import messages
-from django.forms import ValidationError
-from django.http import HttpResponse
 from django.views.generic.edit import FormView
 from django.views.generic import CreateView
-# from django.contrib.auth.mixins import LoginRequiredMixin
-# from django.core.files.storage import FileSystemStorage
 from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
@@ -13,17 +9,12 @@ from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView
-# from django.views.generic.edit import FormView
-# from django.http import HttpResponse
 # from django.db.models import Q
-# from django.views import View
-# from itertools import chain
 from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
 import os
-# from django.views.generic.edit import FormView
 
 
 # ---- User
@@ -114,7 +105,7 @@ def createcategory(request):
         except ValueError:
             return render(request, 'base/createcategory.html', {
                 'form': CategoryForm(),
-                'error': 'Bad data passed in'
+                'error': 'Ошибка ввода данных'
             })
 
 
@@ -139,7 +130,7 @@ def viewcategory(request, slug):
                 request, 'base/viewcategory.html', {
                     'category': category,
                     'form': CategoryForm(),
-                    'error': 'Bad info'
+                    'error': 'Ошибка ввода данных'
                 })
 
 
@@ -154,20 +145,6 @@ def deletecategory(request, slug):
 
 
 # ---- Document
-# class DocumentViews(ListView):
-#     model = Document
-#     template_name = 'base/document_detail.html'
-#     context_object_name = 'documents'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
-    #     return context
-
-    # def get_queryset(self):
-    #     slug = Document.objects.get(slug=self.kwargs['slug'])
-    #     if slug:
-    #         return Item.objects.filter(monster=slug)
 
 class DocumentListView(ListView):
     template_name = 'base/index.html'
@@ -180,6 +157,32 @@ class DocumentListView(ListView):
     #     context = super(DocumentListView, self).get_context_data(**kwargs)
     #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
     #     return context
+
+
+class LawDetailListView(ListView):
+    template_name = 'base/lawdetail.html'
+    context_object_name = 'law_list'
+
+    def get_queryset(self):
+
+        return Document.objects.filter('date_create')
+
+    # def get_context_data(self, **kwargs):
+    #     context = super(DocumentListView, self).get_context_data(**kwargs)
+    #     context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+    #     return context
+
+
+def law_detail_view(request, slug):
+    law = get_object_or_404(Law, slug=slug)
+    print('law ', law)
+    documents = Document.objects.filter(law=law)
+    print('!!!!!!!!!!', documents)
+    context = {
+        'law': law,
+        'documents': documents,
+    }
+    return render(request, 'base/lawdetail.html', context)
 
 
 class LawListView(ListView):
@@ -214,33 +217,42 @@ class DocumentCreateView(CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         files = self.request.FILES.getlist("files")
-        print('vvvvv', files)
-        # entry = h.exists():
-        #     print("Entry contained in queryset")
-        for f in files:
-            extension = os.path.splitext(f.name)[1]
-            print('vvvvddsv', f)
-            if extension not in FILE_EXT_WHITELIST:
-                print('1111', bool(f))
-                files.remove(f)
-                print('dds', extension)
-                messages.add_message(request,
-                                     messages.INFO,
-                                     'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
-                form = form
-                return render(request, self.template_name, {'form': form})
-            else:
-                newdocument = form.save(commit=False)
-                newdocument.user = request.user
-                newdocument.slug = translit(newdocument.title,
-                                            language_code='ru',
-                                            reversed=True)
-                newdocument.slug = slugify(newdocument.slug)
-                newdocument.save()
-                # for f in files:
-                DocumentFile.objects.create(
-                    document=newdocument, file=f)
-        return self.form_valid(form)
+        print('554', files)
+        if files == []:
+            print('!!!----')
+            newdocument = form.save(commit=False)
+            newdocument.user = request.user
+            newdocument.slug = translit(newdocument.title,
+                                        language_code='ru',
+                                        reversed=True)
+            newdocument.slug = slugify(newdocument.slug)
+            newdocument.save()
+            DocumentFile.objects.create(
+                document=newdocument, file=False)
+            return self.form_valid(form)
+        else:
+            for f in files:
+                extension = os.path.splitext(f.name)[1]
+                print('vvvvddsv', f)
+                if extension not in FILE_EXT_WHITELIST:
+                    files.remove(f)
+                    print('dds', extension)
+                    messages.add_message(request,
+                                         messages.INFO,
+                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                    form = form
+                    return render(request, self.template_name, {'form': form})
+                else:
+                    newdocument = form.save(commit=False)
+                    newdocument.user = request.user
+                    newdocument.slug = translit(newdocument.title,
+                                                language_code='ru',
+                                                reversed=True)
+                    newdocument.slug = slugify(newdocument.slug)
+                    newdocument.save()
+                    DocumentFile.objects.create(
+                        document=newdocument, file=f)
+            return self.form_valid(form)
 
 
 class DocumentCreate(FormView):
@@ -265,56 +277,6 @@ class DocumentCreate(FormView):
         else:
             print('sssss')
             return self.form_invalid(form)
-#     def post(self, request, *args, **kwargs):
-#         form_class = DocumentForm
-#         form = self.get_form(form_class)
-#         files = request.FILES.getlist('files')
-#         if form.is_valid():
-#             print('bbb')
-#             newdocument = form.save(commit=False)
-#             newdocument.user = request.user
-#             newdocument.slug = translit(newdocument.title,
-#                                         language_code='ru',
-#                                         reversed=True)
-#             newdocument.slug = slugify(newdocument.slug)
-#             newdocument.save()
-#             k = 0
-#             # for f in files:
-#             #     k += 1
-#             #     print('f', f)
-#             #     Document.objects.create(slug=newdocument.slug,
-#             #                             file=f, category=newdocument.category,
-#             #                             user=newdocument.user)
-#             #     print('bbb')
-
-#             print('ss111sss', k)
-#             return self.form_valid(form)
-#         else:
-#             print('sssss')
-#             return self.form_invalid(form)
-
-
-# class DocumentCreate(CreateView):
-#     model = Document
-#     # form_class = DocumentForm
-#     # extra_context = {'documents': Document.objects.all()}
-#     template_name = 'base/createdocument.html'
-#     success_url = '/'
-
-#     def post(self, request, *args, **kwargs):
-#         form_class = self.get_form_class()
-#         # form_class = DocumentForm(request.POST, request.FILES)
-#         form = self.get_form(form_class)
-#         if form.is_valid():
-#             newdocument = form.save(commit=False)
-#             newdocument.user = request.user
-#             newdocument.slug = translit(newdocument.title,
-#                                         language_code='ru',
-#                                         reversed=True)
-#             newdocument.slug = slugify(newdocument.slug)
-#             newdocument.save()
-#         else:
-#             return self.form_invalid(form)
 
 
 def document_detail_view(request, slug):
@@ -329,10 +291,30 @@ def document_detail_view(request, slug):
     return render(request, 'base/document_detail.html', context)
 
 
+def document_detail_view1(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    files = DocumentFile.objects.filter(document=document)
+    print('0000000', bool(files))
+    laws = Law.objects.filter(document=document)
+    if list(files) == None:
+        print('????????????????')
+        context = {
+            'document': document,
+            'laws': laws,
+        }
+    else:
+        print('iiiiiiiiiiiiiiiiii')
+        context = {
+            'document': document,
+            'laws': laws,
+            'files': files
+        }
+    return render(request, 'base/document_detail.html', context)
+
+
 class DocumentView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'
-    # slug_url_kwarg = 'documents_slug'
     context_object_name = 'documents'
 
     def get_context_data(self, **kwargs):

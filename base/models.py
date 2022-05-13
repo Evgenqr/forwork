@@ -104,11 +104,9 @@ def validate_file_type(value):
 
 class DocumentFile(models.Model):
     document = models.ForeignKey(
-        Document, verbose_name="Вложения11", on_delete=models.CASCADE)
+        Document, verbose_name="Вложения", on_delete=models.CASCADE)
     file = models.FileField(verbose_name="Вложения", blank=True,
-                            null=True, upload_to=file_directory_path,
-                            help_text="Максимальный размер файла: 50 МБ. Разрешённые типы файлов: txt doc docx xls xlsx pdf png jpg rar zip ppt pptx rtf gif.",
-                            validators=[validate_file_type])
+                            null=True, upload_to=file_directory_path)
 
     class Meta:
         verbose_name = "Приложение"
