@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import Category, Law, Document, DocumentFile
 
 # admin.site.register(Document)
-admin.site.register(Law)
+# admin.site.register(Law)
 admin.site.register(Category)
 admin.site.register(DocumentFile)
 
@@ -12,3 +12,9 @@ admin.site.register(DocumentFile)
 class DocumentAdmin(admin.ModelAdmin):
     list_display = ['title', 'slug', 'user', 'category']
     prepopulated_fields = {'slug': ('title',), }
+
+
+@admin.register(Law)
+class LawAdmin(admin.ModelAdmin):
+    list_display = ['title', 'shorttitle', 'slug']
+    prepopulated_fields = {'slug': ('shorttitle',), }

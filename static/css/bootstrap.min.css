@@ -5117,6 +5117,10 @@ fieldset:disabled .btn {
     color: rgba(255, 255, 255, .75)
 }
 
+.navbar-dark .navbar-nav .nav-link2:focus,
+.navbar-dark .navbar-nav .nav-link2:hover {
+    color: #cca35d 
+}
 .navbar-dark .navbar-nav .nav-link.disabled {
     color: rgba(255, 255, 255, .25)
 }

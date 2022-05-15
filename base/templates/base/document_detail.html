@@ -2,45 +2,52 @@
 {% load static %}
 
 {% block title %}
-{{document.title}} :: {{ block.super }}
+{{title}}
 {% endblock %}
 
 {% block content %}
+<div style="font-size: 80%; text-align:right;"><a class="text-decoration-none" href="view/" style="color: #007c84;">Редактировать</a>  </div>
     <h4 class="card-title"> 
-        {{document.title}}
-    </h4>    <br>
-    Категория: {{document.category.title}}<br>
+        {{title}}
+            <br>
+    </h4>
+    
+    Категория:
+
+    <a class="text-decoration-none" href="/category/{{documents.category.slug}}/" style="color: #007c84;"> {{documents.category.title}}</a>
+       
+
+    <br>
     Закон: 
-    {% for l in laws %}
-        {{l.title}}
+    {% for l in documents.law.all %}
+    <a class="text-decoration-none" href="/laws/{{l.slug}}/" style="color: #007c84;"> {{l.shorttitle}}</a>
+       
     {% endfor %}
     <br>
 
-    {% comment %}    {{document.text}}   {% endcomment %}
+    {% comment %}    {{documents.text}}   {% endcomment %}
     <br>
     Приложения: 
     <h6 class="card-title">  
         {% if files %}
-        {{ f.filename }}fff
-        {% else %}
-        re
-        {% endif %}
-       
-        {% comment %}    {% for f in files %}<br>
-        <br>   ssss {{ f.css_class}}ssss
+        {% for f in files %}
+        {{ f.css_class}}<br>
         <span style="color: #007c84;">
         <a class="text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;">
              <svg xmlns="http://www.w3.org/2000/svg" width="16"    height="16" fill="currentColor" class="bi bi-file-earmark-font-fill" viewBox="0 0 16 16">
                 <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.057 6h5.886L11 8h-.5c-.18-1.096-.356-1.192-1.694-1.235l-.298-.01v5.09c0 .47.1.582.903.655v.5H6.59v-.5c.799-.073.898-.184.898-.654V6.755l-.293.01C5.856 6.808 5.68 6.905 5.5 8H5l.057-2z"></path>
               </svg>
-{{ f.filename }}
+        {{ f.filename }}
               </a>
             ({{f.file.size|filesizeformat }}) </span> <br>
-        {% endfor %} {% endcomment %}
+        {% endfor %} 
+       {% else %} 
+       Приложений нетЪ
+        {% endif %}
     </h6>
     <br>
-     Создан: {{document.date_create}}    <br>
-    Обновлён: {{document.date_update}}    <br>
-    Автор: {{document.user}}
+     Создан: {{documents.date_create}}    <br>
+    Обновлён: {{documents.date_update}}    <br>
+    Автор: {{documents.user}}
 
 {% endblock content %} 

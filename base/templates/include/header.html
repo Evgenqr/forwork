@@ -16,14 +16,15 @@
               {{ user.username }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
+                {% comment %}
               <li><a class="dropdown-item" href=" {% url 'createcategory' %} ">Добавить категорию</a></li>
          
-              {% comment %}
+              
               <li><a class="dropdown-item" href="{% url 'createlaw' %} ">Добавить закон</a> </li> 
               {% endcomment %}
                
                  <li><a class="dropdown-item" href="{% url 'createdocument' %} ">Добавить документ</a></li>  
-              <li><a class="dropdown-item" href="">Добавить </a></li>
+         
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="{% url 'logoutuser' %}" method="POST">
@@ -53,10 +54,11 @@
         <button class="btn btn-outline-success" type="submit">Поиск</button>
         {% comment %}
         {% url 'search' %}
+        data-bs-toggle="dropdown" 
         {% endcomment %}
       </form>
-      <a class="btn" href="#" role="button"aria-expanded="false" style="color: #cca35d;">
-        Расширенный поиск
+      <a class="btn" href="#" role="button" aria-expanded="false" style="color: #cca35d;">
+        Расширенный поиск 
       </a>
     </div>
   </div>
@@ -64,41 +66,38 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark"  style="color:#cca35d; background-color:#007c84;">
   <div class="container-md">
-    <ul class="navbar-nav mr-auto mb-3 mb-lg-0">
+    <ul class="navbar-nav mr-auto mb-3 mb-lg-0 ">
+        {% for cat in category.all %}
+        {% if cat.title == "ФАС" %}
       <li class="nav-item dropdown">
-        <a class="nav-link dropbtn" href="/" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link dropbtn" href="/category/{{cat.slug}}/" id="navbarDropdown" role="button" aria-expanded="false">
+            {% comment %}
+            data-bs-toggle="dropdown" 
+            {% endcomment %}
           Антимонопольная служба
         </a>
         <ul class="dropdown-menu dropdown-content" aria-labelledby="navbarDropdown" style="left:0;">
-{% for doc in documents.law.all %}
-            {% for l in doc.document_set.title %}
-            <li>
-                <li><a class="dropdown-item" href="/{{l.slug}}/" >
-                {{ l.title }}
-              </a>
-              </li>
-              {% endfor %}
-{% endfor %}
-          <li><a class="dropdown-item" href="#">ФЗ №135-ФЗ "О защите конкуренции"</a></li>
-          <li><a class="dropdown-item" href="#">ФЗ №147-ФЗ "О естественных монополиях"</a></li>
-          <li><a class="dropdown-item" href="#">ФЗ №44-ФЗ "О контрактной системе в сфере закупок товаров, работ, услуг для обеспечения государственных и муниципальных нужд"</a></li>
-          <li><a class="dropdown-item" href="#">ФЗ №381-ФЗ "Об основах государственного регулирования торговой деятельности в Российской Федерации"</a></li>
-          <li><a class="dropdown-item" href="#">ФЗ №38-ФЗ "О рекламе"</a></li>
-          <li><a class="dropdown-item" href="#">ФЗ №223-ФЗ "О закупках товаров, работ, услуг отдельными видами юридических лиц"</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Прочее</a></li>
+            {% for l in laws.all %}
+                <li><a class="dropdown-item" href="/laws/{{l.slug}}/">{{ l.title }}</a></li>
+            {% endfor %}
+            
         </ul>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" aria-current="page" href="/">Суды</a>
+      {% elif cat.title == "Суд" %}
+      <li class="nav-item ">
+        <a class="nav-link2 nav-link " aria-current="page" href="/category/{{cat.slug}}/"> {{cat.title}}</a>
       </li>
+      {% elif cat.title == "Прокуратура" %}
       <li class="nav-item">
-        <a class="nav-link" href="/">Прокуратура</a>
+        <a class="nav-link2 nav-link" aria-current="page" href="/category/{{cat.slug}}/"> {{cat.title}}</a>
       </li>
+      {% else %}
       <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Что-то еще</a>
+        <a class="nav-link2 nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Что-то еще</a>
       </li>
     </ul>
+    {% endif %}
+    {% endfor %}
   </div>
 </nav>
 

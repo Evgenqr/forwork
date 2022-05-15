@@ -2,18 +2,18 @@
 {% load static %}
 
 {% block title %}
-Главная страница :: {{ block.super }}
+{{title}}
 {% endblock %}
 
 {% block content %} 
-    <h1>Главная страница</h1> <br>
+    <h4 style="text-align: center;">{{title}}</h4>
     <ul class="list-group list-group-flush col-sm-3">
-        {% for document in documents_list %}
+        {% for document in documents %}
             <li class="list-group-item" >
                 <a class="list-group-item list-group-item-action list-group-item-info" href="/document/{{document.slug}}/" >
-                    {{ document.title }}
+                    {{ document.title }} 
                 </a>
             </li>
         {% endfor %}
-    </ul>
+    </ul>  
 {% endblock content %} 

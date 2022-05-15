@@ -37,7 +37,7 @@ class Law(models.Model):
         verbose_name_plural = "Законы"
 
     def __str__(self):
-        return self.title
+        return self.shorttitle
 
     def get_absolute_url(self):
         return reverse("law_detail", kwargs={"slug": self.slug})
@@ -104,7 +104,8 @@ def validate_file_type(value):
 
 class DocumentFile(models.Model):
     document = models.ForeignKey(
-        Document, verbose_name="Вложения", on_delete=models.CASCADE)
+        Document, verbose_name="Документ", blank=True,
+                            null=True, on_delete=models.CASCADE)
     file = models.FileField(verbose_name="Вложения", blank=True,
                             null=True, upload_to=file_directory_path)
 
@@ -121,7 +122,7 @@ class DocumentFile(models.Model):
 
     def css_class(self):
         extension = os.path.splitext(self.file.name)[1]
-        print('-------', extension)
+        # print('-------', extension)
         if extension == '.pdf':
             return 'pdf'
         if extension == '.doc' or extension == '.docx' or extension == '.rtf':

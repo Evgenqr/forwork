@@ -1,5 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}
+Редактирование категории {{category.title}}
+{% endblock %}
+
 {% block content %}
 {{ error }}
 {{category.title}}

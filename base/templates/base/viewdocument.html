@@ -1,11 +1,46 @@
 {% extends 'base.html' %}
 {% load static %}
+{% block title %}
+Редактирование документа {{document.title}}
+{% endblock %}
 {% block content %}
 {{ error }}
 {{category.title}}
 <form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
     {% csrf_token %}
-    {{form.as_p}}
+    {% comment %} {{form.as_p}}
+    {% endcomment %} 
+
+    <div class="col-sm-8">Заголовок: <br>{{form.title}}  </div>
+    <div class="col-sm-12">Категория:<br> {{form.category}}  </div>
+    <div class="col-sm-6">Закон: <br>{{form.law}}  </div>
+    <div class="col-sm-8">Текст: <br> {{form.text}}  </div>
+    <div class="col-sm-4">Приложения:<br>
+        {% if files %}
+        {% for f in files %}
+        {{ f.css_class}}<br>
+        <span style="color: #007c84;">
+        <a class="text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;">
+             <svg xmlns="http://www.w3.org/2000/svg" width="16"    height="16" fill="currentColor" class="bi bi-file-earmark-font-fill" viewBox="0 0 16 16">
+                <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM5.057 6h5.886L11 8h-.5c-.18-1.096-.356-1.192-1.694-1.235l-.298-.01v5.09c0 .47.1.582.903.655v.5H6.59v-.5c.799-.073.898-.184.898-.654V6.755l-.293.01C5.856 6.808 5.68 6.905 5.5 8H5l.057-2z"></path>
+              </svg>
+        {{ f.filename }}
+              </a></span> 
+            ({{f.file.size|filesizeformat }}) <br>
+        {% endfor %} 
+       {% else %} 
+       Приложений нетЪ
+        {% endif %}
+
+        <input name="files" type="file" multiple class="form-control">         
+     </div>
+     
+    <div class="description">Максимальный размер файла: <strong>50 МБ</strong>.<br>Разрешённые типы файлов: <strong>txt doc docx xls xlsx pdf png jpg rar zip ppt pptx rtf gif</strong>.</div>
+
+    {% for message in messages %}
+<span style="color:red;"> {{ message }} </span>
+{% endfor %}
+
     <button type="submit" class="btn btn-success">Сохранить</button>
 </form>
 
