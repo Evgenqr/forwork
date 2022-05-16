@@ -35,8 +35,18 @@
     display: inline-block;
     content: "";
     vertical-align: -.125em;
-    background-image: url("/static/file-earmark-font-fill.svg");
+    /* background-image: url("/static/file-earmark-font-fill.svg"); */
     background-repeat: no-repeat;
     background-size: 1rem 1rem;
   }
 
+
+  .svg-background {
+    width: 25px;
+    height: 25px; 
+    background: url('pdf.svg') no-repeat center;
+  }
+
+  .pdf {
+    background: url('pdf.svg') no-repeat center;
+  }

@@ -249,7 +249,7 @@ class LawListView(ListView):
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                         '.xls', '.xlsx', '.ppt', '.pptx', '.png',
-                        '.jpg', '.gif', '.zip', '.rar', '.txt']
+                        '.jpg', '.gif', '.bmp', '.zip', '.rar', '.txt']
 
 
 class DocumentCreateView(CreateView):
@@ -283,7 +283,7 @@ class DocumentCreateView(CreateView):
                     print('noooooo', extension)
                     messages.add_message(request,
                                          messages.INFO,
-                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, bmp, rar, zip, ppt, pptx, rtf, gif.')
                     form = form
                     return render(request, self.template_name, {'form': form})
                 else:
@@ -326,11 +326,13 @@ class DocumentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
-        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+        # document = get_object_or_404(Document, slug=self.kwargs['slug'])
+        # print('ddfdf', document)
+        context['title'] = Document.objects.get(slug=self.kwargs['slug']) 
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
-        # context['documents'] = Document.objects.get(slug=self.kwargs['slug'])
-        
+        # context['files'] = files
+        context['files'] = DocumentFile.objects.all()
         return context
 
     # def get_queryset(self):
