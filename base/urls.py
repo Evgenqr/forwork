@@ -19,6 +19,8 @@ urlpatterns = [
 
     # -----> Document
     path('document/<str:slug>/', views.DocumentDetailView.as_view(), name='document'),
+    # path('document/<int:document_id>/', views.FileDetailView.as_view(), name='document'),
+    
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),

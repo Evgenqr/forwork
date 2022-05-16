@@ -40,3 +40,8 @@
     background-size: 1rem 1rem;
   }
 
+
+
+.svg-img{
+    background-image: url(static/img/excel.svg);
+}

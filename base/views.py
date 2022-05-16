@@ -249,7 +249,7 @@ class LawListView(ListView):
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                         '.xls', '.xlsx', '.ppt', '.pptx', '.png',
-                        '.jpg', '.gif', '.zip', '.rar', '.txt']
+                        '.jpg', '.bmp' '.gif', '.zip', '.rar', '.txt']
 
 
 class DocumentCreateView(CreateView):
@@ -306,18 +306,19 @@ class DocumentCreateView(CreateView):
         return context
 
 
-def document_detail_view(request, slug):
-    document = get_object_or_404(Document, slug=slug)
-    category = Category.objects.all()
-    files = DocumentFile.objects.filter(document=document)
-    laws = Law.objects.filter(document=document)
-    context = {
-        'document': document,
-        'category': category,
-        'laws': laws,
-        'files': files
-    }
-    return render(request, 'base/document_detail.html', context)
+# def document_detail_view(request, slug):
+#     document = get_object_or_404(Document, slug=slug)
+#     category = Category.objects.all()
+#     files = DocumentFile.objects.filter(document=document)
+#     laws = Law.objects.filter(document=document)
+#     context = {
+#         'document': document,
+#         'category': category,
+#         'laws': laws,
+#         'files': files
+#     }
+#     return render(request, 'base/document_detail.html', context)
+
 
 class DocumentDetailView(DetailView):
     model = Document
@@ -326,17 +327,13 @@ class DocumentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
-        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
-        # context['documents'] = Document.objects.get(slug=self.kwargs['slug'])
-        
+        slug = self.kwargs.get('slug', '')
+        document = Document.objects.get(slug=slug)
+        context['files']  = DocumentFile.objects.filter(document=document)
         return context
 
-    # def get_queryset(self):
-    #     slug = Law.objects.get(slug=self.kwargs['slug'])
-    #     if slug:
-    #         return Document.objects.filter(law=slug)
 
 class DocumentUpdateView(UpdateView):
     model = Document
