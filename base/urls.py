@@ -19,8 +19,12 @@ urlpatterns = [
 
     # -----> Document
     path('document/<str:slug>/', views.DocumentDetailView.as_view(), name='document'),
+<<<<<<< HEAD
     # path('document/<int:document_id>/', views.FileDetailView.as_view(), name='document'),
     
+=======
+    # path('document/<str:slug>/', views.document_detail_view, name='document'),
+>>>>>>> 3a07c6e854f52fd3907b6df89824762e49222a80
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
@@ -42,7 +46,7 @@ urlpatterns = [
     # path('category/<str:slug>/delete',
     #      views.deletecategory,
     #      name='deletecategory'),
-    # path('document/<str:slug>/', views.document_detail_view, name='document'),
+
     # path('document/<str:slug>/view/',
     # views.DocumentUpdateView.as_view(),
     # name='viewdocument'), 

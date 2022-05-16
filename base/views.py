@@ -249,7 +249,11 @@ class LawListView(ListView):
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                         '.xls', '.xlsx', '.ppt', '.pptx', '.png',
+<<<<<<< HEAD
                         '.jpg', '.bmp' '.gif', '.zip', '.rar', '.txt']
+=======
+                        '.jpg', '.gif', '.bmp', '.zip', '.rar', '.txt']
+>>>>>>> 3a07c6e854f52fd3907b6df89824762e49222a80
 
 
 class DocumentCreateView(CreateView):
@@ -283,7 +287,7 @@ class DocumentCreateView(CreateView):
                     print('noooooo', extension)
                     messages.add_message(request,
                                          messages.INFO,
-                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, bmp, rar, zip, ppt, pptx, rtf, gif.')
                     form = form
                     return render(request, self.template_name, {'form': form})
                 else:
@@ -327,11 +331,21 @@ class DocumentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
+<<<<<<< HEAD
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
         slug = self.kwargs.get('slug', '')
         document = Document.objects.get(slug=slug)
         context['files']  = DocumentFile.objects.filter(document=document)
+=======
+        # document = get_object_or_404(Document, slug=self.kwargs['slug'])
+        # print('ddfdf', document)
+        context['title'] = Document.objects.get(slug=self.kwargs['slug']) 
+        context['category'] = Category.objects.all()
+        context['laws'] = Law.objects.all()
+        # context['files'] = files
+        context['files'] = DocumentFile.objects.all()
+>>>>>>> 3a07c6e854f52fd3907b6df89824762e49222a80
         return context
 
 

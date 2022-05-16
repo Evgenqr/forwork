@@ -28,8 +28,11 @@
     {% comment %}    {{documents.text}}   {% endcomment %}
     <br>
     Приложения: 
-    <h6 class="card-title">  
+    <h6 class="card-title"> 
+
+
         {% if files %}
+<<<<<<< HEAD
         {% for f in files %}
        <br>
        
@@ -37,13 +40,19 @@
            <a class=" svg-img text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;">
             <span class="svg-img">
         {{ f.filename }}</span> 
+=======
+       {% for f in files %}
+       <p><span style="color: #007c84;">
+       <a class="pdf text-decoration-none svg-background" href="{{f.file.url}}" download style="color: #007c84;">
+             {{ f.filename }}
+>>>>>>> 3a07c6e854f52fd3907b6df89824762e49222a80
               </a>
-            ({{f.file.size|filesizeformat }}) </span> <br>
+            ({{f.file.size|filesizeformat }}) </span></p> 
         {% endfor %} 
        {% else %} 
        Приложений нетЪ
         {% endif %}
-    </h6>
+      </h6>
     <br>
      Создан: {{documents.date_create}}    <br>
     Обновлён: {{documents.date_update}}    <br>
