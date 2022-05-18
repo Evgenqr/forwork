@@ -23,7 +23,7 @@ class Category(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse("category_detail", kwargs={"slug": self.slug})
+        return reverse("category", kwargs={"slug": self.slug})
 
 
 class Law(models.Model):
@@ -40,7 +40,7 @@ class Law(models.Model):
         return self.shorttitle
 
     def get_absolute_url(self):
-        return reverse("law_detail", kwargs={"slug": self.slug})
+        return reverse("law", kwargs={"slug": self.slug})
 
 
 # class File(models.Model):

@@ -25,20 +25,21 @@
     {% endfor %}
     <br>
 
-    {% comment %}    {{documents.text}}   {% endcomment %}
+    {% comment %}   {% endcomment %} {{documents.text}}   
     <br>
     Приложения: 
     <h6 class="card-title">  
         {% if files %}
         {% for f in files %}
-       <br>
-       
-       <span class="svg-img" style="color: #007c84;">
-           <a class=" svg-img text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;">
-            <span class="svg-img">
-        {{ f.filename }}</span> 
-              </a>
-            ({{f.file.size|filesizeformat }}) </span> <br>
+        {{ f.css_class}}
+        <p>
+            <img class="svg-img" src="{% static 'img/word.svg' %}">
+            <a class="text-decoration-none" href="{{f.file.url}}" download 
+                style="color: #007c84;">
+                {{ f.filename }}
+            </a>
+            ({{f.file.size|filesizeformat }})  
+        </p>
         {% endfor %} 
        {% else %} 
        Приложений нетЪ

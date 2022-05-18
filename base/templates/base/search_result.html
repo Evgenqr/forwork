@@ -1,0 +1,27 @@
+
+
+
+{% extends 'base.html' %} 
+{% load static %}
+{% block title %}
+Результаты поиска
+{% endblock %}
+
+{% block content %}
+    <h2>Поиск</h2>
+    {% if object_list %}
+    <div class="row">
+        <ul class="list-group list-group-flush col-sm-12">
+        {% for object in object_list %}
+        <li class="list-group-item" >
+            <a class="list-group-item list-group-item-action list-group-item-info" href="{{object.get_absolute_url}}" >
+                {{ object.title }}
+            </a>
+        </li>
+       {% endfor %}
+       </ul>
+   </div> 
+    {% else %}
+        <p>Не найдено публикаций по вашему запросу<br>Попробуйте повторить запрос с другой формулировкой</p>
+    {% endif %}
+{% endblock %}

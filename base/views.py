@@ -6,13 +6,15 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, FormView
-# from django.db.models import Q
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
 from transliterate import translit
 import os
+from django.db.models import Q
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from itertools import chain
 
 
 # ---- User
@@ -220,7 +222,6 @@ class DocumentDetailView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
-
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
@@ -311,24 +312,61 @@ def deletedocument(request, slug):
             return redirect('/')
     else:
         return redirect('/')
-
-
 #  ---- Document END
 
-class CourtsView(ListView):
-    model = Document
-    template_name = 'base/courts.html'
-    context_object_name = 'courts'
 
+class SearchView(ListView):
+    model = Document
+    template_name = 'base/search_result.html'
+    
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+        context = super(SearchView, self).get_context_data(**kwargs)
+        context['category'] = Category.objects.all()
+        context['laws'] = Law.objects.all()
+        print('---', context)
         return context
 
-    def get_queryset(self):
-        slug = Document.objects.get(slug=self.kwargs['slug'])
-        if slug:
-            return Document.objects.filter(category=slug)
+    def get(self, request, *args, **kwargs):
+        context = {}
+        q = request.GET.get('q')
+        if q:
+            query_sets = []  # Общий QuerySet
+            query_sets.append(Document.objects.filter(title=q))
+            query_sets.append(Document.objects.filter(text=q))
+            query_sets.append(Law.objects.filter(shorttitle=q))
+            query_sets.append(Category.objects.filter(title=q))
+            # Ищем по всем моделям
+            # и объединяем выдачу
+            final_set = list(chain(*query_sets))
+            context['last_question'] = '?q=%s' % q
+            current_page = Paginator(final_set, 10)
+            page = request.GET.get('page')
+            try:
+                context['object_list'] = current_page.page(page)
+            except PageNotAnInteger:
+                context['object_list'] = current_page.page(1)
+            except EmptyPage:
+                context['object_list'] = current_page.page(current_page.num_pages)
+        return render(request=request, template_name=self.template_name, context=context)
+
+    
+
+
+
+# class CourtsView(ListView):
+#     model = Document
+#     template_name = 'base/courts.html'
+#     context_object_name = 'courts'
+
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
+#         return context
+
+#     def get_queryset(self):
+#         slug = Document.objects.get(slug=self.kwargs['slug'])
+#         if slug:
+#             return Document.objects.filter(category=slug)
 
 
 # def law_detail_view(request, slug):

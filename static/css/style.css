@@ -1,3 +1,5 @@
+{% load static %}
+
 .dropbtn {
     color: white;
     border: none;
@@ -41,7 +43,15 @@
   }
 
 
-
 .svg-img{
-    background-image: url(static/img/excel.svg);
+     /* background-image: url('{% static '/logo.png'%}'); */
+     height: 20px;
+     width: 30px;
+}
+
+.first-info{
+    background-image: url( '/static/img/excel.svg' );
+    width: 100%;
+    height: 300px;
+    
 }

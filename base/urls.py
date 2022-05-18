@@ -18,7 +18,7 @@ urlpatterns = [
     #  <---- End Category
 
     # -----> Document
-    path('document/<str:slug>/', views.DocumentDetailView.as_view(), name='document'),
+    path('document/<str:slug>/', views.DocumentDetailView.as_view(), name='document_detail'),
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
@@ -33,7 +33,7 @@ urlpatterns = [
     path('laws/<str:slug>/', views.LawListView.as_view(), name='law'),
     #  <---- End Law  
 
-    # path('search/', views.SearchView.as_view(), name='search'),
+    path('search/', views.SearchView.as_view(), name='search'),
 
     # path('category/create', views.createcategory, name='createcategory'),
     # path('category/<str:slug>/view/', views.viewcategory, name='viewcategory'),

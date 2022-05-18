@@ -7,7 +7,7 @@
 
 {% block content %} 
     <h1>Главная страница</h1> <br>
-    <ul class="list-group list-group-flush col-sm-3">
+    <ul class="list-group list-group-flush col-sm-12">
         {% for document in documents_list %}
             <li class="list-group-item" >
                 <a class="list-group-item list-group-item-action list-group-item-info" href="/document/{{document.slug}}/" >
