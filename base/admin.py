@@ -4,7 +4,7 @@ from .models import Category, Law, Document, DocumentFile
 
 # admin.site.register(Document)
 # admin.site.register(Law)
-admin.site.register(Category)
+# admin.site.register(Category)
 # admin.site.register(DocumentFile)
 
 
@@ -19,6 +19,11 @@ class LawAdmin(admin.ModelAdmin):
     list_display = ['title', 'shorttitle', 'slug']
     prepopulated_fields = {'slug': ('shorttitle',), }
 
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['title', 'slug']
+    prepopulated_fields = {'slug': ('title',), }
+    
 
 @admin.register(DocumentFile)
 class DocumentFileAdmin(admin.ModelAdmin):

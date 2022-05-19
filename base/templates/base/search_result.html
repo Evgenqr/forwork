@@ -10,9 +10,10 @@
 {% block content %}
     <h2>Поиск</h2>
     {% if object_list %}
-    <div class="row">
+     <div class="row">
         <ul class="list-group list-group-flush col-sm-12">
         {% for object in object_list %}
+        
         <li class="list-group-item" >
             <a class="list-group-item list-group-item-action list-group-item-info" href="{{object.get_absolute_url}}" >
                 {{ object.title }}

@@ -305,38 +305,26 @@ def viewdocument(request, slug):
 @login_required
 def deletedocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
-    if document.user == request.user:
+    # if document.user == request.user:
         #  or request.user.has_perm('auth.change_user')
-        if request.method == 'POST':
-            document.delete()
-            return redirect('/')
-    else:
+    if request.method == 'POST':
+        document.delete()
         return redirect('/')
+    # else:
+    #     return redirect('/')
 #  ---- Document END
 
 
 class SearchView(ListView):
     model = Document
     template_name = 'base/search_result.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super(SearchView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
-        print('---', context)
-        return context
 
     def get(self, request, *args, **kwargs):
         context = {}
         q = request.GET.get('q')
         if q:
             query_sets = []  # Общий QuerySet
-            query_sets.append(Document.objects.filter(title=q))
-            query_sets.append(Document.objects.filter(text=q))
-            query_sets.append(Law.objects.filter(shorttitle=q))
-            query_sets.append(Category.objects.filter(title=q))
-            # Ищем по всем моделям
-            # и объединяем выдачу
+            query_sets.append(Document.objects.filter(Q(title__icontains=q) | Q(text__icontains=q)))
             final_set = list(chain(*query_sets))
             context['last_question'] = '?q=%s' % q
             current_page = Paginator(final_set, 10)
@@ -347,115 +335,7 @@ class SearchView(ListView):
                 context['object_list'] = current_page.page(1)
             except EmptyPage:
                 context['object_list'] = current_page.page(current_page.num_pages)
+            print('ggg', final_set)
+        context['category'] = Category.objects.all()
+        context['laws'] = Law.objects.all()
         return render(request=request, template_name=self.template_name, context=context)
-
-    
-
-
-
-# class CourtsView(ListView):
-#     model = Document
-#     template_name = 'base/courts.html'
-#     context_object_name = 'courts'
-
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
-#         return context
-
-#     def get_queryset(self):
-#         slug = Document.objects.get(slug=self.kwargs['slug'])
-#         if slug:
-#             return Document.objects.filter(category=slug)
-
-
-# def law_detail_view(request, slug):
-#     law = get_object_or_404(Law, slug=slug)
-#     documents = Document.objects.filter(law=law)
-#     context = {
-#         'law': law,
-#         'documents': documents,
-#     }
-#     return render(request, 'base/law_detail.html', context)
-
-
-# class AdminRequiredMixin(object):
-#     def dispatch(self, request, *args, **kwargs):
-#         if request.user.is_authenticated:
-#             pass
-#         else:
-#             return redirect("/login/")
-#         return super().dispatch(request, *args, **kwargs)
-
-# def document_detail_view(request, slug):
-#     document = get_object_or_404(Document, slug=slug)
-#     category = Category.objects.all()
-#     files = DocumentFile.objects.filter(document=document)
-#     laws = Law.objects.filter(document=document)
-#     context = {
-#         'document': document,
-#         'category': category,
-#         'laws': laws,
-#         'files': files
-#     }
-#     return render(request, 'base/document_detail.html', context)
-
-
-# def category_detail_view(request, slug):
-#     category = get_object_or_404(Category, slug=slug)
-#     documents = Document.objects.filter(category=category)
-
-#     context = {
-#         'category': category,
-#         'documents': documents,
-#     }
-#     return render(request, 'base/category_detail.html', context)
-
-
-# @login_required
-# def viewcategory(request, slug):
-#     category = get_object_or_404(Category, slug=slug)
-#     categories = Category.objects.all()
-#     laws = Law.objects.all()
-#     if request.method == 'GET':
-#         form = CategoryForm(instance=category)
-#         return render(request, 'base/viewcategory.html', {
-#             'category': category,
-#             'laws': laws,
-#             'categories': categories,
-#             'form': form
-#         })
-#     else:
-#         try:
-#             form = CategoryForm(request.POST,
-#                                 request.FILES,
-#                                 instance=category)
-#             form.save()
-#             return redirect('home')
-#         except ValueError:
-#             return render(
-#                 request, 'base/viewcategory.html', {
-#                     'category': category,
-#                     'laws': laws,
-#                     'categories': categories,
-#                     'form': CategoryForm(),
-#                     'error': 'Ошибка ввода данных'
-#                 })
-
-
-# @login_required
-# def deletecategory(request, slug):
-#     category = get_object_or_404(Category, slug=slug)
-#     if request.method == 'POST':
-#         category.delete()
-#         return redirect('/')
-#     return redirect('/')
-
-# def document_list(request):
-#     law = Law.objects.all()
-#     category = Category.objects.all()
-#     context = {
-#         'category': category,
-#         'law': law,
-#     }
-#     return render(request, 'include/header.html', context)
