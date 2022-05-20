@@ -22,11 +22,17 @@ urlpatterns = [
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
-    # path('document/<str:slug>/view/', views.viewdocument, name='viewdocument'),
+    path('document/<str:slug>/delete/', views.DocumentDelete.as_view(), name='deletedocument'),
     path('document/<str:slug>/view/', views.DocumentUpdateView.as_view(), name='viewdocument'),
-    path('document/<str:slug>/delete/',
-         views.deletedocument,
-         name='deletedocument'),
+    # path('document/<str:slug>/delete/',
+    #      views.deletedocument,
+    #      name='deletedocument'),
+    # path('<int:id>/delete/',
+    #      views.deletefile,
+    #      name='deletefile'),
+    path('files/<int:pk>/delete/',
+         views.FileDelete.as_view(),
+         name='filedelete'),
     #  <---- End Document   
     #   
       # -----> Law

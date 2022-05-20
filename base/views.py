@@ -6,7 +6,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
 from django.utils.text import slugify
@@ -163,7 +163,7 @@ class LawListView(ListView):
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                         '.xls', '.xlsx', '.ppt', '.pptx', '.png',
-                        '.jpg', '.bmp' '.gif', '.zip', '.rar', '.txt']
+                        '.bmp', '.jpg', '.gif', '.zip', '.rar']
 
 
 class DocumentCreateView(CreateView):
@@ -172,8 +172,13 @@ class DocumentCreateView(CreateView):
     extra_context = {'documents': Document.objects.all()}
     success_url = '/'
 
+    def get_context_data(self, **kwargs):
+        context = super(DocumentCreateView, self).get_context_data(**kwargs)
+        # context['category'] = Category.objects.all()
+        # context['laws'] =Law.objects.all()
+        return context
+    
     def post(self, request, *args, **kwargs):
-
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         files = self.request.FILES.getlist("files")
@@ -189,17 +194,14 @@ class DocumentCreateView(CreateView):
         else:
             for f in files:
                 extension = os.path.splitext(f.name)[1]
-                print('vvvvddsv', f)
                 if extension not in FILE_EXT_WHITELIST:
                     files.remove(f)
-                    print('noooooo', extension)
                     messages.add_message(request,
                                          messages.INFO,
-                                         'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                                         f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
                     form = form
                     return render(request, self.template_name, {'form': form})
                 else:
-                    print('eeeeeeeeeee')
                     newdocument = form.save(commit=False)
                     newdocument.user = request.user
                     newdocument.slug = translit(newdocument.title,
@@ -211,11 +213,6 @@ class DocumentCreateView(CreateView):
                         document=newdocument, file=f)
             return self.form_valid(form)
 
-    def get_context_data(self, **kwargs):
-        context = super(DocumentCreateView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
-        context['laws'] =Law.objects.all()
-        return context
 
 
 class DocumentDetailView(DetailView):
@@ -239,21 +236,82 @@ class DocumentUpdateView(UpdateView):
     extra_context = {'documents': Document.objects.all()}
     success_url = '/'
     template_name_suffix = '_update'
-
+    
     def get_context_data(self, **kwargs):
         context = super(DocumentUpdateView, self).get_context_data(**kwargs)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
+        context['files'] = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
         return context
+   
+class FileDelete(DeleteView):
+    model = DocumentFile
+    template_name = 'base/viewdocument.html'
+    success_url = '/'
+    
+    def filedelete(self, *args, **kwargs):
+        file =  Document.objects.get(pk=self.kwargs['pk'])
+        files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
+        print('file', file)
+        file.delete()
+        return redirect(self.get_success_url())
+    
+   
+class DocumentDelete(DeleteView):
+    model = Document
+    template_name = 'base/viewdocument.html'
+    success_url = '/'
+    
+    def delete(self, *args, **kwargs):
+        document =  Document.objects.get(slug=self.kwargs['slug'])
+        document.delete()
+        return redirect('/')
+          
 
+@login_required
+def deletedocument(request, slug):
+    document = get_object_or_404(Document, slug=slug)
+    
+    # if document.user == request.user:
+        #  or request.user.has_perm('auth.change_user')
+    if request.method == 'POST':
+        document.delete()
+        return redirect('/')
+    # else:
+    #     return redirect('/')
+    
+# def delete_task(request, file_id):
+#     file = DocumentFile.objects.get(id=file_id)
+#     file.objects.delete()
 
+#     file = DocumentFile.objects.order_by('date_added')
+#     context = {'file': file}
+#     return render(request, 'work_list/index.html', context)
+        
+
+@login_required
+def deletefile(request, id):
+    file = get_object_or_404(DocumentFile, id=id)
+    print('id', id)
+    print('pppp', file.document)
+    # if document.user == request.user:
+        #  or request.user.has_perm('auth.change_user')
+    if request.method == 'POST':
+        file.delete()
+        return redirect('')
+    else:
+        return redirect('')
+    
+    
 @login_required
 def viewdocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
     files = DocumentFile.objects.filter(document=document)
+    print('pppssss', files)
     # newfiles = self.request.FILES.getlist("files")
     if request.user:
+        print('pppssss', files)
         #  or request.user.has_perm('auth.change_user')
         if request.method == 'GET':
             form = DocumentForm(instance=document)
@@ -302,16 +360,7 @@ def viewdocument(request, slug):
         return redirect('/')
 
 
-@login_required
-def deletedocument(request, slug):
-    document = get_object_or_404(Document, slug=slug)
-    # if document.user == request.user:
-        #  or request.user.has_perm('auth.change_user')
-    if request.method == 'POST':
-        document.delete()
-        return redirect('/')
-    # else:
-    #     return redirect('/')
+
 #  ---- Document END
 
 
