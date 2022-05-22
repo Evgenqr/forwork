@@ -214,7 +214,6 @@ class DocumentCreateView(CreateView):
             return self.form_valid(form)
 
 
-
 class DocumentDetailView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'

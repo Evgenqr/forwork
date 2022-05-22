@@ -15,30 +15,30 @@
     <div class="col-sm-12">Категория:<br> {{form.category}}  </div>
     <div class="col-sm-6">Закон: <br>{{form.law}}  </div>
     <div class="col-sm-8">Текст: <br> {{form.text}}  </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    
     <div class="col-sm-12">Приложения:<br>
         {% if files %}
         {% for f in files %}
-        <img class="svg-img" src="{% static 'img/word.svg' %}">
+       <div class="del-file">
+           <span><img class="svg-img" src="{% static 'img/word.svg' %}">
             <a class="text-decoration-none" href="{{f.file.url}}" download 
                 style="color: #007c84;">
                 {{ f.filename }} 
             </a>
             ({{f.file.size|filesizeformat }})   {{f.pk}}
-             <a class="text-decoration-none" href="/files/{{f.pk}}/delete/" 
-            style="color: #b44b04;"> Удалить1 </a>   
-            <form method="POST" action="{% url 'filedelete' f.pk %}">
-                {% csrf_token %}
-            <button type="submit"  class="btn btn-link text-decoration-none"  style="color: #b44b04;">Удалить</button>
-            </form>
-            <br>
-        {% endfor %} 
+             <a class="text-decoration-none del-file2" href="" 
+            style="color: #b44b04;"> Удалить </a>   <button  >Удалить это!</button></span> 
+              <br>
+        </div> 
+        {% endfor %} </div>      
        {% else %} 
        Приложений нетЪ
         {% endif %}
         <br>
         <div class="col-sm-6">
         <input name="files" type="file" multiple class="form-control">  
-        </div>       
+         
      </div>
      
     <div class="description">Максимальный размер файла: <strong>50 МБ</strong>.<br>Разрешённые типы файлов: <strong>txt doc docx xls xlsx pdf png bmp jpg rar zip ppt pptx rtf gif</strong>.</div>
@@ -55,6 +55,15 @@
     {% csrf_token %}
 <button type="submit"  class="btn btn-danger">Удалить</button>
 </form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.0/jquery.min.js"></script>
+<script>
+    $(function (){
+        $('button').click(function(){
+            $('span').remove();
+        });
+    });
+    </script>
 
 {% endblock %}
 

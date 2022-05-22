@@ -94,12 +94,13 @@ class Document(models.Model):
     def get_absolute_url(self):
         return reverse("document_detail", kwargs={"slug": self.slug})
 
-
-def validate_file_type(value):
-    accepted_extensions = ['.png', '.jpg', '.jpeg', '.pdf']
-    extension = os.path.splitext(value.name)[1]
-    if extension not in accepted_extensions:
-        raise ValidationError(u'{} is not an accepted file type'.format(value))
+    def validate_file_type(value):
+        FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
+                            '.xls', '.xlsx', '.ppt', '.pptx', '.png',
+                            '.bmp', '.jpg', '.gif', '.zip', '.rar']
+        extension = os.path.splitext(value.name)[1]
+        if extension not in FILE_EXT_WHITELIST:
+            raise ValidationError(u'{} is not an accepted file type'.format(value))
 
 
 class DocumentFile(models.Model):

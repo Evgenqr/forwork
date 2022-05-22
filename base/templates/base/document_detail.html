@@ -9,47 +9,36 @@
 <div style="font-size: 80%; text-align:right;"><a class="text-decoration-none" href="view/" style="color: #007c84;">Редактировать</a>  </div>
     <h4 class="card-title"> 
         {{documents.title}}
-            <br>
+        <br>
     </h4>
-    
-    Категория:
-
+    <b>Категория:</b>
     <a class="text-decoration-none" href="/category/{{documents.category.slug}}/" style="color: #007c84;"> {{documents.category.title}}</a>
-       
-
-    <br>
-    Закон: 
+ <br>
+    <b> Закон: </b>
     {% for l in documents.law.all %}
-    <a class="text-decoration-none" href="/laws/{{l.slug}}/" style="color: #007c84;"> {{l.shorttitle}}</a>
-       
+    <a class="text-decoration-none" href="/laws/{{l.slug}}/" style="color: #007c84;"> {{l.shorttitle}} </a>
     {% endfor %}
     <br>
-
-    {% comment %}   {% endcomment %} {{documents.text}}   
-    <br>
-    Приложения: 
-    <h6 class="card-title">  
+    {{documents.text}}   
+   <br>
+    <b>Приложения: </b>
         {% if files %}
-        {% for f in files %}
-        {{ f.css_class}}
-        <p>
-            <img class="svg-img" src="{% static 'img/word.svg' %}">
-            <a class="text-decoration-none" href="{{f.file.url}}" download 
-                style="color: #007c84;">
-                {{ f.filename }}
-            </a>
-            ({{f.file.size|filesizeformat }})  
+            {% for f in files %}
 
-        </a>
-        </p>
-        {% endfor %} 
-       {% else %} 
-       Приложений нетЪ
+            <p class="filelogo">
+                  <a class="text-decoration-none" href="{{f.file.url}}" download style="color: #007c84;font-weight: bold;">
+                 {{ f.filename }} 
+                </a>
+                ({{f.file.size|filesizeformat }})  
+            </p>
+            {% endfor %} 
+        {% else %} 
+            Приложений нетЪ
         {% endif %}
-    </h6>
+   
     <br>
-     Создан: {{documents.date_create}}    <br>
+    Создан: {{documents.date_create}}    <br>
     Обновлён: {{documents.date_update}}    <br>
     Автор: {{documents.user}}
-
+</div>
 {% endblock content %} 

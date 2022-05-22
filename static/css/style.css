@@ -1,4 +1,4 @@
-{% load static %}
+
 
 .dropbtn {
     color: white;
@@ -32,7 +32,6 @@
 .dropdown:hover .dropdown-content {display: block;}
 .dropdown:hover .dropbtn {background-color: #cca35d ;}
 
-
 .bi::before {
     display: inline-block;
     content: "";
@@ -41,7 +40,6 @@
     background-repeat: no-repeat;
     background-size: 1rem 1rem;
   }
-
 
 .svg-img{
      /* background-image: url('{% static '/logo.png'%}'); */
@@ -54,4 +52,71 @@
     width: 100%;
     height: 300px;
     
+}
+
+.grey-card {
+    background-color: #f6f6f6;
+    padding: 1rem;
+    margin: 1.5rem 0;
+}
+
+a {
+    text-decoration: none;
+    color: #007c84;
+}
+
+a:hover{color:#cca35d;}
+
+.badge {
+    display: inline-block;
+    min-width: 10px;
+    padding: 3px 7px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    line-height: 1;
+    vertical-align: middle;
+    white-space: nowrap;
+    text-align: center;
+    background-color: #777;
+    border-radius: 10px;
+}
+
+.badge-disabled {
+    margin: 2px 0;
+    padding: 6px 10px;
+    background-color: #aaaaaa;
+}
+
+b, strong {
+    font-weight: bold;
+}
+
+h1, h2, h3, h4, h5, .navbar-brand {
+    font-family: "RaleighC BT", sans-serif !important;
+}
+
+h1, .h1 {
+    font-size: 36px;
+}
+
+user agent stylesheet
+h1 {
+    display: block;
+    font-size: 2em;
+    margin: 0.67em 0;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+
+.filelogo{
+    background-image:url('/static/img/pdf.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    padding-left: 30px;
+
+
 }
