@@ -13,31 +13,34 @@ urlpatterns = [
     path('login/', views.loginuser, name="loginuser"),
     #  <---- End For User
 
-    # -----> Category 
+    # -----> Category
     path('category/<str:slug>/', views.CategoryListView.as_view(), name='category'),
     #  <---- End Category
 
     # -----> Document
-    path('document/<str:slug>/', views.DocumentDetailView.as_view(), name='document_detail'),
+    path('document/<str:slug>/', views.DocumentDetailView.as_view(),
+         name='document_detail'),
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
-    path('document/<str:slug>/delete/', views.DocumentDelete.as_view(), name='deletedocument'),
-    path('document/<str:slug>/view/', views.DocumentUpdateView.as_view(), name='viewdocument'),
+    path('document/<str:slug>/delete/',
+         views.DocumentDelete.as_view(), name='deletedocument'),
+    path('document/<str:slug>/view/',
+         views.DocumentUpdateView.as_view(), name='viewdocument'),
     # path('document/<str:slug>/delete/',
     #      views.deletedocument,
     #      name='deletedocument'),
-    # path('<int:id>/delete/',
-    #      views.deletefile,
+    path('deletefile/<int:pk>/',
+         views.deletefile,
+         name='deletefile'),
+    # path('file/<int:pk>/delete/',
+    #      views.FileDelete.as_view(),
     #      name='deletefile'),
-    path('files/<int:pk>/delete/',
-         views.FileDelete.as_view(),
-         name='filedelete'),
-    #  <---- End Document   
-    #   
-      # -----> Law
+    #  <---- End Document
+    #
+    # -----> Law
     path('laws/<str:slug>/', views.LawListView.as_view(), name='law'),
-    #  <---- End Law  
+    #  <---- End Law
 
     path('search/', views.SearchView.as_view(), name='search'),
 
@@ -49,7 +52,7 @@ urlpatterns = [
     # path('document/<str:slug>/', views.document_detail_view, name='document'),
     # path('document/<str:slug>/view/',
     # views.DocumentUpdateView.as_view(),
-    # name='viewdocument'), 
+    # name='viewdocument'),
     # path('category/<str:slug>/', views.category_detail_view, name='category'),
     # path('fas/', views.Fas, name="fas"),
     # path('laws/<str:slug>/', views.law_detail_view, name='law'),
@@ -57,6 +60,3 @@ urlpatterns = [
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
-

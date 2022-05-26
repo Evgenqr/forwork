@@ -1,3 +1,5 @@
+from audioop import reverse
+from multiprocessing import context
 from unicodedata import category
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
@@ -73,6 +75,8 @@ def logoutuser(request):
 # ---- User END
 
 # ---- Home
+
+
 def Home(request):
     return render(request, 'base/index.html')
 # ---- END Home
@@ -83,13 +87,13 @@ def Home(request):
 def createcategory(request):
     category = Category.objects.all()
     laws = Law.objects.all()
-    
+
     if request.method == 'GET':
         return render(request, 'base/createcategory.html', {
-                'form': CategoryForm(),
-                'category': category,
-                'laws': laws, 
-            })
+            'form': CategoryForm(),
+            'category': category,
+            'laws': laws,
+        })
     else:
         try:
             form = CategoryForm(request.POST, request.FILES)
@@ -105,14 +109,16 @@ def createcategory(request):
             return render(request, 'base/createcategory.html', {
                 'form': CategoryForm(),
                 'category': category,
-                'laws': laws, 
+                'laws': laws,
                 'error': 'Ошибка ввода данных'
             })
+
 
 class CategoryListView(ListView):
     model = Document
     template_name = 'base/category_detail.html'
     context_object_name = 'documents'
+
     def get_context_data(self, **kwargs):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         context['title'] = Category.objects.get(slug=self.kwargs['slug'])
@@ -129,6 +135,7 @@ class CategoryListView(ListView):
 
 # ---- Document
 
+
 class DocumentListView(ListView):
     model = Document
     template_name = 'base/index.html'
@@ -139,7 +146,7 @@ class DocumentListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentListView, self).get_context_data(**kwargs)
-        context['laws'] =Law.objects.all()
+        context['laws'] = Law.objects.all()
         context['category'] = Category.objects.all()
         return context
 
@@ -148,11 +155,12 @@ class LawListView(ListView):
     model = Document
     template_name = 'base/law_detail.html'
     context_object_name = 'documents'
+
     def get_context_data(self, **kwargs):
         context = super(LawListView, self).get_context_data(**kwargs)
         context['title'] = Law.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
-        context['laws'] =Law.objects.all()
+        context['laws'] = Law.objects.all()
         return context
 
     def get_queryset(self):
@@ -162,8 +170,8 @@ class LawListView(ListView):
 
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
-                        '.xls', '.xlsx', '.ppt', '.pptx', '.png',
-                        '.bmp', '.jpg', '.gif', '.zip', '.rar']
+                      '.xls', '.xlsx', '.ppt', '.pptx', '.png',
+                      '.bmp', '.jpg', '.gif', '.zip', '.rar']
 
 
 class DocumentCreateView(CreateView):
@@ -177,7 +185,7 @@ class DocumentCreateView(CreateView):
         # context['category'] = Category.objects.all()
         # context['laws'] =Law.objects.all()
         return context
-    
+
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -218,13 +226,14 @@ class DocumentDetailView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
+
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
         slug = self.kwargs.get('slug', '')
         document = Document.objects.get(slug=slug)
-        context['files']  = DocumentFile.objects.filter(document=document)
+        context['files'] = DocumentFile.objects.filter(document=document)
         return context
 
 
@@ -232,54 +241,128 @@ class DocumentUpdateView(UpdateView):
     model = Document
     template_name = 'base/viewdocument.html'
     form_class = DocumentForm
-    extra_context = {'documents': Document.objects.all()}
-    success_url = '/'
+    extra_context = {'documents': Document.objects.all(
+    ), 'files': DocumentFile.objects.all()}
     template_name_suffix = '_update'
-    
+
     def get_context_data(self, **kwargs):
         context = super(DocumentUpdateView, self).get_context_data(**kwargs)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
-        context['files'] = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
+        context['files'] = DocumentFile.objects.filter(
+            document__slug=self.kwargs['slug'])
+        print('vvfddd', context['files'])
         return context
-   
-class FileDelete(DeleteView):
-    model = DocumentFile
-    template_name = 'base/viewdocument.html'
-    success_url = '/'
-    
-    def filedelete(self, *args, **kwargs):
-        file =  Document.objects.get(pk=self.kwargs['pk'])
-        files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
-        print('file', file)
+
+    def post(self, request, *args, **kwargs):
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        newfiles = self.request.FILES.getlist("files")
+        document = get_object_or_404(Document, slug=self.kwargs['slug'])
+        files = DocumentFile.objects.filter(document=document)
+        
+        if newfiles == []:
+            try:
+                form = DocumentForm(
+                    request.POST, request.FILES, instance=document)
+                form.save()
+                return redirect('home')
+            except ValueError:
+                return render(request, self.template_name, {
+                    'document': document,
+                    'form': DocumentForm(),
+                    'newfiles': newfiles,
+                    'error': 'Bad info'
+                })
+        else:
+            for f in newfiles:
+                extension = os.path.splitext(f.name)[1]
+                if extension not in FILE_EXT_WHITELIST:
+                    newfiles.remove(f)
+                    messages.add_message(request,
+                                         messages.INFO,
+                                         f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
+                    # form = form
+                    return render(request, self.template_name, {'form': form})
+                else:
+                    form = DocumentForm(
+                        request.POST, request.FILES, instance=document)
+                    form.save()
+                    DocumentFile.objects.create(
+                        document=document, file=f)
+                    form.save()
+            return self.form_valid(form)
+
+
+# class FileDelete(DeleteView):
+#     model = DocumentFile
+#     template_name = 'base/viewdocument.html'
+#     success_url = '/'
+
+#     def post(self, *args, **kwargs):
+#         file =  Document.objects.get(pk=self.kwargs['pk'])
+#         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
+#         print('file', file)
+#         file.delete()
+#         return redirect(self.get_success_url())
+
+# @login_required
+# def deletefile(request, pk):
+#     files = DocumentFile.objects.filter(file__pk=pk)
+#     print('ggg', files)
+#     if request.method == "POST":
+#         print('!!!!!!!!!!!')
+#         file = get_object_or_404(DocumentFile, pk=pk)
+
+#         # file.delete()
+#         return redirect('/')
+#     elif request.method == "GET":
+#         print('---------')
+#         # return render(request, 'base/viewdocument.html')
+#     else:
+#         print('ffffffff')
+#         return redirect('/')
+
+@login_required
+def deletefile(request, pk):
+    file = get_object_or_404(DocumentFile, pk=pk)
+    slug = file.document.slug
+    document = get_object_or_404(Document, slug=slug)
+    if request.method == 'GET':
         file.delete()
-        return redirect(self.get_success_url())
-    
-   
+        form = DocumentForm(instance=document)
+        files = DocumentFile.objects.filter(document=document)
+        return render(request, 'base/viewdocument.html', {
+            'document': document,
+            'files': files,
+            'form': form
+        })
+
+
 class DocumentDelete(DeleteView):
     model = Document
     template_name = 'base/viewdocument.html'
     success_url = '/'
-    
-    def delete(self, *args, **kwargs):
-        document =  Document.objects.get(slug=self.kwargs['slug'])
-        document.delete()
-        return redirect('/')
-          
 
-@login_required
-def deletedocument(request, slug):
-    document = get_object_or_404(Document, slug=slug)
-    
-    # if document.user == request.user:
-        #  or request.user.has_perm('auth.change_user')
-    if request.method == 'POST':
+    def delete(self, *args, **kwargs):
+        document = Document.objects.get(slug=self.kwargs['slug'])
         document.delete()
         return redirect('/')
+
+
+# @login_required
+# def deletedocument(request, slug):
+#     document = get_object_or_404(Document, slug=slug)
+
+#     # if document.user == request.user:
+#         #  or request.user.has_perm('auth.change_user')
+#     if request.method == 'POST':
+#         document.delete()
+#         return redirect('/')
     # else:
     #     return redirect('/')
-    
+
 # def delete_task(request, file_id):
 #     file = DocumentFile.objects.get(id=file_id)
 #     file.objects.delete()
@@ -287,22 +370,8 @@ def deletedocument(request, slug):
 #     file = DocumentFile.objects.order_by('date_added')
 #     context = {'file': file}
 #     return render(request, 'work_list/index.html', context)
-        
 
-@login_required
-def deletefile(request, id):
-    file = get_object_or_404(DocumentFile, id=id)
-    print('id', id)
-    print('pppp', file.document)
-    # if document.user == request.user:
-        #  or request.user.has_perm('auth.change_user')
-    if request.method == 'POST':
-        file.delete()
-        return redirect('')
-    else:
-        return redirect('')
-    
-    
+
 @login_required
 def viewdocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
@@ -339,8 +408,8 @@ def viewdocument(request, slug):
                     if extension not in FILE_EXT_WHITELIST:
                         files.remove(f)
                         messages.add_message(request,
-                                            messages.INFO,
-                                            'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
+                                             messages.INFO,
+                                             'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
                         form = form
                         return render(request, 'base/viewdocument.html', {'form': form})
                 try:
@@ -359,7 +428,6 @@ def viewdocument(request, slug):
         return redirect('/')
 
 
-
 #  ---- Document END
 
 
@@ -372,7 +440,8 @@ class SearchView(ListView):
         q = request.GET.get('q')
         if q:
             query_sets = []  # Общий QuerySet
-            query_sets.append(Document.objects.filter(Q(title__icontains=q) | Q(text__icontains=q)))
+            query_sets.append(Document.objects.filter(
+                Q(title__icontains=q) | Q(text__icontains=q)))
             final_set = list(chain(*query_sets))
             context['last_question'] = '?q=%s' % q
             current_page = Paginator(final_set, 10)
@@ -382,7 +451,8 @@ class SearchView(ListView):
             except PageNotAnInteger:
                 context['object_list'] = current_page.page(1)
             except EmptyPage:
-                context['object_list'] = current_page.page(current_page.num_pages)
+                context['object_list'] = current_page.page(
+                    current_page.num_pages)
             print('ggg', final_set)
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
