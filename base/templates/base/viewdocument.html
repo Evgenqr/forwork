@@ -6,9 +6,13 @@
 {% block content %}
 {{ error }}
 {{category.title}}
-<form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
+
+    <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data">
     {% csrf_token %}
-    {% comment %} {{form.as_p}}
+    {% comment %}
+    <form action="" method="POST" enctype="multipart/form-data">99877
+    <form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
+    {{form.as_p}}
     {% endcomment %} 
 
     <div class="col-sm-8">Заголовок: <br>{{form.title}}  </div>
@@ -53,11 +57,12 @@
     {% for message in messages %}
 <span style="color:red;"> {{ message }} </span>
 {% endfor %}
+<br>
     <button type="submit" class="btn btn-success">Сохранить</button>
 </form>
 
 <p>
-<form method="POST" action="{% url 'deletedocument' document.slug %}">
+<form action="{% url 'deletedocument' document.slug %}" method="POST" >
     {% csrf_token %}
 <button type="submit"  class="btn btn-danger">Удалить</button>
 </form>

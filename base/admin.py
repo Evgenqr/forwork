@@ -10,7 +10,7 @@ from .models import Category, Law, Document, DocumentFile
 
 @admin.register(Document)
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ['title', 'slug', 'user', 'category']
+    list_display = ['title', 'slug', 'user', 'category', 'date_create']
     prepopulated_fields = {'slug': ('title',), }
 
 

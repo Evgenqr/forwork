@@ -1,7 +1,7 @@
-from django.urls import path
+from django.urls import path # type: ignore
 from . import views
-from django.conf.urls.static import static
-from django.conf import settings
+from django.conf.urls.static import static # type: ignore
+from django.conf import settings # type: ignore
 
 
 urlpatterns = [
@@ -30,9 +30,9 @@ urlpatterns = [
     # path('document/<str:slug>/delete/',
     #      views.deletedocument,
     #      name='deletedocument'),
-    path('deletefile/<int:pk>/',
-         views.deletefile,
-         name='deletefile'),
+    # path('deletefile/<int:pk>/',
+    #      views.deletefile,
+    #      name='deletefile'),
     # path('file/<int:pk>/delete/',
     #      views.FileDelete.as_view(),
     #      name='deletefile'),

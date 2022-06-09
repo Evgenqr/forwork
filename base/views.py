@@ -1,23 +1,25 @@
 from audioop import reverse
+from django.urls import reverse # type: ignore
 from multiprocessing import context
 from unicodedata import category
-from django.contrib import messages
-from django.shortcuts import redirect, render, get_object_or_404
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.db import IntegrityError
-from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.contrib import messages # type: ignore
+from django.shortcuts import redirect, render, get_object_or_404 # type: ignore
+from django.contrib.auth.models import User # type: ignore
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm # type: ignore
+from django.db import IntegrityError # type: ignore
+from django.contrib.auth import login, logout, authenticate # type: ignore
+from django.contrib.auth.decorators import login_required # type: ignore
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
 from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm
-from django.utils.text import slugify
-from transliterate import translit
+from django.utils.text import slugify # type: ignore
+from transliterate import translit # type: ignore
 import os
-from django.db.models import Q
-from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
+from django.db.models import Q # type: ignore
+from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage # type: ignore
 from itertools import chain
-
+from django.http import HttpResponseRedirect # type: ignore
+from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 
 # ---- User
 def signupuser(request):
@@ -174,7 +176,11 @@ FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                       '.bmp', '.jpg', '.gif', '.zip', '.rar']
 
 
-class DocumentCreateView(CreateView):
+def check_lists(list_1,list_2): 
+    return all(i in list_2 for i in list_1)
+
+
+class DocumentCreateView(LoginRequiredMixin, CreateView):
     template_name = 'base/createdocument.html'
     form_class = DocumentForm
     extra_context = {'documents': Document.objects.all()}
@@ -182,8 +188,8 @@ class DocumentCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentCreateView, self).get_context_data(**kwargs)
-        # context['category'] = Category.objects.all()
-        # context['laws'] =Law.objects.all()
+        context['category'] = Category.objects.all()
+        context['laws'] = Law.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -200,14 +206,16 @@ class DocumentCreateView(CreateView):
             newdocument.save()
             return self.form_valid(form)
         else:
+            ext_list = []
             for f in files:
                 extension = os.path.splitext(f.name)[1]
-                if extension not in FILE_EXT_WHITELIST:
-                    files.remove(f)
+                ext_list.append(extension)
+            for f in files:
+                if not all(i in FILE_EXT_WHITELIST for i in ext_list):
                     messages.add_message(request,
-                                         messages.INFO,
-                                         f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
-                    form = form
+                                            messages.INFO,
+                                            f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
+                    
                     return render(request, self.template_name, {'form': form})
                 else:
                     newdocument = form.save(commit=False)
@@ -232,12 +240,13 @@ class DocumentDetailView(DetailView):
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
         slug = self.kwargs.get('slug', '')
+        context['slug'] = slug
         document = Document.objects.get(slug=slug)
         context['files'] = DocumentFile.objects.filter(document=document)
         return context
 
 
-class DocumentUpdateView(UpdateView):
+class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
     template_name = 'base/viewdocument.html'
     form_class = DocumentForm
@@ -247,12 +256,15 @@ class DocumentUpdateView(UpdateView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentUpdateView, self).get_context_data(**kwargs)
+        slug = self.kwargs.get('slug', '')
+ 
+        document = Document.objects.get(slug=slug)
+        context['files'] = DocumentFile.objects.filter(document=document)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
-        context['files'] = DocumentFile.objects.filter(
-            document__slug=self.kwargs['slug'])
-        print('vvfddd', context['files'])
+        # context['files'] = DocumentFile.objects.filter(
+        #     document__slug=self.kwargs['slug'])
         return context
 
     def post(self, request, *args, **kwargs):
@@ -261,7 +273,8 @@ class DocumentUpdateView(UpdateView):
         newfiles = self.request.FILES.getlist("files")
         document = get_object_or_404(Document, slug=self.kwargs['slug'])
         files = DocumentFile.objects.filter(document=document)
-        
+        laws = Law.objects.all()
+        category = Category.objects.all()
         if newfiles == []:
             try:
                 form = DocumentForm(
@@ -276,15 +289,25 @@ class DocumentUpdateView(UpdateView):
                     'error': 'Bad info'
                 })
         else:
+            ext_list = []
             for f in newfiles:
                 extension = os.path.splitext(f.name)[1]
-                if extension not in FILE_EXT_WHITELIST:
-                    newfiles.remove(f)
+                ext_list.append(extension)
+            for f in newfiles:
+                extension = os.path.splitext(f.name)[1]
+                if not all(i in FILE_EXT_WHITELIST for i in ext_list):
+                    # newfiles.remove(f)
                     messages.add_message(request,
                                          messages.INFO,
                                          f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
-                    # form = form
-                    return render(request, self.template_name, {'form': form})
+                    context = {
+                        'document': document,
+                        'laws': laws,
+                        'category':category, 
+                        'files' :files,
+                        'form': form,
+                    }
+                    return render(request, self.template_name, context)
                 else:
                     form = DocumentForm(
                         request.POST, request.FILES, instance=document)
@@ -340,7 +363,7 @@ def deletefile(request, pk):
         })
 
 
-class DocumentDelete(DeleteView):
+class DocumentDelete(LoginRequiredMixin, DeleteView):
     model = Document
     template_name = 'base/viewdocument.html'
     success_url = '/'
@@ -348,20 +371,19 @@ class DocumentDelete(DeleteView):
     def delete(self, *args, **kwargs):
         document = Document.objects.get(slug=self.kwargs['slug'])
         document.delete()
-        return redirect('/')
+        return redirect('home')
 
 
 # @login_required
 # def deletedocument(request, slug):
 #     document = get_object_or_404(Document, slug=slug)
-
-#     # if document.user == request.user:
-#         #  or request.user.has_perm('auth.change_user')
 #     if request.method == 'POST':
 #         document.delete()
-#         return redirect('/')
-    # else:
-    #     return redirect('/')
+#         print(1111)
+#         return redirect('home')
+#     else:
+#         print(222)
+#         return redirect('home')
 
 # def delete_task(request, file_id):
 #     file = DocumentFile.objects.get(id=file_id)
