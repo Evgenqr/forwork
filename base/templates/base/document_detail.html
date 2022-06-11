@@ -29,12 +29,15 @@
                   <a class="text-decoration-none del-file"  href="{{f.file.url}}" download style="color: #007c84;font-weight: bold;">
                  {{ f.filename }} 
                 </a>
-                ({{f.file.size|filesizeformat }})   <button class="ui red basic button del-file" data-bk="{{ documents.id }}" data-pg="{{f.id}}">Удалить</button>
+                ({{f.file.size|filesizeformat }})   
+{% comment %}
+<button class="ui red basic button del-file" data-bk="{{ documents.id }}" data-pg="{{f.id}}">Удалить</button>
+{% endcomment %}
+
             </p>
         </div>
             {% endfor %} 
-        {% else %} 
-            Приложений нетЪ
+
         {% endif %}
 
         <script>

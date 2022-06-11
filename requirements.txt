@@ -18,6 +18,7 @@ django-debug-toolbar==3.2.4
 django-js-asset==1.2.2
 filelock==3.3.2
 flake8==4.0.1
+fontawesome-free==5.15.4
 idna==3.3
 isort==5.10.1
 lazy-object-proxy==1.7.1

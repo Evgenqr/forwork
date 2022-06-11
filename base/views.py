@@ -1,4 +1,6 @@
 from audioop import reverse
+from http.client import HTTPResponse
+import json
 from django.urls import reverse # type: ignore
 from multiprocessing import context
 from unicodedata import category
@@ -18,7 +20,6 @@ import os
 from django.db.models import Q # type: ignore
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage # type: ignore
 from itertools import chain
-from django.http import HttpResponseRedirect # type: ignore
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 
 # ---- User
@@ -142,7 +143,8 @@ class DocumentListView(ListView):
     model = Document
     template_name = 'base/index.html'
     context_object_name = 'documents_list'
-
+    paginate_by = 3
+    
     def get_queryset(self):
         return Document.objects.order_by('-date_create')
 
@@ -235,6 +237,7 @@ class DocumentDetailView(DetailView):
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
 
+
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
@@ -250,14 +253,15 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
     template_name = 'base/viewdocument.html'
     form_class = DocumentForm
-    extra_context = {'documents': Document.objects.all(
-    ), 'files': DocumentFile.objects.all()}
+    extra_context = {
+        'documents': Document.objects.all(),
+        'files': DocumentFile.objects.all()
+        }
     template_name_suffix = '_update'
 
     def get_context_data(self, **kwargs):
         context = super(DocumentUpdateView, self).get_context_data(**kwargs)
         slug = self.kwargs.get('slug', '')
- 
         document = Document.objects.get(slug=slug)
         context['files'] = DocumentFile.objects.filter(document=document)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
@@ -267,6 +271,36 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         #     document__slug=self.kwargs['slug'])
         return context
 
+    def deletefile(self, request, pk):
+        file = get_object_or_404(DocumentFile, pk=pk)
+        slug = file.document.slug
+        document = get_object_or_404(Document, slug=slug)
+        if request.method == 'GET':
+            file.delete()
+            form = DocumentForm(instance=document)
+            files = DocumentFile.objects.filter(document=document)
+            print('oooooooooooooooook')
+            # return render(request, 'base/viewdocument.html', {
+            #     'document': document,
+            #     'files': files,
+            #     'form': form
+            # })   
+    
+
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })   
+    
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -275,12 +309,19 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         files = DocumentFile.objects.filter(document=document)
         laws = Law.objects.all()
         category = Category.objects.all()
+        context = {
+                        'document': document,
+                        'files' :files,
+                        'laws': laws,
+                        'category':category, 
+                        'form': form,
+                    }
         if newfiles == []:
             try:
                 form = DocumentForm(
                     request.POST, request.FILES, instance=document)
                 form.save()
-                return redirect('home')
+                return redirect('document_detail',  slug = document.slug)
             except ValueError:
                 return render(request, self.template_name, {
                     'document': document,
@@ -300,13 +341,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                     messages.add_message(request,
                                          messages.INFO,
                                          f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
-                    context = {
-                        'document': document,
-                        'laws': laws,
-                        'category':category, 
-                        'files' :files,
-                        'form': form,
-                    }
                     return render(request, self.template_name, context)
                 else:
                     form = DocumentForm(
@@ -316,7 +350,33 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         document=document, file=f)
                     form.save()
             return self.form_valid(form)
+        
+        
+from django.http import JsonResponse
+def deletefile(request):
+    if request.user.is_authenticated() and request.is_ajax() and request.POST:
+        object_id = request.POST.get('id', None)
+        b = get_object_or_404(DocumentFile, id=object_id)
+        b.delete()
+        data = {'message': 'delete'.format(b)}
+        return HTTPResponse(json.dumps(data), content_type='application/json')
+    else:
+        return JsonResponse({'error': 'Only authenticated users'}, status=404)
 
+@login_required
+def deletefile2(request, pk):
+    file = get_object_or_404(DocumentFile, pk=pk)
+    slug = file.document.slug
+    document = get_object_or_404(Document, slug=slug)
+    if request.method == 'GET':
+        file.delete()
+        form = DocumentForm(instance=document)
+        files = DocumentFile.objects.filter(document=document)
+        return render(request, 'base/viewdocument.html', {
+            'document': document,
+            'files': files,
+            'form': form
+        })
 
 # class FileDelete(DeleteView):
 #     model = DocumentFile
@@ -328,7 +388,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
 #         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
 #         print('file', file)
 #         file.delete()
-#         return redirect(self.get_success_url())
+#         return redirect(self.get_success_url(), pk = file.pk)
 
 # @login_required
 # def deletefile(request, pk):

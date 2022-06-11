@@ -8,7 +8,7 @@ urlpatterns = [
     path('', views.DocumentListView.as_view(), name="home"),
 
     # -----> For User
-    path('signup/', views.signupuser, name='signupuser'),
+    # path('signup/', views.signupuser, name='signupuser'),
     path('logout/', views.logoutuser, name='logoutuser'),
     path('login/', views.loginuser, name="loginuser"),
     #  <---- End For User
@@ -23,16 +23,17 @@ urlpatterns = [
     path('create/',
          views.DocumentCreateView.as_view(),
          name='createdocument'),
-    path('document/<str:slug>/delete/',
-         views.DocumentDelete.as_view(), name='deletedocument'),
     path('document/<str:slug>/view/',
          views.DocumentUpdateView.as_view(), name='viewdocument'),
+    path('document/<str:slug>/delete/',
+         views.DocumentDelete.as_view(), name='deletedocument'),
+
     # path('document/<str:slug>/delete/',
     #      views.deletedocument,
     #      name='deletedocument'),
-    # path('deletefile/<int:pk>/',
-    #      views.deletefile,
-    #      name='deletefile'),
+    path('deletefile/<int:pk>/',
+         views.deletefile,
+         name='deletefile'),
     # path('file/<int:pk>/delete/',
     #      views.FileDelete.as_view(),
     #      name='deletefile'),

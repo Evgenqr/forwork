@@ -18,8 +18,11 @@ ALLOWED_HOSTS = []
 
 
 # Application definition
+import sys
+sys.modules['fontawesome_free'] = __import__('fontawesome-free')
 
 INSTALLED_APPS = [
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -29,6 +32,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'base',
     'django_cleanup.apps.CleanupConfig',
+    'fontawesome_free',
 ]
 
 
@@ -48,7 +52,9 @@ ROOT_URLCONF = 'forwork.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / "templates"],
+        'DIRS': [
+            # os.path.join(BASE_DIR, 'templates'),
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

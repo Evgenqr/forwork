@@ -12,7 +12,7 @@
       <ul class="nav position-relative">  
         {% if request.user.is_authenticated %}
           <li class="nav-item dropdown position-absolute top-0 end-0">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: #cca35d;">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarScrollingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" >
               {{ user.username }}
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
@@ -21,6 +21,8 @@
          
               
               <li><a class="dropdown-item" href="{% url 'createlaw' %} ">Добавить закон</a> </li> 
+
+              <li><a class="dropdown-item" href="{% url 'signupuser' %}">Регистрация</a></li>
               {% endcomment %}
                
                  <li><a class="dropdown-item" href="{% url 'createdocument' %} ">Добавить документ</a></li>  
@@ -36,11 +38,11 @@
           </li>
         {% else %}
           <li class="nav-item dropdown position-absolute top-0 end-0">
-            <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false" style="color: #cca35d;">
+            <a class="btn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
               Личный кабинет
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-              <li><a class="dropdown-item" href="{% url 'signupuser' %}">Регистрация</a></li>
+           
               <li><a class="dropdown-item" href="{% url 'loginuser' %}">Авторизация</a></li>
             </ul>
           </li>
@@ -53,7 +55,7 @@
         <input class="form-control me-2" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
         <button class="btn btn-outline-success" type="submit">Поиск</button>
            </form>
-      <a class="btn" href="#" role="button" aria-expanded="false" style="color: #cca35d;">
+      <a class="btn" href="#" role="button" aria-expanded="false" >
         Расширенный поиск 
       </a>
     </div>
