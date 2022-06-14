@@ -121,7 +121,8 @@ class CategoryListView(ListView):
     model = Document
     template_name = 'base/category_detail.html'
     context_object_name = 'documents'
-
+    paginate_by = 3
+    
     def get_context_data(self, **kwargs):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         context['title'] = Category.objects.get(slug=self.kwargs['slug'])
@@ -159,7 +160,7 @@ class LawListView(ListView):
     model = Document
     template_name = 'base/law_detail.html'
     context_object_name = 'documents'
-
+    paginate_by = 3
     def get_context_data(self, **kwargs):
         context = super(LawListView, self).get_context_data(**kwargs)
         context['title'] = Law.objects.get(slug=self.kwargs['slug'])
@@ -279,7 +280,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             file.delete()
             form = DocumentForm(instance=document)
             files = DocumentFile.objects.filter(document=document)
-            print('oooooooooooooooook')
+  
             # return render(request, 'base/viewdocument.html', {
             #     'document': document,
             #     'files': files,
@@ -386,25 +387,25 @@ def deletefile2(request, pk):
 #     def post(self, *args, **kwargs):
 #         file =  Document.objects.get(pk=self.kwargs['pk'])
 #         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
-#         print('file', file)
+#       
 #         file.delete()
 #         return redirect(self.get_success_url(), pk = file.pk)
 
 # @login_required
 # def deletefile(request, pk):
 #     files = DocumentFile.objects.filter(file__pk=pk)
-#     print('ggg', files)
+#   
 #     if request.method == "POST":
-#         print('!!!!!!!!!!!')
+#        
 #         file = get_object_or_404(DocumentFile, pk=pk)
 
 #         # file.delete()
 #         return redirect('/')
 #     elif request.method == "GET":
-#         print('---------')
+#        
 #         # return render(request, 'base/viewdocument.html')
 #     else:
-#         print('ffffffff')
+#        
 #         return redirect('/')
 
 @login_required
@@ -439,10 +440,10 @@ class DocumentDelete(LoginRequiredMixin, DeleteView):
 #     document = get_object_or_404(Document, slug=slug)
 #     if request.method == 'POST':
 #         document.delete()
-#         print(1111)
+#         
 #         return redirect('home')
 #     else:
-#         print(222)
+#        
 #         return redirect('home')
 
 # def delete_task(request, file_id):
@@ -458,10 +459,8 @@ class DocumentDelete(LoginRequiredMixin, DeleteView):
 def viewdocument(request, slug):
     document = get_object_or_404(Document, slug=slug)
     files = DocumentFile.objects.filter(document=document)
-    print('pppssss', files)
     # newfiles = self.request.FILES.getlist("files")
     if request.user:
-        print('pppssss', files)
         #  or request.user.has_perm('auth.change_user')
         if request.method == 'GET':
             form = DocumentForm(instance=document)
@@ -516,7 +515,8 @@ def viewdocument(request, slug):
 class SearchView(ListView):
     model = Document
     template_name = 'base/search_result.html'
-
+    paginate_by = 3
+    
     def get(self, request, *args, **kwargs):
         context = {}
         q = request.GET.get('q')
@@ -535,7 +535,7 @@ class SearchView(ListView):
             except EmptyPage:
                 context['object_list'] = current_page.page(
                     current_page.num_pages)
-            print('ggg', final_set)
+
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
         return render(request=request, template_name=self.template_name, context=context)

@@ -33,8 +33,10 @@ INSTALLED_APPS = [
     'base',
     'django_cleanup.apps.CleanupConfig',
     'fontawesome_free',
+    'crispy_forms',
 ]
 
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

@@ -98,7 +98,7 @@ a {
     scroll-behavior: smooth;
   }
 }
-/* 
+
 body {
   margin: 0;
   font-family: var(--bs-body-font-family);
@@ -110,16 +110,16 @@ body {
   background-color: var(--bs-body-bg);
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
-} */
+}
 
-body {
+/* body {
     margin: 0;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-size: 14px;
     line-height: 1.42857143;
     color: #333;
     background-color: #fff;
-  }
+  } */
 
 
 hr {
@@ -298,7 +298,7 @@ sup {
 
 
 a:hover {
-  color: #0a58ca;
+  color: #cca35d;
 }
 
 a:not([href]):not([class]),
@@ -706,7 +706,10 @@ progress {
   padding-left: var(--bs-gutter-x, 0.75rem);
   margin-right: auto;
   margin-left: auto;
+
 }
+
+
 
 @media (min-width: 576px) {
   .container,
@@ -752,12 +755,32 @@ progress {
     max-width: 1320px;
   }
 }
+@media (min-width: 768px) {
+    .container {
+      width: 750px;
+    }
+  }
+  @media (min-width: 992px) {
+    .container {
+      width: 970px;
+    }
+  }
+  @media (min-width: 1200px) {
+    .container {
+      width: 1170px;
+    }
+  }
+
 
 .row {
   --bs-gutter-x: 1.5rem;
   --bs-gutter-y: 0;
   display: flex;
   flex-wrap: wrap;
+
+  margin: 10px;
+
+
   margin-top: calc(-1 * var(--bs-gutter-y));
   margin-right: calc(-0.5 * var(--bs-gutter-x));
   margin-left: calc(-0.5 * var(--bs-gutter-x));
@@ -2572,9 +2595,9 @@ textarea.form-control-lg {
 }
 
 .form-select:focus {
-  border-color: #86b7fe;
+  border-color: #aaaaaa;
   outline: 0;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  box-shadow: 0 0 0 0.25rem #aaaaaa;
 }
 
 .form-select[multiple],
@@ -4504,7 +4527,7 @@ fieldset:disabled .btn {
 .nav-link {
   display: block;
   padding: 0.5rem 1rem;
-  color: #0d6efd;
+
   text-decoration: none;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out,
     border-color 0.15s ease-in-out;
@@ -4518,7 +4541,7 @@ fieldset:disabled .btn {
 
 .nav-link:focus,
 .nav-link:hover {
-  color: #0a58ca;
+  color: #cca35d;;
 }
 
 .nav-link.disabled {

@@ -1,78 +1,80 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 {% block title %}
 Редактирование документа {{document.title}}
 {% endblock %}
 {% block content %}
 {{ error }}
 {{category.title}}
-
-    <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    {% comment %}
-    <form action="" method="POST" enctype="multipart/form-data">99877
-    <form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
-    {{form.as_p}}
-
-    <script>
-        $(".del-file").click(function(){ 
-            $('#document_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
-            console.log($(this).data('bk')+'_'+$(this).data('pg'))
-            return false; 
-          });
-    </script>
-
-    {% endcomment %} 
-
-    <div class="col-sm-8">Заголовок: <br>{{form.title}}  </div>
-    <div class="col-sm-12">Категория:<br> {{form.category}}  </div>
-    <div class="col-sm-6">Закон: <br>{{form.law}}  </div>
-    <div class="col-sm-8">Текст: <br> {{form.text}}  </div>
-   
-    <div class="col-sm-12">Приложения:<br>
-        {% if files %}
-        {% for f in files %}
-        <div class="file del-file" id="document_{{document.id}}_{{f.id}}">
-           <p class="filelogo"><img class="svg-img" src="{% static 'img/word.svg' %}">
-            <a class="text-decoration-none" href="{{f.file.url}}" download 
-                style="color: #007c84;">
-                {{ f.filename }} 
-            </a>
-            ({{f.file.size|filesizeformat }}) 
-            <button class="btn btn-link  text-decoration-none del-file" id="btn-del-file" data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% comment %}
+                    <form action="" method="POST" enctype="multipart/form-data">99877</form>
+                    <form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
+                    </form> 
+                    {{form.as_p}}
+                    document.querySelector("#edit-submit")
+                    <input class="form-submit ajax-processed" type="submit" id="edit-field-news-file-ru-{{f.id}}-remove-button" name="field_news_file_ru_{{f.id}}_remove_button" value="Удалить" >
+                {% endcomment %} 
+                <div class="col-sm-6">{{form.title|as_crispy_field}}</div>
+                <div class="col-sm-4">{{form.category|as_crispy_field}}</div>
+                <div class="col-sm-4">{{form.law|as_crispy_field}}</div>
+                <div class="col-sm-10">{{form.text|as_crispy_field}}</div>
+                <div class="col-sm-6">
+                    Приложения:<br>
+                    {% if files %}
+                        {% for f in files %}
+                            <div class="file del-file" id="document_{{document.id}}_{{f.id}}">
+                                <p class="filelogo">
+                                    <img class="svg-img" src="{% static 'img/word.svg' %}">
+                                    <a class="text-decoration-none" href="{{f.file.url}}" download 
+                                        style="color: #007c84;">
+                                        {{ f.filename }} 
+                                    </a>
+                                    ({{f.file.size|filesizeformat }}) 
+                                    <button class="btn btn-link  text-decoration-none del-file" id="btn-del-file" data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
+                                </p>
+                            </div> 
+                        {% endfor %} 
+                    <script>
+                            $(".del-file").click(function(){ 
+                                $('#document_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
+                                console.log($(this).data('bk')+'_'+$(this).data('pg'))
+                                return false; 
+                            });
+                        </script>
+                    {% endif %}
+                </div> 
+                <div class="col-sm-8">
+                    <input name="files" type="file" multiple class="form-control">  
+                </div>
+                <div class="description col-sm-12">Максимальный размер файла: 
+                    <strong>50 МБ.</strong>
+                    <br>
+                    Разрешённые типы файлов: 
+                    <strong>txt doc docx xls xlsx pdf png bmp jpg rar zip ppt pptx rtf gif.</strong>
+                </div>
+                {% for message in messages %}
+                    <span style="color:red;"> {{ message }} </span>
+                {% endfor %}
+                <br>
+                <div class="col-sm-8">
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                </div>
+            </form>
             <br>
-            <input type="submit" id="edit-field-news-file-ru-{{f.id}}-remove-button" name="field_news_file_ru_{{f.id}}_remove_button" value="Удалить" class="form-submit ajax-processed">
-        </div> 
-        {% endfor %} </div>  
-
-
-        document.querySelector("#edit-submit")
- 
-
-      
-        {% endif %}
-        <br>
-        <div class="col-sm-6">
-        <input name="files" type="file" multiple class="form-control">  
-         
-     </div>
-     
-    <div class="description">Максимальный размер файла: <strong>50 МБ</strong>.<br>Разрешённые типы файлов: <strong>txt doc docx xls xlsx pdf png bmp jpg rar zip ppt pptx rtf gif</strong>.</div>
-
-    {% for message in messages %}
-<span style="color:red;"> {{ message }} </span>
-{% endfor %}
-<br>
-    <button type="submit" class="btn btn-success">Сохранить</button>
-</form>
-
-<p>
-<form action="{% url 'deletedocument' document.slug %}" method="POST" >
-    {% csrf_token %}
-<button type="submit"  class="btn btn-danger">Удалить</button>
-</form>
-
-
-
+            <div class="col-sm-8">
+                <form action="{% url 'deletedocument' document.slug %}" method="POST" >
+                    {% csrf_token %}
+                    <button type="submit"  class="btn btn-danger">Удалить</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 

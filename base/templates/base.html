@@ -16,11 +16,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}"  type="text/css" />
-<link rel="stylesheet" href="{% static '/css/all.min.css' %}" type="text/css"/>
 <link rel="stylesheet" href="{% static '/css/style.css' %}"  type="text/css" />
-
-
-<link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico '%}">
+<link rel="stylesheet" href="{% static '/css/all.min.css' %}" type="text/css"/>
+<link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico '%}">
 <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
 <script src="{% static 'js/script.js' %}"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
@@ -34,7 +32,8 @@
                     {% endblock content %} 
                 </div>
             </div>
-        </div>           
+        </div> 
+    {% include 'include/paginate.html' %}           
     {% include 'include/footer.html' %}  
    
         

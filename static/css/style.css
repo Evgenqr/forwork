@@ -57,12 +57,13 @@
     margin: 1.5rem 0;
 }
 
-a {
-    text-decoration: none;
-    color: #007c84;
+.editdoc{
+    font-size: 80%; 
+    margin: auto;
+    color: red;
 }
 
-a:hover{color:#cca35d;}
+
 
 .badge {
     display: inline-block;
@@ -122,37 +123,21 @@ h1 {
   
 
   .container {
-    padding-right: 15px;
-    padding-left: 15px;
+    padding-right: 0px;
+    padding-left: 0px;
     margin-right: auto;
     margin-left: auto;
   }
-  @media (min-width: 768px) {
-    .container {
-      width: 750px;
-    }
-  }
-  @media (min-width: 992px) {
-    .container {
-      width: 970px;
-    }
-  }
-  @media (min-width: 1200px) {
-    .container {
-      width: 1170px;
-    }
-  }
-
-  .row {
+  /* .row {
     margin-right: -15px;
     margin-left: -15px;
-  }
+  } */
+
   
   .form-group {
     margin-bottom: 15px;
   }
   
-
 
   .btn-default {
     color: #333;
@@ -170,3 +155,4 @@ h1 {
     background-color: #cca35d;
     border-color: #adadad;
   }
+

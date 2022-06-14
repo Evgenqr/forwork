@@ -35,7 +35,7 @@ $(document).ready(function() {
            }
        });
    
-       $('#del-file').on('click', function(e) {
+       $('#del-file11').on('click', function(e) {
            e.preventDefault();
            var $this = $(this),
                data = $this.data();

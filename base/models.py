@@ -43,27 +43,6 @@ class Law(models.Model):
         return reverse("law", kwargs={"slug": self.slug})
 
 
-# class File(models.Model):
-#     title = models.CharField(verbose_name="Название файла", max_length=100,
-#                              blank=True, null=True)
-#     file = models.FileField(verbose_name="Вложения", blank=True,
-#                             null=True, max_length=200,
-#                             upload_to=file_directory_path,
-#                             validators=[validate_image_file_extension])
-#     # validators=[FileExtensionValidator(
-#     #     allowed_extensions=['pdf'])])
-
-#     def filename(self):
-#         return os.path.basename(self.file.name)
-
-#     class Meta:
-#         verbose_name = "Вложение"
-#         verbose_name_plural = "Вложения"
-
-#     def __str__(self):
-#         return self.title
-
-
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -180,3 +159,25 @@ class DocumentFile(models.Model):
 
     # def get_absolute_url(self):
     #     return reverse("document_detail", kwargs={"slug": self.slug})
+
+
+
+# class File(models.Model):
+#     title = models.CharField(verbose_name="Название файла", max_length=100,
+#                              blank=True, null=True)
+#     file = models.FileField(verbose_name="Вложения", blank=True,
+#                             null=True, max_length=200,
+#                             upload_to=file_directory_path,
+#                             validators=[validate_image_file_extension])
+#     # validators=[FileExtensionValidator(
+#     #     allowed_extensions=['pdf'])])
+
+#     def filename(self):
+#         return os.path.basename(self.file.name)
+
+#     class Meta:
+#         verbose_name = "Вложение"
+#         verbose_name_plural = "Вложения"
+
+#     def __str__(self):
+#         return self.title

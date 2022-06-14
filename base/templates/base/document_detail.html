@@ -6,49 +6,52 @@
 {% endblock %}
 
 {% block content %}
-<div style="font-size: 80%; text-align:right;"><a class="text-decoration-none" href="view/" style="color: #007c84;">Редактировать</a>  </div>
+    <div class="editdoc">
+        <a class="text-decoration-none" href="view/" >
+            Редактировать
+        </a>  
+    </div>
     <h4 class="card-title"> 
-        {{documents.title}}
-        <br>
+        {{documents.title}} 
     </h4>
     <b>Категория:</b>
-    <a class="text-decoration-none" href="/category/{{documents.category.slug}}/" style="color: #007c84;"> {{documents.category.title}}</a>
- <br>
+    <a class="text-decoration-none" href="/category/{{documents.category.slug}}/"> 
+        {{documents.category.title}}
+    </a>
+    <br>
     <b> Закон: </b>
     {% for l in documents.law.all %}
-    <a class="text-decoration-none" href="/laws/{{l.slug}}/" style="color: #007c84;"> {{l.shorttitle}} </a>
+        <a class="text-decoration-none" href="/laws/{{l.slug}}/"> 
+            {{l.shorttitle}}
+        </a>
     {% endfor %}
     <br>
     {{documents.text}}   
-   <br>
+    <br>
     <b>Приложения: </b>
-        {% if files %}
-            {% for f in files %}
-<div class="file" id="documents_{{documents.id}}_{{f.id}}">
-            <p class="filelogo">
-                  <a class="text-decoration-none del-file"  href="{{f.file.url}}" download style="color: #007c84;font-weight: bold;">
-                 {{ f.filename }} 
-                </a>
-                ({{f.file.size|filesizeformat }})   
-{% comment %}
-<button class="ui red basic button del-file" data-bk="{{ documents.id }}" data-pg="{{f.id}}">Удалить</button>
-{% endcomment %}
-
-            </p>
-        </div>
-            {% endfor %} 
-
-        {% endif %}
-
-        <script>
-            $(".del-file").click(function(){ 
-                $('#documents_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
-                return false; 
-              });
-        </script>
+    {% if files %}
+        {% for f in files %}
+            <div class="file" id="documents_{{documents.id}}_{{f.id}}">
+                <p class="filelogo">
+                    <a class="text-decoration-none del-file" download href="{{f.file.url}}"  style="font-weight: bold;">
+                    {{ f.filename }} 
+                    </a>
+                    ({{f.file.size|filesizeformat }}) 
+                </p>      
+                {% comment %}
+                <button class="ui red basic button del-file" data-bk="{{ documents.id }}" data-pg="{{f.id}}">Удалить</button>
+                {% endcomment %}
+            </div>
+        {% endfor %} 
+    {% endif %}
+    <script>
+        $(".del-file11").click(function(){ 
+            $('#documents_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
+            return false; 
+        });
+    </script>
     <br>
     Создан: {{documents.date_create}}    <br>
     Обновлён: {{documents.date_update}}    <br>
     Автор: {{documents.user}}
-</div>
 {% endblock content %} 
