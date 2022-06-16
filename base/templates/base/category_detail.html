@@ -21,10 +21,11 @@
                 <div class="row">
                     <div class="col-sm-9">
                         {% for l in document.law.all %}
-                        <a href="/laws/{{l.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;"> {{l.shorttitle}}</a>
-                           
+                            <a href="/laws/{{l.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;"> 
+                                {{l.shorttitle}}
+                            </a>
                         {% endfor %}
-                        <br>
+                   
                     </div>
                 </div>
             </div>

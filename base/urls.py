@@ -10,7 +10,8 @@ urlpatterns = [
     # -----> For User
     # path('signup/', views.signupuser, name='signupuser'),
     path('logout/', views.logoutuser, name='logoutuser'),
-    path('login/', views.loginuser, name="loginuser"),
+    path('login/', views.LoginView.as_view(), name="loginuser"),
+    path('login_form/', views.LoginView.as_view(), name="login_form"),
     #  <---- End For User
 
     # -----> Category

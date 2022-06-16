@@ -17,15 +17,10 @@
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
                 {% comment %}
               <li><a class="dropdown-item" href=" {% url 'createcategory' %} ">Добавить категорию</a></li>
-         
-              
               <li><a class="dropdown-item" href="{% url 'createlaw' %} ">Добавить закон</a> </li> 
-
               <li><a class="dropdown-item" href="{% url 'signupuser' %}">Регистрация</a></li>
               {% endcomment %}
-               
-                 <li><a class="dropdown-item" href="{% url 'createdocument' %} ">Добавить документ</a></li>  
-         
+              <li><a class="dropdown-item" href="{% url 'createdocument' %} ">Добавить документ</a></li>  
               <li><hr class="dropdown-divider"></li>
               <li>
                 <form action="{% url 'logoutuser' %}" method="POST">
@@ -41,8 +36,8 @@
               Личный кабинет
             </a>
             <ul class="dropdown-menu" aria-labelledby="navbarScrollingDropdown">
-           
-              <li><a class="dropdown-item" href="{% url 'loginuser' %}">Авторизация</a></li>
+            <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#login_form">Авторизация Ajax</a></li>
+            <li><a class="dropdown-item" href="{% url 'loginuser' %}">Авторизация</a></li>
             </ul>
           </li>
         {% endif %}  

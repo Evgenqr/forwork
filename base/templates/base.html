@@ -19,12 +19,14 @@
 <link rel="stylesheet" href="{% static '/css/style.css' %}"  type="text/css" />
 <link rel="stylesheet" href="{% static '/css/all.min.css' %}" type="text/css"/>
 <link rel="shortcut icon" type="image/png" href="{% static 'img/favicon.ico '%}">
-<script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
-<script src="{% static 'js/script.js' %}"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+
+
+
 </head>
 <body>
     {% include 'include/header.html' %} 
+    {% include 'base/modal.html' %}
         <div class="container">
             <div class="row">
                 <div class="col-sm-12">
@@ -35,8 +37,9 @@
         </div> 
     {% include 'include/paginate.html' %}           
     {% include 'include/footer.html' %}  
-   
-        
-   
+    <script src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/script.js' %}"></script>
 </body>
 </html>

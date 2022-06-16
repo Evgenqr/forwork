@@ -4,6 +4,26 @@ from .models import Category, Law, Document
 from django import forms
 
 
+class AuthForm(forms.Form):
+    username = forms.CharField(
+        label= ("Логин"),
+        max_length=15,
+        widget=forms.TextInput(attrs={
+            "autocomplete": "username",
+            "class": "form-control",
+        }),
+    )
+    
+    password = forms.CharField(
+        label= ("Пароль"),
+        strip=False,
+        widget=forms.PasswordInput(attrs={
+            "autocomplete": "current-password",
+            "class": "form-control",
+        }),
+    )
+ 
+ 
 class CategoryForm(ModelForm):
     class Meta:
         model = Category

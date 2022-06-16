@@ -11,9 +11,10 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm # typ
 from django.db import IntegrityError # type: ignore
 from django.contrib.auth import login, logout, authenticate # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
 from .models import Category, Document, Law, DocumentFile
-from .forms import CategoryForm, DocumentForm
+from .forms import CategoryForm, DocumentForm, AuthForm
 from django.utils.text import slugify # type: ignore
 from transliterate import translit # type: ignore
 import os
@@ -23,6 +24,25 @@ from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 
 # ---- User
+class LoginView(View):
+
+    def post(self, request):
+        user = authenticate(
+            request,
+            username=request.POST['username'],
+            password=request.POST['password'],
+        )
+        if user is None:
+            return render(
+                request, 'base/modal.html', {
+                    'form': AuthenticationForm(),
+                    'error': 'User or password did not match'
+                })
+        else:
+            login(request, user)
+            return redirect(self.request.META.get('HTTP_REFERER', ''))
+
+
 def signupuser(request):
     if request.method == 'GET':
         return render(request, 'base/signupuser.html',
@@ -144,10 +164,10 @@ class DocumentListView(ListView):
     model = Document
     template_name = 'base/index.html'
     context_object_name = 'documents_list'
-    paginate_by = 3
+    paginate_by = 5
     
     def get_queryset(self):
-        return Document.objects.order_by('-date_create')
+        return Document.objects.order_by('-date_create').select_related('category')
 
     def get_context_data(self, **kwargs):
         context = super(DocumentListView, self).get_context_data(**kwargs)
@@ -161,6 +181,7 @@ class LawListView(ListView):
     template_name = 'base/law_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
+    
     def get_context_data(self, **kwargs):
         context = super(LawListView, self).get_context_data(**kwargs)
         context['title'] = Law.objects.get(slug=self.kwargs['slug'])
@@ -171,7 +192,8 @@ class LawListView(ListView):
     def get_queryset(self):
         slug = Law.objects.get(slug=self.kwargs['slug'])
         if slug:
-            return Document.objects.filter(law=slug)
+            return Document.objects.filter(law=slug).prefetch_related('category')
+        # .prefetch_related('law')
 
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
@@ -280,27 +302,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             file.delete()
             form = DocumentForm(instance=document)
             files = DocumentFile.objects.filter(document=document)
-  
-            # return render(request, 'base/viewdocument.html', {
-            #     'document': document,
-            #     'files': files,
-            #     'form': form
-            # })   
-    
-
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })   
     
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -378,6 +379,26 @@ def deletefile2(request, pk):
             'files': files,
             'form': form
         })
+            # return render(request, 'base/viewdocument.html', {
+            #     'document': document,
+            #     'files': files,
+            #     'form': form
+            # })   
+    
+
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })  
 
 # class FileDelete(DeleteView):
 #     model = DocumentFile

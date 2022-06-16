@@ -19,7 +19,15 @@
                     {{form.as_p}}
                     document.querySelector("#edit-submit")
                     <input class="form-submit ajax-processed" type="submit" id="edit-field-news-file-ru-{{f.id}}-remove-button" name="field_news_file_ru_{{f.id}}_remove_button" value="Удалить" >
-                {% endcomment %} 
+                    <script>
+                        $(".del-file").click(function(){ 
+                            $('#document_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
+                            console.log($(this).data('bk')+'_'+$(this).data('pg'))
+                            return false; 
+                        });
+                    </script>
+               
+                    {% endcomment %} 
                 <div class="col-sm-6">{{form.title|as_crispy_field}}</div>
                 <div class="col-sm-4">{{form.category|as_crispy_field}}</div>
                 <div class="col-sm-4">{{form.law|as_crispy_field}}</div>
@@ -40,13 +48,20 @@
                                 </p>
                             </div> 
                         {% endfor %} 
-                    <script>
-                            $(".del-file").click(function(){ 
-                                $('#document_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
-                                console.log($(this).data('bk')+'_'+$(this).data('pg'))
-                                return false; 
-                            });
-                        </script>
+                        <script>
+                        $.ajax({
+                            type: 'POST',
+                            url: '/document/delete/',
+                            data: {'ids': ids},
+                            success: function() {
+                                console.log(date_time + ": AJAX call succeeded.");
+                            },
+                            error: function() {
+                                console.log(date_time + ": AJAX call failed!");
+                                console.log(date_time + ": Image ID: " + ids + ".");
+                            }
+                        });
+                    </script>
                     {% endif %}
                 </div> 
                 <div class="col-sm-8">

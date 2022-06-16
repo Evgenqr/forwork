@@ -3348,20 +3348,29 @@ fieldset:disabled .btn {
 }
 
 .btn-secondary {
-  color: #fff;
-  background-color: #6c757d;
-  border-color: #6c757d;
-}
+    float: right;
+    font-size: 14px;
+    color: #fff;
+    background: #aaaaaa;
+    border-color: #6c757d;
+    border-radius: 30px;
+    padding: 10px 25px;
+    border: none;
+    text-transform: capitalize;
+    transition: all 0.5s ease 0s;
+   }
+
+
 
 .btn-secondary:hover {
-  color: #fff;
-  background-color: #5c636a;
+  color: rgb(0, 0, 0);
+  background-color: #cca35d;
   border-color: #565e64;
 }
 
 .btn-check:focus + .btn-secondary,
 .btn-secondary:focus {
-  color: #fff;
+  color: rgb(0, 0, 0);
   background-color: #5c636a;
   border-color: #565e64;
   box-shadow: 0 0 0 0.25rem rgba(130, 138, 145, 0.5);
@@ -3372,7 +3381,7 @@ fieldset:disabled .btn {
 .btn-secondary.active,
 .btn-secondary:active,
 .show > .btn-secondary.dropdown-toggle {
-  color: #fff;
+  color: rgb(0, 0, 0);
   background-color: #565e64;
   border-color: #51585e;
 }
@@ -3387,7 +3396,7 @@ fieldset:disabled .btn {
 
 .btn-secondary.disabled,
 .btn-secondary:disabled {
-  color: #fff;
+  color: rgb(0, 0, 0);
   background-color: #6c757d;
   border-color: #6c757d;
 }
@@ -6422,14 +6431,20 @@ fieldset:disabled .btn {
   border-top-right-radius: calc(0.3rem - 1px);
 }
 
+
 .modal-header .btn-close {
   padding: 0.5rem 0.5rem;
   margin: -0.5rem -0.5rem -0.5rem auto;
 }
 
 .modal-title {
-  margin-bottom: 0;
+  /* margin-bottom: 0; */
+ padding-left: 20%;
+  display: block;
+  margin: 0 auto;
+ 
   line-height: 1.5;
+  color:#007c84;
 }
 
 .modal-body {
@@ -12422,6 +12437,9 @@ fieldset:disabled .btn {
     text-transform: capitalize;
     transition: all 0.5s ease 0s;
    }
+
+
+  
    @media only screen and (max-width: 479px){
     .form-horizontal .form-group{
     padding: 0 25px;

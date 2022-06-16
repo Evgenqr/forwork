@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'django_cleanup.apps.CleanupConfig',
     'fontawesome_free',
     'crispy_forms',
+    'widget_tweaks',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
@@ -64,6 +65,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'forwork.context_processors.get_context_data',
+                # 'apps.core.context_processors.appointment_form',
+                # 'apps.forwork.context_processors.courses_categories',
             ],
         },
     },
@@ -145,6 +149,9 @@ MEDIA_URL = '/media/'
 # MEDIA_DIR = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+INTERNAL_IPS = [
+    '127.0.0.1',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
