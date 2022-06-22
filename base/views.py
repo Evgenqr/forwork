@@ -11,7 +11,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm # typ
 from django.db import IntegrityError # type: ignore
 from django.contrib.auth import login, logout, authenticate # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
-from django.views import View
+from django.views import View # type: ignore
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
 from .models import Category, Document, Law, DocumentFile
 from .forms import CategoryForm, DocumentForm, AuthForm
@@ -22,25 +22,35 @@ from django.db.models import Q # type: ignore
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage # type: ignore
 from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
+from django.http import JsonResponse # type: ignore
+
 
 # ---- User
 class LoginView(View):
 
     def post(self, request):
-        user = authenticate(
-            request,
-            username=request.POST['username'],
-            password=request.POST['password'],
-        )
-        if user is None:
-            return render(
-                request, 'base/modal.html', {
-                    'form': AuthenticationForm(),
-                    'error': 'User or password did not match'
-                })
-        else:
-            login(request, user)
-            return redirect(self.request.META.get('HTTP_REFERER', ''))
+        username=request.POST.get('username')
+        password=request.POST.get('password')
+        if username and password:
+            user = authenticate(request, username=username, password=password)
+            if user:
+                login(request, user)
+                return JsonResponse(data={}, status=201)
+            else:
+                return JsonResponse(
+                    data={'error': 'Пароль и/или логин не верны'},
+                    status=400
+                    )
+        return JsonResponse(data={'error': 'Введите логин и пароль'}, status=400)
+        # if user is None:
+        #     return render(
+        #         request, 'base/modal.html', {
+        #             'form': AuthenticationForm(),
+        #             'error': 'User or password did not match'
+        #         })
+        # else:
+        #     login(request, user)
+        #     return redirect(self.request.META.get('HTTP_REFERER', ''))
 
 
 def signupuser(request):
