@@ -46,12 +46,7 @@
             </div>
         {% endfor %} 
     {% endif %}
-    <script>
-        $(".del-file11").click(function(){ 
-            $('#documents_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
-            return false; 
-        });
-    </script>
+
     <br>
     Создан: {{documents.date_create}}    <br>
     Обновлён: {{documents.date_update}}    <br>

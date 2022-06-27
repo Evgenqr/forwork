@@ -10,24 +10,8 @@
 <div class="container">
     <div class="row">
         <div class="col-md-8 mx-auto">
-            <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data">
+            <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data" id="update-form">
                 {% csrf_token %}
-                {% comment %}
-                    <form action="" method="POST" enctype="multipart/form-data">99877</form>
-                    <form method="POST" enctype="multipart/form-data" action="{% url 'viewdocument' document.slug %}">
-                    </form> 
-                    {{form.as_p}}
-                    document.querySelector("#edit-submit")
-                    <input class="form-submit ajax-processed" type="submit" id="edit-field-news-file-ru-{{f.id}}-remove-button" name="field_news_file_ru_{{f.id}}_remove_button" value="Удалить" >
-                    <script>
-                        $(".del-file").click(function(){ 
-                            $('#document_'+$(this).data('bk')+'_'+$(this).data('pg')).remove();
-                            console.log($(this).data('bk')+'_'+$(this).data('pg'))
-                            return false; 
-                        });
-                    </script>
-               
-                    {% endcomment %} 
                 <div class="col-sm-6">{{form.title|as_crispy_field}}</div>
                 <div class="col-sm-4">{{form.category|as_crispy_field}}</div>
                 <div class="col-sm-4">{{form.law|as_crispy_field}}</div>
@@ -36,7 +20,7 @@
                     Приложения:<br>
                     {% if files %}
                         {% for f in files %}
-                            <div class="file del-file" id="document_{{document.id}}_{{f.id}}">
+                            <div class="file" id="document_{{document.id}}_{{f.id}}">
                                 <p class="filelogo">
                                     <img class="svg-img" src="{% static 'img/word.svg' %}">
                                     <a class="text-decoration-none" href="{{f.file.url}}" download 
@@ -44,24 +28,10 @@
                                         {{ f.filename }} 
                                     </a>
                                     ({{f.file.size|filesizeformat }}) 
-                                    <button class="btn btn-link  text-decoration-none del-file" id="btn-del-file" data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
+                                    <button class="btn btn-link  text-decoration-none del-file"  data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
                                 </p>
                             </div> 
                         {% endfor %} 
-                        <script>
-                        $.ajax({
-                            type: 'POST',
-                            url: '/document/delete/',
-                            data: {'ids': ids},
-                            success: function() {
-                                console.log(date_time + ": AJAX call succeeded.");
-                            },
-                            error: function() {
-                                console.log(date_time + ": AJAX call failed!");
-                                console.log(date_time + ": Image ID: " + ids + ".");
-                            }
-                        });
-                    </script>
                     {% endif %}
                 </div> 
                 <div class="col-sm-8">
@@ -92,4 +62,3 @@
     </div>
 </div>
 {% endblock %}
-

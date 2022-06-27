@@ -24,7 +24,6 @@ $(function ($) {
             // headers: {'X-CSRFToken': getCookie('csrftoken')},
             dataType: 'json',
             success: function (response) {
-                console.log('ok - ', response)
                 window.location.reload()
             },
             error: function (response) {
@@ -36,4 +35,34 @@ $(function ($) {
         })
     }
      )
+})
+
+$(document).ready(function (e) {
+    $(".del-file").click(function(e){ 
+        e.preventDefault();
+        // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
+        let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
+        document.getElementById(elem).remove(); 
+        // return false; 
+    });
+
+    $('#update-form').on('submit', function (e) {
+        // e.preventDefault();
+        let formData = new FormData(this)
+        console.log('1111', formData)
+        $.ajax({
+            type: this.method,
+            url: this.action,
+            data: $(this).serialize(),
+            success: function () {
+                console.log('+++');
+            },
+            error: function (response) {
+                console.log('err - ', response);
+            }
+        });
+    });
+
+ 
+
 })

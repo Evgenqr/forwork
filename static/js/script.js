@@ -39,8 +39,6 @@ $(document).ready(function() {
            e.preventDefault();
            var $this = $(this),
                data = $this.data();
-   
-   
            $this.hide();
            $.ajax({
                url: 'deletefile',
