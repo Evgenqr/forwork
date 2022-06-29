@@ -1,3 +1,4 @@
+from venv import create
 from django.core.exceptions import ValidationError
 import os
 from django.db import models
@@ -5,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator, validate_image_file_extension
 from django.core import validators
+
 
 
 def file_directory_path(instance, filename):
@@ -43,6 +45,10 @@ class Law(models.Model):
         return reverse("law", kwargs={"slug": self.slug})
 
 
+class Department(models.Model):
+    title = models.CharField(verbose_name="Название отдела", max_length=250)
+    slug = models.SlugField("Ссылка", max_length=250, unique=True)
+
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -67,6 +73,8 @@ class Document(models.Model):
         verbose_name = "Документ"
         verbose_name_plural = "Документы"
 
+    def save(self, *args, **kwargs):
+        return super().save(*args, **kwargs)
     def __str__(self):
         return self.title
 
@@ -118,6 +126,44 @@ class DocumentFile(models.Model):
         if extension == '.txt':
             return 'textfile'
         return 'other'
+
+
+# from django.db.models import signals
+# from django.shortcuts import get_object_or_404 
+
+# def pre_test(sender, instance, *args, **kwargs):
+#     if create:
+#         print('dd')
+#     else:
+#         print('ne')
+#     file = get_object_or_404(DocumentFile, pk=instance.pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     files = DocumentFile.objects.filter(document=document)
+#     for f in files:
+#         print ("Pre", f.filename)
+#     # print(args, kwargs)
+
+# signals.pre_save.connect(receiver=pre_test, sender=DocumentFile)
+
+
+# def post_test(sender, instance, *args, **kwargs):
+#     if create:
+#         print('dd2')
+#     else:
+#         print('ne2')
+    
+    # file = get_object_or_404(DocumentFile, pk=instance.pk)
+    # slug = file.document.slug
+    # document = get_object_or_404(Document, slug=slug)
+    # files = DocumentFile.objects.filter(document=document)
+    # for f in files:
+    #     print ("Pre", f.filename, f.pk)
+
+# signals.post_save.connect(receiver=post_test, sender=DocumentFile)
+
+
+
 
 
 # class Document(models.Model):

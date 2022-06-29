@@ -36,8 +36,27 @@ $(function ($) {
     }
      )
 })
+function delfile(){
+    const divID="del-file"
+    console.log('222', divID)
+    $(divID).on('click', (e) => {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: $(this).data("url"),
+            // url: '/file/delete/',
+            data: $(this).serialize(),
+            success: function () {
+                console.log('+++', data);
+            },
+            error: function (response) {
+                console.log('err - ', response);
+            }
+        });
+    })
+}
 
-$(document).ready(function (e) {
+function delfile2(){
     $(".del-file").click(function(e){ 
         e.preventDefault();
         // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
@@ -45,6 +64,17 @@ $(document).ready(function (e) {
         document.getElementById(elem).remove(); 
         // return false; 
     });
+}
+$(document).ready(function (e) {
+    delfile()
+    delfile2()
+    // $(".del-file").click(function(e){ 
+    //     e.preventDefault();
+    //     // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
+    //     let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
+    //     document.getElementById(elem).remove(); 
+    //     // return false; 
+    // });
 
     $('#update-form').on('submit', function (e) {
         // e.preventDefault();
@@ -61,8 +91,6 @@ $(document).ready(function (e) {
                 console.log('err - ', response);
             }
         });
+    
     });
-
- 
-
 })

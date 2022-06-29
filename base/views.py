@@ -1,6 +1,7 @@
 from audioop import reverse
 from http.client import HTTPResponse
 import json
+import re
 from django.urls import reverse # type: ignore
 from multiprocessing import context
 from unicodedata import category
@@ -23,7 +24,6 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage # type:
 from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 from django.http import JsonResponse # type: ignore
-
 
 # ---- User
 class LoginView(View):
@@ -281,6 +281,9 @@ class DocumentDetailView(DetailView):
         context['files'] = DocumentFile.objects.filter(document=document)
         return context
 
+class DocumentUpdateView2(LoginRequiredMixin, UpdateView):
+    pass
+
 
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
@@ -304,14 +307,14 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         #     document__slug=self.kwargs['slug'])
         return context
 
-    def deletefile(self, request, pk):
-        file = get_object_or_404(DocumentFile, pk=pk)
-        slug = file.document.slug
-        document = get_object_or_404(Document, slug=slug)
-        if request.method == 'GET':
-            file.delete()
-            form = DocumentForm(instance=document)
-            files = DocumentFile.objects.filter(document=document)
+    # def deletefile(self, request, pk):
+    #     file = get_object_or_404(DocumentFile, pk=pk)
+    #     slug = file.document.slug
+    #     document = get_object_or_404(Document, slug=slug)
+    #     if request.method == 'GET':
+    #         file.delete()
+    #         form = DocumentForm(instance=document)
+    #         files = DocumentFile.objects.filter(document=document)
     
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -364,31 +367,44 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             return self.form_valid(form)
         
         
-from django.http import JsonResponse
+
 def deletefile(request):
-    if request.user.is_authenticated() and request.is_ajax() and request.POST:
-        object_id = request.POST.get('id', None)
-        b = get_object_or_404(DocumentFile, id=object_id)
-        b.delete()
-        data = {'message': 'delete'.format(b)}
-        return HTTPResponse(json.dumps(data), content_type='application/json')
+    form = DocumentForm
+    print('da1')
+    if request.user.is_authenticated() and request.is_ajax():
+        print('da')
+        form = DocumentForm(request.POST)
+        if form.is_valid():
+            data = {'file': form.cleaned_data['files']}
+            print('+++', data)
+            return JsonResponse({'good': data})
+        else:
+            print('-----------')
     else:
         return JsonResponse({'error': 'Only authenticated users'}, status=404)
+    # return redirect
+    #     object_id = request.POST.get('id', None)
+    #     b = get_object_or_404(DocumentFile, id=object_id)
+    #     b.delete()
+    #     data = {'message': 'delete'.format(b)}
+    #     return HTTPResponse(json.dumps(data), content_type='application/json')
+    # else:
+    #     return JsonResponse({'error': 'Only authenticated users'}, status=404)
 
-@login_required
-def deletefile2(request, pk):
-    file = get_object_or_404(DocumentFile, pk=pk)
-    slug = file.document.slug
-    document = get_object_or_404(Document, slug=slug)
-    if request.method == 'GET':
-        file.delete()
-        form = DocumentForm(instance=document)
-        files = DocumentFile.objects.filter(document=document)
-        return render(request, 'base/viewdocument.html', {
-            'document': document,
-            'files': files,
-            'form': form
-        })
+# @login_required
+# def deletefile2(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })
             # return render(request, 'base/viewdocument.html', {
             #     'document': document,
             #     'files': files,
@@ -439,20 +455,20 @@ def deletefile2(request, pk):
 #        
 #         return redirect('/')
 
-@login_required
-def deletefile(request, pk):
-    file = get_object_or_404(DocumentFile, pk=pk)
-    slug = file.document.slug
-    document = get_object_or_404(Document, slug=slug)
-    if request.method == 'GET':
-        file.delete()
-        form = DocumentForm(instance=document)
-        files = DocumentFile.objects.filter(document=document)
-        return render(request, 'base/viewdocument.html', {
-            'document': document,
-            'files': files,
-            'form': form
-        })
+# @login_required
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })
 
 
 class DocumentDelete(LoginRequiredMixin, DeleteView):
