@@ -44,17 +44,31 @@ class Law(models.Model):
     def get_absolute_url(self):
         return reverse("law", kwargs={"slug": self.slug})
 
-
-class Department(models.Model):
+class Departament(models.Model):
     title = models.CharField(verbose_name="Название отдела", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
 
+    class Meta:
+        verbose_name = "Отдел"
+        verbose_name_plural = "Отделы"
+    
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("departament", kwargs={"slug": self.slug})
+    
+    
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
     user = models.ForeignKey(User,
                              verbose_name="Пользователь",
                              on_delete=models.CASCADE)
+    departament = models.ForeignKey(
+        Departament, verbose_name="Отдел", related_name="departaments",
+        blank=True, null=True,
+        on_delete=models.CASCADE)
     category = models.ForeignKey(
         Category, verbose_name="Категория", related_name="categories",
         on_delete=models.CASCADE)

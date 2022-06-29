@@ -14,7 +14,7 @@ from django.contrib.auth import login, logout, authenticate # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.views import View # type: ignore
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
-from .models import Category, Document, Law, DocumentFile
+from .models import Category, Document, Law, DocumentFile, Departament
 from .forms import CategoryForm, DocumentForm, AuthForm
 from django.utils.text import slugify # type: ignore
 from transliterate import translit # type: ignore
@@ -119,13 +119,14 @@ def Home(request):
 @login_required
 def createcategory(request):
     category = Category.objects.all()
-    laws = Law.objects.all()
-
+    # laws = Law.objects.all()
+    departament = Departament.objects.all()
     if request.method == 'GET':
         return render(request, 'base/createcategory.html', {
             'form': CategoryForm(),
             'category': category,
-            'laws': laws,
+            # 'laws': laws,
+            'departament': departament,
         })
     else:
         try:
@@ -142,11 +143,30 @@ def createcategory(request):
             return render(request, 'base/createcategory.html', {
                 'form': CategoryForm(),
                 'category': category,
-                'laws': laws,
+                # 'laws': laws,
+                'departament': departament,
                 'error': 'Ошибка ввода данных'
             })
 
+class DepartamentListView(ListView):
+    model = Document
+    template_name = 'base/departament_detail.html'
+    context_object_name = 'documents'
+    paginate_by = 3
+    
+    def get_context_data(self, **kwargs):
+        context = super(DepartamentListView, self).get_context_data(**kwargs)
+        context['title'] = Departament.objects.get(slug=self.kwargs['slug'])
+        context['category'] = Category.objects.all()
+        context['departament'] = Departament.objects.all()
+        return context
 
+    def get_queryset(self):
+        slug = Departament.objects.get(slug=self.kwargs['slug'])
+        if slug:
+            return Document.objects.filter(departament=slug)
+        
+        
 class CategoryListView(ListView):
     model = Document
     template_name = 'base/category_detail.html'
@@ -157,7 +177,7 @@ class CategoryListView(ListView):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         context['title'] = Category.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
+        context['laws'] = Category.objects.all()
         return context
 
     def get_queryset(self):
@@ -181,7 +201,7 @@ class DocumentListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentListView, self).get_context_data(**kwargs)
-        context['laws'] = Law.objects.all()
+        context['departament'] = Departament.objects.all()
         context['category'] = Category.objects.all()
         return context
 
@@ -274,7 +294,7 @@ class DocumentDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
+        context['departament'] = Departament.objects.all()
         slug = self.kwargs.get('slug', '')
         context['slug'] = slug
         document = Document.objects.get(slug=slug)

@@ -75,8 +75,8 @@
                 Акты антимонопольного органа
                 </a>
                 <ul class="dropdown-menu dropdown-content" aria-labelledby="navbarDropdown" style="left:0;">
-                    {% for l in laws.all %}
-                        <li><a class=" dropdown-item" href="/laws/{{l.slug}}/">{{ l.title }}</a></li>
+                    {% for dep in departament.all %}
+                        <li><a class=" dropdown-item" href="/departament/{{dep.slug}}/">{{ dep.title }}</a></li>
                     {% endfor %}
                 </ul>
             </li>

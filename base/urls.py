@@ -16,6 +16,7 @@ urlpatterns = [
 
     # -----> Category
     path('category/<str:slug>/', views.CategoryListView.as_view(), name='category'),
+    path('departament/<str:slug>/', views.DepartamentListView.as_view(), name='departament'),
     #  <---- End Category
 
     # -----> Document

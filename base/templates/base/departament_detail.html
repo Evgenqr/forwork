@@ -1,0 +1,39 @@
+{% extends 'base.html' %} 
+{% load static %}
+
+{% block title %}
+{{title}}
+{% endblock %}
+
+{% block content %} 
+    <h4 style="text-align: center;">{{title}}</h4>
+    <div class="grey-card">
+        {% for document in documents %}
+            <div class="row" style="padding-bottom: 1rem;">
+                <div class="col-sm-10">
+                    <b style="font-size: 12pt;">
+                        <a target="_blank" href="/document/{{document.slug}}/"> {{ document.title }}</a>
+                    </b>
+                </div>
+                <div class="col-sm-2 text-right">
+                    {{document.date_create.date}}
+                </div>
+                <div class="row">
+                    <div class="col-sm-9">
+                        <a href="/category/{{document.category.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;">
+                      {{ document.category }}</a>
+                      <br>
+                                {% for l in document.law.all %}
+                                    <a href="/laws/{{l.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;"> 
+                                        {{l.shorttitle}}
+                                    </a>
+                                {% endfor %}
+                     </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <span class="pagination justify-content-center">
+        Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+    </span>
+{% endblock content %} 
