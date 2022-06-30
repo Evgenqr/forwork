@@ -1,6 +1,5 @@
-from tkinter.tix import Select
 from django.forms import ModelForm
-from .models import Category, Law, Document
+from .models import Category, Law, Document, Departament, Status
 from django import forms
 
 
@@ -51,6 +50,20 @@ class DocumentForm(ModelForm):
         label='Категория',
         # choices=[(cat.id, cat.title) for cat in Category.objects.all()],
         queryset= Category.objects.all(),
+        widget=forms.Select(
+            attrs={
+                "class":"form-select "
+            }))
+    departament = forms.ModelChoiceField(
+        required=False, label='Отдел',
+        queryset= Departament.objects.all(),
+        widget=forms.Select(
+            attrs={
+                "class":"form-select "
+            }))
+    status = forms.ModelChoiceField(
+        required=False, label='Статус',
+        queryset= Status.objects.all(),
         widget=forms.Select(
             attrs={
                 "class":"form-select "

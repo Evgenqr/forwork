@@ -58,6 +58,21 @@ class Departament(models.Model):
     def get_absolute_url(self):
         return reverse("departament", kwargs={"slug": self.slug})
     
+
+class Status(models.Model):
+    title = models.CharField(verbose_name="Статус", max_length=250)
+    slug = models.SlugField("Ссылка", max_length=250, unique=True)
+
+    class Meta:
+        verbose_name = "Статус"
+        verbose_name_plural = "Статус"
+    
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("status", kwargs={"slug": self.slug})
+
     
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
@@ -71,6 +86,10 @@ class Document(models.Model):
         on_delete=models.CASCADE)
     category = models.ForeignKey(
         Category, verbose_name="Категория", related_name="categories",
+        on_delete=models.CASCADE)
+    status = models.ForeignKey(
+        Status, verbose_name="Статус", related_name="status",
+        blank=True, null=True,
         on_delete=models.CASCADE)
     law = models.ManyToManyField(
         Law, verbose_name="Закон",
@@ -89,6 +108,7 @@ class Document(models.Model):
 
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)
+    
     def __str__(self):
         return self.title
 

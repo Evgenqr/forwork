@@ -21,6 +21,20 @@
         {{documents.category.title}}
     </a>
     <br>
+    {% if documents.departament%}
+        <b>Отдел:</b>
+        <a class="text-decoration-none" href="/departament/{{documents.departament.slug}}/"> 
+            {{documents.departament}}
+        </a>
+    {% endif %} 
+    {% if documents.status %} 
+        <br><b>Статус:</b>
+        <a class="text-decoration-none" href="/status/{{documents.status.slug}}/"> 
+            {{documents.status}}
+        </a>
+    {% endif %}
+   
+    {% if document.law %}
     <b> Закон: </b>
     {% for l in documents.law.all %}
         <a class="text-decoration-none" href="/laws/{{l.slug}}/"> 
@@ -28,8 +42,10 @@
         </a>
     {% endfor %}
     <br>
-    {{documents.text}}   
-    <br>
+    {% endif %}
+    <div class="col-sm-9">
+       {{documents.text}}   
+    </div>
     <b>Приложения: </b>
     {% if files %}
         {% for f in files %}

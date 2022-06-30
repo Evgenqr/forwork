@@ -14,7 +14,7 @@ from django.contrib.auth import login, logout, authenticate # type: ignore
 from django.contrib.auth.decorators import login_required # type: ignore
 from django.views import View # type: ignore
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
-from .models import Category, Document, Law, DocumentFile, Departament
+from .models import Category, Document, Law, DocumentFile, Departament, Status
 from .forms import CategoryForm, DocumentForm, AuthForm
 from django.utils.text import slugify # type: ignore
 from transliterate import translit # type: ignore
@@ -177,7 +177,7 @@ class CategoryListView(ListView):
         context = super(CategoryListView, self).get_context_data(**kwargs)
         context['title'] = Category.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
-        context['laws'] = Category.objects.all()
+        context['laws'] = Law.objects.all()
         return context
 
     def get_queryset(self):
@@ -186,7 +186,24 @@ class CategoryListView(ListView):
             return Document.objects.filter(category=slug)
 
 # ---- Category END
+class StatusListView(ListView):
+    model = Document
+    template_name = 'base/status_detail.html'
+    context_object_name = 'documents'
+    paginate_by = 3
+    
+    def get_context_data(self, **kwargs):
+        context = super(StatusListView, self).get_context_data(**kwargs)
+        context['title'] = Status.objects.get(slug=self.kwargs['slug'])
+        context['category'] = Category.objects.all()
+        context['status'] = Status.objects.all()
+        return context
 
+    def get_queryset(self):
+        slug = Status.objects.get(slug=self.kwargs['slug'])
+        if slug:
+            return Document.objects.filter(status=slug)
+        
 # ---- Document
 
 
@@ -202,6 +219,7 @@ class DocumentListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(DocumentListView, self).get_context_data(**kwargs)
         context['departament'] = Departament.objects.all()
+        context['status'] = Status.objects.all()
         context['category'] = Category.objects.all()
         return context
 
@@ -244,6 +262,8 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super(DocumentCreateView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
+        context['departament'] = Departament.objects.all()
+        context['status'] = Status.objects.all()
         context['laws'] = Law.objects.all()
         return context
 
@@ -259,6 +279,7 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
                                         reversed=True)
             newdocument.slug = slugify(newdocument.slug)
             newdocument.save()
+            
             return self.form_valid(form)
         else:
             ext_list = []
@@ -295,6 +316,7 @@ class DocumentDetailView(DetailView):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         context['category'] = Category.objects.all()
         context['departament'] = Departament.objects.all()
+        context['status'] = Status.objects.all()
         slug = self.kwargs.get('slug', '')
         context['slug'] = slug
         document = Document.objects.get(slug=slug)
@@ -311,6 +333,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     form_class = DocumentForm
     extra_context = {
         'documents': Document.objects.all(),
+        
         'files': DocumentFile.objects.all()
         }
     template_name_suffix = '_update'
@@ -322,6 +345,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         context['files'] = DocumentFile.objects.filter(document=document)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         context['category'] = Category.objects.all()
+        context['departament'] = Departament.objects.all()
+        context['status'] = Status.objects.all()
         context['laws'] = Law.objects.all()
         # context['files'] = DocumentFile.objects.filter(
         #     document__slug=self.kwargs['slug'])
@@ -342,6 +367,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         newfiles = self.request.FILES.getlist("files")
         document = get_object_or_404(Document, slug=self.kwargs['slug'])
         files = DocumentFile.objects.filter(document=document)
+        departament = Departament.objects.all()
+        status = Status.objects.all()
         laws = Law.objects.all()
         category = Category.objects.all()
         context = {
@@ -349,8 +376,11 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'files' :files,
                         'laws': laws,
                         'category':category, 
+                        'departament': departament,
+                        'status': status,
                         'form': form,
                     }
+        print('***', context)
         if newfiles == []:
             try:
                 form = DocumentForm(
@@ -360,6 +390,10 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             except ValueError:
                 return render(request, self.template_name, {
                     'document': document,
+                    'laws': laws,
+                    'category':category, 
+                    'departament': departament,
+                    'status': status,
                     'form': DocumentForm(),
                     'newfiles': newfiles,
                     'error': 'Bad info'
@@ -387,7 +421,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             return self.form_valid(form)
         
         
-
 def deletefile(request):
     form = DocumentForm
     print('da1')
