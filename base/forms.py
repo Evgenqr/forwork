@@ -28,11 +28,18 @@ class CategoryForm(ModelForm):
         model = Category
         fields = ['title']
 
-
+class DepartamentForm(ModelForm):
+    class Meta:
+        model =  Departament
+        fields = ['title']
+        
+        
 class LawForm(ModelForm):
     class Meta:
         model = Law
         fields = ['shorttitle']
+
+
 
 
 # class FileForm(ModelForm):
@@ -48,25 +55,24 @@ class DocumentForm(ModelForm):
         )
     category = forms.ModelChoiceField(
         label='Категория',
-        # choices=[(cat.id, cat.title) for cat in Category.objects.all()],
         queryset= Category.objects.all(),
         widget=forms.Select(
             attrs={
-                "class":"form-select "
+                "class":"form-select"
             }))
     departament = forms.ModelChoiceField(
         required=False, label='Отдел',
         queryset= Departament.objects.all(),
         widget=forms.Select(
             attrs={
-                "class":"form-select "
+                "class":"form-select"
             }))
     status = forms.ModelChoiceField(
         required=False, label='Статус',
         queryset= Status.objects.all(),
         widget=forms.Select(
             attrs={
-                "class":"form-select "
+                "class":"form-select"
             }))
     law = forms.ModelMultipleChoiceField(
         required=False, label='Закон',
@@ -94,4 +100,4 @@ class DocumentForm(ModelForm):
     
     class Meta:
         model = Document
-        fields = ['title', 'category', 'law', 'text']
+        fields = ['title', 'category', 'departament', 'status', 'law', 'text']

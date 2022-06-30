@@ -10,9 +10,10 @@
 {% comment %}
 <img class="svg-img" src="{% static 'img/word.svg' %}">
 class="filelogo"
-{% endcomment %}
+{% endcomment %}<h2>Редактирование документа<span><h3>{{document.title}}</h3></span> </h2> 
 <div class="container">
-    <div class="row">
+   
+    <div class="row"> 
         <div class="col-md-8 mx-auto">
             <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data" id="update-form">
                 {% csrf_token %}

@@ -25,6 +25,7 @@ from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 from django.http import JsonResponse # type: ignore
 
+
 # ---- User
 class LoginView(View):
 
@@ -42,62 +43,6 @@ class LoginView(View):
                     status=400
                     )
         return JsonResponse(data={'error': 'Введите логин и пароль'}, status=400)
-        # if user is None:
-        #     return render(
-        #         request, 'base/modal.html', {
-        #             'form': AuthenticationForm(),
-        #             'error': 'User or password did not match'
-        #         })
-        # else:
-        #     login(request, user)
-        #     return redirect(self.request.META.get('HTTP_REFERER', ''))
-
-
-# def signupuser(request):
-#     if request.method == 'GET':
-#         return render(request, 'base/signupuser.html',
-#                       {'form': UserCreationForm()})
-#     else:
-#         if request.POST['password1'] == request.POST['password2']:
-#             try:
-#                 user = User.objects.create_user(
-#                     request.POST['username'],
-#                     password=request.POST['password1'])
-#                 user.save()
-#                 login(request, user)
-#                 return redirect('/')
-#             except IntegrityError:
-#                 return render(
-#                     request, 'base/signupuser.html', {
-#                         'form': UserCreationForm(),
-#                         'error': 'That username has already been taken'
-#                     })
-#         else:
-#             return render(request, 'base/signupuser.html', {
-#                 'form': UserCreationForm(),
-#                 'error': 'Password did not match'
-#             })
-
-
-# def loginuser(request):
-#     if request.method == 'GET':
-#         return render(request, 'base/loginuser.html',
-#                       {'form': AuthenticationForm()})
-#     else:
-#         user = authenticate(
-#             request,
-#             username=request.POST['username'],
-#             password=request.POST['password'],
-#         )
-#         if user is None:
-#             return render(
-#                 request, 'base/loginuser.html', {
-#                     'form': AuthenticationForm(),
-#                     'error': 'User or password did not match'
-#                 })
-#         else:
-#             login(request, user)
-#             return redirect('/')
 
 
 @login_required
@@ -107,106 +52,105 @@ def logoutuser(request):
         return redirect('/')
 # ---- User END
 
+
 # ---- Home
-
-
 def Home(request):
     return render(request, 'base/index.html')
 # ---- END Home
 
 
 # ---- Category
-@login_required
-def createcategory(request):
-    category = Category.objects.all()
-    # laws = Law.objects.all()
-    departament = Departament.objects.all()
-    if request.method == 'GET':
-        return render(request, 'base/createcategory.html', {
-            'form': CategoryForm(),
-            'category': category,
-            # 'laws': laws,
-            'departament': departament,
-        })
-    else:
-        try:
-            form = CategoryForm(request.POST, request.FILES)
-            newcategory = form.save(commit=False)
-            newcategory.user = request.user
-            newcategory.slug = translit(newcategory.title,
-                                        language_code='ru',
-                                        reversed=True)
-            newcategory.slug = slugify(newcategory.slug)
-            newcategory.save()
-            return redirect('home')
-        except ValueError:
-            return render(request, 'base/createcategory.html', {
-                'form': CategoryForm(),
-                'category': category,
-                # 'laws': laws,
-                'departament': departament,
-                'error': 'Ошибка ввода данных'
-            })
+class CategoryListView(ListView):
 
+    model = Document
+    template_name = 'base/category_detail.html'
+    context_object_name = 'documents'
+    paginate_by = 3
+    cat = ''
+    
+    def get_queryset(self):
+        self.cat = Category.objects.get(slug=self.kwargs['slug'])
+        slug =  self.cat
+        if slug:
+            return Document.objects.filter(category=slug)
+        
+    def get_context_data(self, **kwargs):
+        context = super(CategoryListView, self).get_context_data(*kwargs)
+        context['title'] =  self.cat
+        return context
+# ---- Category END
+
+
+# ---- Departamen
 class DepartamentListView(ListView):
     model = Document
     template_name = 'base/departament_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
+    dep =''
     
+    def get_queryset(self):
+        self.dep = Departament.objects.get(slug=self.kwargs['slug'])
+        slug = self.dep
+        if slug:
+            return Document.objects.filter(departament=slug)    
+        
     def get_context_data(self, **kwargs):
         context = super(DepartamentListView, self).get_context_data(**kwargs)
-        context['title'] = Departament.objects.get(slug=self.kwargs['slug'])
-        context['category'] = Category.objects.all()
-        context['departament'] = Departament.objects.all()
+        context['title'] = self.dep
         return context
 
-    def get_queryset(self):
-        slug = Departament.objects.get(slug=self.kwargs['slug'])
-        if slug:
-            return Document.objects.filter(departament=slug)
-        
-        
-class CategoryListView(ListView):
-    model = Document
-    template_name = 'base/category_detail.html'
-    context_object_name = 'documents'
-    paginate_by = 3
-    
-    def get_context_data(self, **kwargs):
-        context = super(CategoryListView, self).get_context_data(**kwargs)
-        context['title'] = Category.objects.get(slug=self.kwargs['slug'])
-        context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
-        return context
 
-    def get_queryset(self):
-        slug = Category.objects.get(slug=self.kwargs['slug'])
-        if slug:
-            return Document.objects.filter(category=slug)
+# ---- Departamen END
 
-# ---- Category END
+
+# ---- Status
 class StatusListView(ListView):
     model = Document
     template_name = 'base/status_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
+    sts = ''
     
-    def get_context_data(self, **kwargs):
-        context = super(StatusListView, self).get_context_data(**kwargs)
-        context['title'] = Status.objects.get(slug=self.kwargs['slug'])
-        context['category'] = Category.objects.all()
-        context['status'] = Status.objects.all()
-        return context
-
     def get_queryset(self):
-        slug = Status.objects.get(slug=self.kwargs['slug'])
+        self.sts = Status.objects.get(slug=self.kwargs['slug'])
+        slug = self.sts 
         if slug:
             return Document.objects.filter(status=slug)
         
+    def get_context_data(self, **kwargs):
+        context = super(StatusListView, self).get_context_data(**kwargs)
+        context['title'] = self.sts 
+        return context
+
+
+# ---- Category END
+
+
+# ---- Law
+class LawListView(ListView):
+    model = Document
+    template_name = 'base/law_detail.html'
+    context_object_name = 'documents'
+    paginate_by = 3
+    law =''
+    
+    def get_queryset(self):
+        self.law = Law.objects.get(slug=self.kwargs['slug'])
+        slug = self.law
+        if slug:
+            return Document.objects.filter(law=slug).prefetch_related('category')
+        # .prefetch_related('law')
+        
+    def get_context_data(self, **kwargs):
+        context = super(LawListView, self).get_context_data(**kwargs)
+        context['title'] = self.law
+        return context
+
+
+# ---- Law END
+    
 # ---- Document
-
-
 class DocumentListView(ListView):
     model = Document
     template_name = 'base/index.html'
@@ -215,42 +159,15 @@ class DocumentListView(ListView):
     
     def get_queryset(self):
         return Document.objects.order_by('-date_create').select_related('category')
-
-    def get_context_data(self, **kwargs):
-        context = super(DocumentListView, self).get_context_data(**kwargs)
-        context['departament'] = Departament.objects.all()
-        context['status'] = Status.objects.all()
-        context['category'] = Category.objects.all()
-        return context
-
-
-class LawListView(ListView):
-    model = Document
-    template_name = 'base/law_detail.html'
-    context_object_name = 'documents'
-    paginate_by = 3
     
     def get_context_data(self, **kwargs):
-        context = super(LawListView, self).get_context_data(**kwargs)
-        context['title'] = Law.objects.get(slug=self.kwargs['slug'])
-        context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
+        context = super(DocumentListView, self).get_context_data(**kwargs)
         return context
-
-    def get_queryset(self):
-        slug = Law.objects.get(slug=self.kwargs['slug'])
-        if slug:
-            return Document.objects.filter(law=slug).prefetch_related('category')
-        # .prefetch_related('law')
 
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                       '.xls', '.xlsx', '.ppt', '.pptx', '.png',
                       '.bmp', '.jpg', '.gif', '.zip', '.rar']
-
-
-def check_lists(list_1,list_2): 
-    return all(i in list_2 for i in list_1)
 
 
 class DocumentCreateView(LoginRequiredMixin, CreateView):
@@ -261,10 +178,6 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentCreateView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
-        context['departament'] = Departament.objects.all()
-        context['status'] = Status.objects.all()
-        context['laws'] = Law.objects.all()
         return context
 
     def post(self, request, *args, **kwargs):
@@ -314,17 +227,11 @@ class DocumentDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
-        context['category'] = Category.objects.all()
-        context['departament'] = Departament.objects.all()
-        context['status'] = Status.objects.all()
         slug = self.kwargs.get('slug', '')
         context['slug'] = slug
         document = Document.objects.get(slug=slug)
         context['files'] = DocumentFile.objects.filter(document=document)
         return context
-
-class DocumentUpdateView2(LoginRequiredMixin, UpdateView):
-    pass
 
 
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
@@ -344,22 +251,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         document = Document.objects.get(slug=slug)
         context['files'] = DocumentFile.objects.filter(document=document)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
-        context['category'] = Category.objects.all()
-        context['departament'] = Departament.objects.all()
-        context['status'] = Status.objects.all()
-        context['laws'] = Law.objects.all()
-        # context['files'] = DocumentFile.objects.filter(
-        #     document__slug=self.kwargs['slug'])
         return context
-
-    # def deletefile(self, request, pk):
-    #     file = get_object_or_404(DocumentFile, pk=pk)
-    #     slug = file.document.slug
-    #     document = get_object_or_404(Document, slug=slug)
-    #     if request.method == 'GET':
-    #         file.delete()
-    #         form = DocumentForm(instance=document)
-    #         files = DocumentFile.objects.filter(document=document)
     
     def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
@@ -380,7 +272,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'status': status,
                         'form': form,
                     }
-        print('***', context)
         if newfiles == []:
             try:
                 form = DocumentForm(
@@ -423,105 +314,13 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         
 def deletefile(request):
     form = DocumentForm
-    print('da1')
     if request.user.is_authenticated() and request.is_ajax():
-        print('da')
         form = DocumentForm(request.POST)
         if form.is_valid():
             data = {'file': form.cleaned_data['files']}
-            print('+++', data)
             return JsonResponse({'good': data})
-        else:
-            print('-----------')
     else:
         return JsonResponse({'error': 'Only authenticated users'}, status=404)
-    # return redirect
-    #     object_id = request.POST.get('id', None)
-    #     b = get_object_or_404(DocumentFile, id=object_id)
-    #     b.delete()
-    #     data = {'message': 'delete'.format(b)}
-    #     return HTTPResponse(json.dumps(data), content_type='application/json')
-    # else:
-    #     return JsonResponse({'error': 'Only authenticated users'}, status=404)
-
-# @login_required
-# def deletefile2(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })
-            # return render(request, 'base/viewdocument.html', {
-            #     'document': document,
-            #     'files': files,
-            #     'form': form
-            # })   
-    
-
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })  
-
-# class FileDelete(DeleteView):
-#     model = DocumentFile
-#     template_name = 'base/viewdocument.html'
-#     success_url = '/'
-
-#     def post(self, *args, **kwargs):
-#         file =  Document.objects.get(pk=self.kwargs['pk'])
-#         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
-#       
-#         file.delete()
-#         return redirect(self.get_success_url(), pk = file.pk)
-
-# @login_required
-# def deletefile(request, pk):
-#     files = DocumentFile.objects.filter(file__pk=pk)
-#   
-#     if request.method == "POST":
-#        
-#         file = get_object_or_404(DocumentFile, pk=pk)
-
-#         # file.delete()
-#         return redirect('/')
-#     elif request.method == "GET":
-#        
-#         # return render(request, 'base/viewdocument.html')
-#     else:
-#        
-#         return redirect('/')
-
-# @login_required
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })
 
 
 class DocumentDelete(LoginRequiredMixin, DeleteView):
@@ -533,82 +332,6 @@ class DocumentDelete(LoginRequiredMixin, DeleteView):
         document = Document.objects.get(slug=self.kwargs['slug'])
         document.delete()
         return redirect('home')
-
-
-# @login_required
-# def deletedocument(request, slug):
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'POST':
-#         document.delete()
-#         
-#         return redirect('home')
-#     else:
-#        
-#         return redirect('home')
-
-# def delete_task(request, file_id):
-#     file = DocumentFile.objects.get(id=file_id)
-#     file.objects.delete()
-
-#     file = DocumentFile.objects.order_by('date_added')
-#     context = {'file': file}
-#     return render(request, 'work_list/index.html', context)
-
-
-@login_required
-def viewdocument(request, slug):
-    document = get_object_or_404(Document, slug=slug)
-    files = DocumentFile.objects.filter(document=document)
-    # newfiles = self.request.FILES.getlist("files")
-    if request.user:
-        #  or request.user.has_perm('auth.change_user')
-        if request.method == 'GET':
-            form = DocumentForm(instance=document)
-            return render(request, 'base/viewdocument.html', {
-                'document': document,
-                'files': files,
-                'form': form
-            })
-        else:
-            if list(files) == []:
-                try:
-                    form = DocumentForm(
-                        request.POST, request.FILES, instance=document)
-                    form.save()
-                    return redirect('home')
-                except ValueError:
-                    return render(request, 'base/viewdocument.html', {
-                        'document': document,
-                        'form': DocumentForm(),
-                        'error': 'Bad info'
-                    })
-            else:
-                for f in files:
-                    files.add(f)
-                    extension = os.path.splitext(f.file.name)[1]
-                    if extension not in FILE_EXT_WHITELIST:
-                        files.remove(f)
-                        messages.add_message(request,
-                                             messages.INFO,
-                                             'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: txt, doc, docx, xls, xlsx, pdf, png, jpg, rar, zip, ppt, pptx, rtf, gif.')
-                        form = form
-                        return render(request, 'base/viewdocument.html', {'form': form})
-                try:
-                    form = DocumentForm(
-                        request.POST, request.FILES, instance=document)
-                    form.save()
-                    return redirect('home')
-                except ValueError:
-                    return render(request, 'base/viewdocument.html', {
-                        'document': document,
-                        'form': DocumentForm(),
-                        'files': files,
-                        'error': 'Bad info'
-                    })
-    else:
-        return redirect('/')
-
-
 #  ---- Document END
 
 

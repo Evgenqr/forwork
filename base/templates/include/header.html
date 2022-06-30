@@ -49,9 +49,10 @@
             <input class="form-control me-2" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
             <button class="btn btn-outline-success" type="submit">Поиск</button>
             </form>
+            {% comment %}
         <a class="btn" href="#" role="button" aria-expanded="false" >
             Расширенный поиск 
-        </a>
+        </a>{% endcomment %}
         </div>
     </div>
   </div>
@@ -60,19 +61,15 @@
 <li><a class="dropdown-item" href="{% url 'loginuser' %}">Авторизация</a></li>
 {% endcomment %}
 <nav class="navbar navbar-expand-lg navbar-dark"  style="background-color:#007c84;">
-
     <ul class="navbar-nav mr-auto mb-3 mb-lg-0 ">
         <li class="nav-item dropdown">
             <a class="{% if request.path == '/' %}active{% endif %} nav-link dropbtn" aria-current="page" href="/"> Главная </a>
         </li>
         {% for cat in category.all %}
-        {% if cat.title == "ФАС" %}
+        {% if cat.title == "Акты антимонопольного органа" %}
             <li class="nav-item dropdown">
                 <a class="{% if request.path == '/category/fas/' %}active{% endif %}  nav-link dropbtn" href="/category/{{cat.slug}}/" id="navbarDropdown" role="button" aria-expanded="false">
-                    {% comment %}
-                    data-bs-toggle="dropdown" 
-                    {% endcomment %}
-                Акты антимонопольного органа
+                    {{cat.title}}
                 </a>
                 <ul class="dropdown-menu dropdown-content" aria-labelledby="navbarDropdown" style="left:0;">
                     {% for dep in departament.all %}
@@ -80,13 +77,13 @@
                     {% endfor %}
                 </ul>
             </li>
-        {% elif cat.title == "Суд" %}
+        {% elif cat.title == "Судебные акты" %}
             <li class="nav-item dropdown">
-                <a class="{% if request.path == '/category/sud/' %}active{% endif %}  nav-link dropbtn " id="navbarDropdown" aria-current="page" href="/category/{{cat.slug}}/"> Судебные акты</a>
+                <a class="{% if request.path == '/category/sud/' %}active{% endif %}  nav-link dropbtn " id="navbarDropdown" aria-current="page" href="/category/{{cat.slug}}/"> {{cat.title}}</a>
             </li>
-        {% elif cat.title == "Прокуратура" %}
+        {% elif cat.title == "Акты органов прокуратуры" %}
             <li class="nav-item dropdown">
-                <a class="{% if request.path == '/category/prokuratura/' %}active{% endif %} nav-link dropbtn" aria-current="page" href="/category/{{cat.slug}}/"> Акты органов прокуратуры</a>
+                <a class="{% if request.path == '/category/prokuratura/' %}active{% endif %} nav-link dropbtn" aria-current="page" href="/category/{{cat.slug}}/"> {{cat.title}}</a>
             </li>
         {% else %}
             <li class="nav-item">
