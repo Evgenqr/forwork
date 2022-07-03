@@ -36,8 +36,9 @@ class="filelogo"
                                     </a>
                                     ({{f.file.size|filesizeformat }}) 
                                     <button class="btn btn-link  text-decoration-none del-file"  data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
-                                    <a class="dropdown-item" href="/file/delete/">Удалить 2</a>
+                                    <a class="dropdown-item"  href="/file/delete/{{f.id}}">Удалить 2</a>
                                 </p>
+                                
                             </div> 
                         {% endfor %} 
                     {% endif %}

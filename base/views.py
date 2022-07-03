@@ -66,7 +66,6 @@ class CategoryListView(ListView):
     template_name = 'base/category_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
-    cat = ''
     
     def get_queryset(self):
         self.cat = Category.objects.get(slug=self.kwargs['slug'])
@@ -87,7 +86,6 @@ class DepartamentListView(ListView):
     template_name = 'base/departament_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
-    dep =''
     
     def get_queryset(self):
         self.dep = Departament.objects.get(slug=self.kwargs['slug'])
@@ -99,8 +97,6 @@ class DepartamentListView(ListView):
         context = super(DepartamentListView, self).get_context_data(**kwargs)
         context['title'] = self.dep
         return context
-
-
 # ---- Departamen END
 
 
@@ -110,7 +106,6 @@ class StatusListView(ListView):
     template_name = 'base/status_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
-    sts = ''
     
     def get_queryset(self):
         self.sts = Status.objects.get(slug=self.kwargs['slug'])
@@ -122,9 +117,7 @@ class StatusListView(ListView):
         context = super(StatusListView, self).get_context_data(**kwargs)
         context['title'] = self.sts 
         return context
-
-
-# ---- Category END
+# ---- Status END
 
 
 # ---- Law
@@ -133,7 +126,6 @@ class LawListView(ListView):
     template_name = 'base/law_detail.html'
     context_object_name = 'documents'
     paginate_by = 3
-    law =''
     
     def get_queryset(self):
         self.law = Law.objects.get(slug=self.kwargs['slug'])
@@ -146,9 +138,8 @@ class LawListView(ListView):
         context = super(LawListView, self).get_context_data(**kwargs)
         context['title'] = self.law
         return context
-
-
 # ---- Law END
+    
     
 # ---- Document
 class DocumentListView(ListView):
@@ -175,7 +166,7 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
     form_class = DocumentForm
     extra_context = {'documents': Document.objects.all()}
     success_url = '/'
-
+    
     def get_context_data(self, **kwargs):
         context = super(DocumentCreateView, self).get_context_data(**kwargs)
         return context
@@ -223,8 +214,13 @@ class DocumentDetailView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
-
-
+    
+    def get_context_data(self, **kwargs):
+        context = super(DocumentDetailView, self).get_context_data(**kwargs)
+        context['title'] = self.document
+        context['files'] = DocumentFile.objects.filter(document=self.document)
+        return context
+    
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
         slug = self.kwargs.get('slug', '')
@@ -238,11 +234,10 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
     template_name = 'base/viewdocument.html'
     form_class = DocumentForm
-    extra_context = {
-        'documents': Document.objects.all(),
-        
-        'files': DocumentFile.objects.all()
-        }
+    # extra_context = {
+    #     'documents': Document.objects.all(),
+    #     'files': DocumentFile.objects.all()
+    #     }
     template_name_suffix = '_update'
 
     def get_context_data(self, **kwargs):
@@ -259,17 +254,9 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         newfiles = self.request.FILES.getlist("files")
         document = get_object_or_404(Document, slug=self.kwargs['slug'])
         files = DocumentFile.objects.filter(document=document)
-        departament = Departament.objects.all()
-        status = Status.objects.all()
-        laws = Law.objects.all()
-        category = Category.objects.all()
         context = {
                         'document': document,
                         'files' :files,
-                        'laws': laws,
-                        'category':category, 
-                        'departament': departament,
-                        'status': status,
                         'form': form,
                     }
         if newfiles == []:
@@ -281,10 +268,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             except ValueError:
                 return render(request, self.template_name, {
                     'document': document,
-                    'laws': laws,
-                    'category':category, 
-                    'departament': departament,
-                    'status': status,
                     'form': DocumentForm(),
                     'newfiles': newfiles,
                     'error': 'Bad info'
@@ -297,7 +280,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
             for f in newfiles:
                 extension = os.path.splitext(f.name)[1]
                 if not all(i in FILE_EXT_WHITELIST for i in ext_list):
-                    # newfiles.remove(f)
                     messages.add_message(request,
                                          messages.INFO,
                                          f'Выбранный файл не может быть загружен. Возможно загрузка файлов только со следующими расширениями: {FILE_EXT_WHITELIST}')
@@ -310,19 +292,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         document=document, file=f)
                     form.save()
             return self.form_valid(form)
+  
         
-        
-def deletefile(request):
-    form = DocumentForm
-    if request.user.is_authenticated() and request.is_ajax():
-        form = DocumentForm(request.POST)
-        if form.is_valid():
-            data = {'file': form.cleaned_data['files']}
-            return JsonResponse({'good': data})
-    else:
-        return JsonResponse({'error': 'Only authenticated users'}, status=404)
-
-
 class DocumentDelete(LoginRequiredMixin, DeleteView):
     model = Document
     template_name = 'base/viewdocument.html'
@@ -331,9 +302,8 @@ class DocumentDelete(LoginRequiredMixin, DeleteView):
     def delete(self, *args, **kwargs):
         document = Document.objects.get(slug=self.kwargs['slug'])
         document.delete()
-        return redirect('home')
+        return redirect('home')       
 #  ---- Document END
-
 
 class SearchView(ListView):
     model = Document
@@ -362,3 +332,101 @@ class SearchView(ListView):
         context['category'] = Category.objects.all()
         context['laws'] = Law.objects.all()
         return render(request=request, template_name=self.template_name, context=context)
+
+
+
+# def deletefile(request):
+#     form = DocumentForm
+#     print('1111')
+    # if request.user.is_authenticated() and request.is_ajax():
+    #     form = DocumentForm(request.POST)
+    #     if form.is_valid():
+    #         data = {'file': form.cleaned_data['files']}
+    #         return JsonResponse({'good': data})
+    # else:
+    #     return JsonResponse({'error': 'Only authenticated users'}, status=404)
+
+
+# ++
+# @login_required
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     print('!!!!!!file', file.pk)
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         # file.delete()
+#         form = DocumentForm(instance=document)
+#         # files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'file': file,
+#             'form': form
+#         })
+        
+        
+        
+            # return render(request, 'base/viewdocument.html', {
+            #     'document': document,
+            #     'files': files,
+            #     'form': form
+            # })   
+    
+
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })  
+
+# class FileDelete(DeleteView):
+#     model = DocumentFile
+#     template_name = 'base/viewdocument.html'
+#     success_url = '/'
+
+#     def post(self, *args, **kwargs):
+#         file =  Document.objects.get(pk=self.kwargs['pk'])
+#         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
+#       
+#         file.delete()
+#         return redirect(self.get_success_url(), pk = file.pk)
+
+# @login_required
+# def deletefile(request, pk):
+#     files = DocumentFile.objects.filter(file__pk=pk)
+#   
+#     if request.method == "POST":
+#        
+#         file = get_object_or_404(DocumentFile, pk=pk)
+
+#         # file.delete()
+#         return redirect('/')
+#     elif request.method == "GET":
+#        
+#         # return render(request, 'base/viewdocument.html')
+#     else:
+#        
+#         return redirect('/')
+
+# @login_required
+# def deletefile(request, pk):
+#     file = get_object_or_404(DocumentFile, pk=pk)
+#     slug = file.document.slug
+#     document = get_object_or_404(Document, slug=slug)
+#     if request.method == 'GET':
+#         file.delete()
+#         form = DocumentForm(instance=document)
+#         files = DocumentFile.objects.filter(document=document)
+#         return render(request, 'base/viewdocument.html', {
+#             'document': document,
+#             'files': files,
+#             'form': form
+#         })

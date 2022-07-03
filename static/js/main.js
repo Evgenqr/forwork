@@ -36,38 +36,43 @@ $(function ($) {
     }
      )
 })
-function delfile(){
-    const divID="del-file"
-    console.log('222', divID)
-    $(divID).on('click', (e) => {
-        e.preventDefault();
-        $.ajax({
-            type: 'POST',
-            url: $(this).data("url"),
-            // url: '/file/delete/',
-            data: $(this).serialize(),
-            success: function () {
-                console.log('+++', data);
-            },
-            error: function (response) {
-                console.log('err - ', response);
-            }
-        });
-    })
-}
 
-function delfile2(){
+// function delfile(){
+//     const divID="del-file"
+//     $(divID).on('click', (e) => {
+//         e.preventDefault();
+//         $.ajax({
+//             type: 'POST',
+//             url: $(this).data("url"),
+//             // url: '/file/delete/',
+//             data: $(this).serialize(),
+//             success: function () {
+//                 console.log('+++', data);
+//             },
+//             error: function (response) {
+//                 console.log('err - ', response);
+//             }
+//         });
+//     })
+// }
+
+function id_filese_for_delete(){
+    let arr_of_id = [];
     $(".del-file").click(function(e){ 
         e.preventDefault();
         // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
+        // 
+        arr_of_id.push($(this).data("pg"))
+        console.log('+++ ', $(this).data("pg"));
         let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
         document.getElementById(elem).remove(); 
-        // return false; 
+        console.log('!!!! ', arr_of_id);
+        return arr_of_id; 
     });
 }
 $(document).ready(function (e) {
-    delfile()
-    delfile2()
+    // delfile()
+    id_filese_for_delete()
     // $(".del-file").click(function(e){ 
     //     e.preventDefault();
     //     // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
