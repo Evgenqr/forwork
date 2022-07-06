@@ -2,6 +2,7 @@ from audioop import reverse
 from http.client import HTTPResponse
 import json
 import re
+from urllib import request
 from django.urls import reverse # type: ignore
 from multiprocessing import context
 from unicodedata import category
@@ -229,6 +230,20 @@ class DocumentDetailView(DetailView):
         context['files'] = DocumentFile.objects.filter(document=document)
         return context
 
+from django.http import HttpResponse
+
+
+@login_required
+def deleteitems(request):
+    # newdata = request.user
+    # profiledata = User.objects.get(user=newdata)
+    swid = request.POST.getlist('newval[]') # ajax post data (which have all id of GalleryImage objects)
+    for one in swid:
+        obj = DocumentFile.objects.get(id=one) #.delete()
+        print('----', obj)
+    response = json.dumps({'data':'deleted'})
+    return HttpResponse(response, mimetype="application/json")
+
 
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
@@ -248,7 +263,22 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         return context
     
+    # def file_for_delete(self, request, *args, **kwargs):
+    #     if request.method == 'POST' and request.is_ajax():
+    #         print('bgbg')
+    #         return HttpResponse('ok')
+    #     else:
+    #         print('nooo')
+    #         return HttpResponse('bad')
+    
     def post(self, request, *args, **kwargs):
+        # if request.is_ajax():
+
+            # return HttpResponse('ok')
+        # else:
+        #     print('nooo')
+            # return HttpResponse('bad')
+        
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         newfiles = self.request.FILES.getlist("files")
@@ -260,6 +290,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'form': form,
                     }
         if newfiles == []:
+            arr_of_id = request.GET.getlist('arr_of_id[]')
+            print('!!!!', arr_of_id)
             try:
                 form = DocumentForm(
                     request.POST, request.FILES, instance=document)

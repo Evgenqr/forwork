@@ -27,7 +27,7 @@ $(function ($) {
                 window.location.reload()
             },
             error: function (response) {
-                console.log('err - ', response)
+                console.log('log err - ', response)
                 if (response.status === 400) {
                     $('.alert-danger').text(response.responseJSON.error).removeClass('d-none')
                 }
@@ -37,42 +37,39 @@ $(function ($) {
      )
 })
 
-// function delfile(){
-//     const divID="del-file"
-//     $(divID).on('click', (e) => {
+function delfile(){
+    const divID="del-file"
+    $(divID).on('click', (e) => {
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: $(this).data("url"),
+            // url: '/file/delete/',
+            data: $(this).serialize(),
+            success: function () {
+                console.log('del +++', data);
+            },
+            error: function (response) {
+                console.log('del err - ', response);
+            }
+        });
+    })
+}
+
+// function id_filese_for_delete(){
+//     let arr_of_id = [];
+//     $(".del-file").click(function(e){ 
 //         e.preventDefault();
-//         $.ajax({
-//             type: 'POST',
-//             url: $(this).data("url"),
-//             // url: '/file/delete/',
-//             data: $(this).serialize(),
-//             success: function () {
-//                 console.log('+++', data);
-//             },
-//             error: function (response) {
-//                 console.log('err - ', response);
-//             }
-//         });
-//     })
+//         // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
+//         arr_of_id.push($(this).data("pg"))
+//         console.log('id ', $(this).data("pg"));
+//         let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
+//         document.getElementById(elem).remove(); 
+//         console.log('arr_of_id ', arr_of_id);
+//         return arr_of_id; 
+//     });
 // }
 
-function id_filese_for_delete(){
-    let arr_of_id = [];
-    $(".del-file").click(function(e){ 
-        e.preventDefault();
-        // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
-        // 
-        arr_of_id.push($(this).data("pg"))
-        console.log('+++ ', $(this).data("pg"));
-        let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
-        document.getElementById(elem).remove(); 
-        console.log('!!!! ', arr_of_id);
-        return arr_of_id; 
-    });
-}
-$(document).ready(function (e) {
-    // delfile()
-    id_filese_for_delete()
     // $(".del-file").click(function(e){ 
     //     e.preventDefault();
     //     // let elem = document.getElementById('document_'+$(this).data('bk')+'_'+$(this).data('pg')); 
@@ -81,21 +78,49 @@ $(document).ready(function (e) {
     //     // return false; 
     // });
 
+
+$(document).ready(function (e) {
+    // delfile()
+    // id_filese_for_delete()
+    let arr_of_id = [];
+    $('.del-file').click(function() {
+        var i = $(this).data("pg")
+        // $('.del-file').each(function() {   
+        // arr_of_id.push(i);
+        //  })
+        let elem = 'document_'+$(this).data('bk')+'_'+$(this).data('pg');
+        document.getElementById(elem).remove(); 
+        $.ajax({
+          type:  this.method,
+          url: this.action,
+          data: {arr_of_id: arr_of_id},
+          dataType: "text",
+          success: function() {
+            arr_of_id.push(i);
+            console.log('success arr_of_id for delete ', arr_of_id);
+          },
+          error: function(status, error) {
+            console.log('error ', status, error);
+          }
+        })
+
+
+      });
+
     $('#update-form').on('submit', function (e) {
         // e.preventDefault();
-        let formData = new FormData(this)
-        console.log('1111', formData)
+        // let formData = new FormData(this)
+        // console.log('formData ', formData)
         $.ajax({
             type: this.method,
             url: this.action,
             data: $(this).serialize(),
             success: function () {
-                console.log('+++');
+                console.log('upd +++');
             },
             error: function (response) {
-                console.log('err - ', response);
+                console.log('upd err - ', response);
             }
         });
-    
     });
 })
