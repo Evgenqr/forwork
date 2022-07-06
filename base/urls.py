@@ -20,6 +20,8 @@ urlpatterns = [
     #  <---- End Category
 
     # -----> Document
+    path('testajax/', views.testajax,
+         name='testajax'),
     path('document/<str:slug>/', views.DocumentDetailView.as_view(),
          name='document_detail'),
     path('create/',

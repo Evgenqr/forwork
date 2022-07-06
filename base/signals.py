@@ -5,11 +5,10 @@ from .models import Document, DocumentFile
 from django.db.models import signals
 
  
-@receiver(pre_save, sender=Document)
-def post_delete_file(sender, **kwargs):
-    pass
+# @receiver(pre_save, sender=DocumentFile)
+# def post_delete_file(request, sender, **kwargs):
     # print('post delete')
-    # arr_of_id = request.POST.getlist('arr_of_id[]')
+    # arr_of_id = request.POST.get('arr_of_id[]')
     # print('!!!!', arr_of_id)
     # arr_of_id = request.GET.getlist('arr_of_id[]')
     # print('!!!!', arr_of_id)

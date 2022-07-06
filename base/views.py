@@ -278,6 +278,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         # else:
         #     print('nooo')
             # return HttpResponse('bad')
+        # arr_of_id1 = request.GET.get('arr_of_id[]')
+        # print('3331', arr_of_id1)
         
         form_class = self.get_form_class()
         form = self.get_form(form_class)
@@ -290,9 +292,11 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'form': form,
                     }
         if newfiles == []:
-            arr_of_id = request.GET.getlist('arr_of_id[]')
-            print('!!!!', arr_of_id)
+           
             try:
+                # arr_of_id2 = request.GET.getlist('arr_of_id[]')
+
+                
                 form = DocumentForm(
                     request.POST, request.FILES, instance=document)
                 form.save()
@@ -325,7 +329,30 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                     form.save()
             return self.form_valid(form)
   
-        
+# def testajax(request): 
+#     data = 'fff'
+#     # if request.GET:
+#     data = request.GET.get('data')
+#     return JsonResponse({
+#             'data': data,
+#         })
+
+
+def testajax(request):
+    # data = 'ds'
+    # data2 = 'gg'  
+    # if request.GET:
+    data = request.POST.get("data")
+    data2 = request.GET.get("data")
+    # data2 = '34' + data
+    print('================ ', data)
+    print('333 ', data2)
+    return JsonResponse({
+            'data': data,
+            'data2': data2,
+        })
+    
+    
 class DocumentDelete(LoginRequiredMixin, DeleteView):
     model = Document
     template_name = 'base/viewdocument.html'

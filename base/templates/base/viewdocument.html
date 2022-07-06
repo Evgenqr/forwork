@@ -15,7 +15,7 @@ class="filelogo"
    
     <div class="row"> 
         <div class="col-md-8 mx-auto">
-            <form action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data" id="update-form">
+            <form  action="{% url 'viewdocument' document.slug %}" method="POST" enctype="multipart/form-data" id="update-form">
                 {% csrf_token %}
                 <div class="col-sm-6">{{form.title|as_crispy_field}}</div>
                 <div class="col-sm-4">{{form.category|as_crispy_field}}</div>
@@ -36,7 +36,8 @@ class="filelogo"
                                     </a>
                                     ({{f.file.size|filesizeformat }}) 
                                     <button class="btn btn-link  text-decoration-none del-file"  data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
-                                    <a class="dropdown-item"  href="/file/delete/">Удалить 2</a>
+                              
+                                    
                                 </p>
                             </div> 
                         {% endfor %} 
@@ -65,8 +66,10 @@ class="filelogo"
                     {% csrf_token %}
                     <button type="submit"  class="btn btn-danger">Удалить</button>
                 </form>
+                <a class="dropdown-item" href="{% url 'testajax' %} ">testajax</a>
             </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
