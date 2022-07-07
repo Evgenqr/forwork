@@ -1,5 +1,5 @@
 from django.urls import path # type: ignore
-from . import views
+from . import views, signals
 from django.conf.urls.static import static # type: ignore
 from django.conf import settings # type: ignore
 
@@ -38,6 +38,9 @@ urlpatterns = [
     path('file/delete/',
          views.deleteitems,
          name='deleteitems'),
+    path('file/<int:pk>/delete/',
+         signals.delete_file,
+         name='delete_file'),
     # path('file/<int:pk>/delete/',
     #      views.FileDelete.as_view(),
     #      name='deletefile'),

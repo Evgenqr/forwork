@@ -39,43 +39,9 @@ $(function ($) {
 
 // ----------------------------
 
-$(function () {
-    $(".del-file").click(function (e) {
-        e.preventDefault();
-        var data = "station";
-        $.ajax = ({
-            method: "GET",
-            url: '/testajax/',
-            data: {'data': data},
-            success: function (data) 
-                {console.log(data);},
-            error: function (xhr, status, error) 
-                {console.log(error);}
-    });
-});
-})
 // --------------------------
 
 
-
-// function delfile(){
-//     const divID="del-file"
-//     $(divID).on('click', (e) => {
-//         e.preventDefault();
-//         $.ajax({
-//             type: 'POST',
-//             url: $(this).data("url"),
-//             // url: '/file/delete/',
-//             data: $(this).serialize(),
-//             success: function () {
-//                 console.log('del +++', data);
-//             },
-//             error: function (response) {
-//                 console.log('del err - ', response);
-//             }
-//         });
-//     })
-// }
 
 // function id_filese_for_delete(){
 //     let arr_of_id = [];
@@ -101,6 +67,7 @@ $(function () {
 
 
 $(document).ready(function (e) {
+    
     // delfile()
     // id_filese_for_delete()
     // let arr_of_id = [];
@@ -132,14 +99,31 @@ $(document).ready(function (e) {
     //         console.log('error ', status);
     //       }
     //     })
+   //   });
+
+   $(function () {
+    $("#ajax").click(function (e) {
+        // e.preventDefault();
+        var text = "kkkk";
+        $.ajax = ({
+            // method: "GET",
+            type: this.method,
+            url: "/testajax/",
+            data: $(this).serialize(), 
+            // data: {data: text},
+            success: function (response) 
+                {console.log(response);},
+            error: function (xhr, status, error, response) 
+                {console.log(error);
+                console.log(response.responseJSON.errors);}
+    });
+});
+})
 
 
-    //   });
 
     $('#update-form').on('submit', function (e) {
-        // e.preventDefault();
-        // let formData = new FormData(this)
-        // console.log('formData ', formData)
+        e.preventDefault();
         $.ajax({
             type: this.method,
             url: this.action,
@@ -153,3 +137,32 @@ $(document).ready(function (e) {
         });
     });
 })
+
+
+
+//     $('#update-form').on('submit', function (e) {
+//         e.preventDefault();
+//         // let formData = new FormData(this)
+//         // console.log('formData ', formData)
+//         // var data = "kkkk";
+//         var menuId = "009";
+
+//         $.ajax({
+//             // type: this.method,
+            
+//             url: this.action,
+//             method: 'post',
+//             // dataType: "text",
+//             data: {text: 'Текст'},
+//             // data: { name: "John", location: "Boston" },
+//             // data: {id : menuId},
+//             // $(this).serialize(),
+//             success: function () {
+//                 console.log('upd +++');
+//             },
+//             error: function (response, error) {
+//                 console.log('upd err - ', error);
+//             }
+//         });
+//     });
+// })

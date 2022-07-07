@@ -272,6 +272,16 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     #         return HttpResponse('bad')
     
     def post(self, request, *args, **kwargs):
+        
+            # data2 = '34' + data
+            # print('================ ', data)
+            
+            # return JsonResponse({
+            #         'data': data,
+            #         'data2': data2,
+            #     })
+        # else:
+        #     print('999999999999999')
         # if request.is_ajax():
 
             # return HttpResponse('ok')
@@ -292,11 +302,11 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'form': form,
                     }
         if newfiles == []:
-           
+            if request.is_ajax():
+                data = request.GET.get("data")
+                print('333 ', data)
             try:
                 # arr_of_id2 = request.GET.getlist('arr_of_id[]')
-
-                
                 form = DocumentForm(
                     request.POST, request.FILES, instance=document)
                 form.save()
@@ -337,13 +347,31 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
 #             'data': data,
 #         })
 
+def testajax98(request):
+    form = DocumentForm()
+    if request.method == "POST" and request.is_ajax():
+        print('fdf11')
+        form = DocumentForm(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['data']
+            form.save()
+            return JsonResponse({"data": data}, status=200)
+        else:
+            errors = form.errors.as_json()
+            return JsonResponse({"errors": errors}, status=400)
+
+    # return render(request, "contact.html", {"form": form})
 
 def testajax(request):
     # data = 'ds'
     # data2 = 'gg'  
     # if request.GET:
-    data = request.POST.get("data")
-    data2 = request.GET.get("data")
+    # if request.is_ajax():
+    #     print('+++++++++++')
+    # else:
+    #     print('999999999999999')
+    data = request.POST.getlist("data")
+    data2 = request.GET.getlist("data")
     # data2 = '34' + data
     print('================ ', data)
     print('333 ', data2)
