@@ -244,6 +244,7 @@ def deleteitems(request):
     response = json.dumps({'data':'deleted'})
     return HttpResponse(response, mimetype="application/json")
 
+from django.views.decorators.csrf import csrf_exempt
 
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
@@ -262,35 +263,8 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
         context['files'] = DocumentFile.objects.filter(document=document)
         context['title'] = Document.objects.get(slug=self.kwargs['slug'])
         return context
-    
-    # def file_for_delete(self, request, *args, **kwargs):
-    #     if request.method == 'POST' and request.is_ajax():
-    #         print('bgbg')
-    #         return HttpResponse('ok')
-    #     else:
-    #         print('nooo')
-    #         return HttpResponse('bad')
-    
-    def post(self, request, *args, **kwargs):
-        
-            # data2 = '34' + data
-            # print('================ ', data)
-            
-            # return JsonResponse({
-            #         'data': data,
-            #         'data2': data2,
-            #     })
-        # else:
-        #     print('999999999999999')
-        # if request.is_ajax():
 
-            # return HttpResponse('ok')
-        # else:
-        #     print('nooo')
-            # return HttpResponse('bad')
-        # arr_of_id1 = request.GET.get('arr_of_id[]')
-        # print('3331', arr_of_id1)
-        
+    def post(self, request, *args, **kwargs):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         newfiles = self.request.FILES.getlist("files")
@@ -302,14 +276,22 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'form': form,
                     }
         if newfiles == []:
-            if request.is_ajax():
-                data = request.GET.get("data")
-                print('333 ', data)
             try:
-                # arr_of_id2 = request.GET.getlist('arr_of_id[]')
+                if request.is_ajax():
+                    arr_of_id = request.POST.getlist("arr_of_id[]")
+                    print('444 ', arr_of_id)
+                    # --------------------------------
+                    for f_id in arr_of_id:
+                        file = get_object_or_404(DocumentFile, pk=f_id)
+                        slug = file.document.slug
+                        document = get_object_or_404(Document, slug=slug)
+                        print('dellll')
+                        file.delete()
+                    # ---------------------------------
                 form = DocumentForm(
-                    request.POST, request.FILES, instance=document)
+                request.POST, request.FILES, instance=document)
                 form.save()
+       
                 return redirect('document_detail',  slug = document.slug)
             except ValueError:
                 return render(request, self.template_name, {
@@ -338,7 +320,10 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         document=document, file=f)
                     form.save()
             return self.form_valid(form)
-  
+        
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(DocumentUpdateView, self).dispatch(*args, **kwargs)
 # def testajax(request): 
 #     data = 'fff'
 #     # if request.GET:
