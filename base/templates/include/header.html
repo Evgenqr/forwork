@@ -45,16 +45,21 @@
         <div class="col-sm"> </div>
         <div class="col-sm"> </div>
         <div class="col-sm">
-        <form class="d-flex" action="{% url 'search' %}" method="get">
-            <input class="form-control me-2" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
-            <button class="btn btn-outline-success" type="submit">Поиск</button>
+            <form class="d-flex" action="{% url 'search' %}" method="get">
+                <input class="form-control me-2" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
+                <button class="btn btn-outline-success" type="submit">Поиск</button>
             </form>
-            {% comment %}
-        <a class="btn" href="#" role="button" aria-expanded="false" >
-            Расширенный поиск 
-        </a>{% endcomment %}
+            {% comment %}{% endcomment %}
+            <a class="btn ext-search-btn" href="#" role="button" aria-expanded="false" >
+                Расширенный поиск 
+            </a>
+        </div>
+        <div class="col-sm-12 ext-search" style="display: none;">
+            <p>Блок скрытого текста...</p>
+            {% include 'include/ext-search.html' %} 
         </div>
     </div>
+
   </div>
 
 {% comment %}  data-bs-toggle="dropdown"  

@@ -4,8 +4,8 @@ class BaseConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'base'
     
-    def ready(self):
-        # Implicitly connect a signal handlers decorated with @receiver.
-        from . import signals
+    # def ready(self):
+    #     # Implicitly connect a signal handlers decorated with @receiver.
+    #     from . import signals
         # Explicitly connect a signal handler.
         # signals.pre_save.connect(signals.test2, dispatch_uid="my_unique_identifier")

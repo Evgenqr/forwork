@@ -54,4 +54,10 @@ $(document).ready(function (e) {
             console.log('ok ', arr_of_id);
         });
     });
+
+    $('.ext-search-btn').click(function(){
+        $('.ext-search').slideToggle(300);      
+        return false;
+    });
+
 })

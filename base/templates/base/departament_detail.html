@@ -20,9 +20,6 @@
                 </div>
                 <div class="row">
                     <div class="col-sm-9">
-                        <a href="/category/{{document.category.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;">
-                      {{ document.category }}</a>
-                      <br>
                                 {% for l in document.law.all %}
                                     <a href="/laws/{{l.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;"> 
                                         {{l.shorttitle}}

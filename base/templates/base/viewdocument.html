@@ -36,8 +36,7 @@ class="filelogo"
                                     </a>
                                     ({{f.file.size|filesizeformat }}) 
                                     <button class="btn btn-link  text-decoration-none del-file"  data-bk="{{ document.id }}" data-pg="{{f.id}}" style="color: #6b2525;">Удалить</button>
-                                    <a class="dropdown-item"  href="/file/{{f.id}}/delete">Удалить 2</a>
-                                </p>
+                                                                  </p>
                             </div> 
                         {% endfor %} 
                     {% endif %}
@@ -65,7 +64,6 @@ class="filelogo"
                     {% csrf_token %}
                     <button type="submit"  class="btn btn-danger">Удалить</button>
                 </form>
-                <a class="dropdown-item" id="ajax" href="{% url 'testajax' %} ">testajax</a>
             </div >
         </div>
     </div>

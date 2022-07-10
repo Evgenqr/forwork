@@ -25,6 +25,7 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage # type:
 from itertools import chain
 from django.contrib.auth.mixins import LoginRequiredMixin # type: ignore
 from django.http import JsonResponse # type: ignore
+from django.views.decorators.csrf import csrf_exempt
 
 
 # ---- User
@@ -230,21 +231,6 @@ class DocumentDetailView(DetailView):
         context['files'] = DocumentFile.objects.filter(document=document)
         return context
 
-from django.http import HttpResponse
-
-
-@login_required
-def deleteitems(request):
-    # newdata = request.user
-    # profiledata = User.objects.get(user=newdata)
-    swid = request.POST.getlist('newval[]') # ajax post data (which have all id of GalleryImage objects)
-    for one in swid:
-        obj = DocumentFile.objects.get(id=one) #.delete()
-        print('----', obj)
-    response = json.dumps({'data':'deleted'})
-    return HttpResponse(response, mimetype="application/json")
-
-from django.views.decorators.csrf import csrf_exempt
 
 class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
@@ -275,23 +261,20 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
                         'files' :files,
                         'form': form,
                     }
-        if newfiles == []:
-            try:
-                if request.is_ajax():
+        # --------------------------------
+        if request.is_ajax():
                     arr_of_id = request.POST.getlist("arr_of_id[]")
-                    print('444 ', arr_of_id)
-                    # --------------------------------
                     for f_id in arr_of_id:
                         file = get_object_or_404(DocumentFile, pk=f_id)
                         slug = file.document.slug
                         document = get_object_or_404(Document, slug=slug)
-                        print('dellll')
                         file.delete()
-                    # ---------------------------------
+        # ---------------------------------
+        if newfiles == []:
+            try:
                 form = DocumentForm(
                 request.POST, request.FILES, instance=document)
                 form.save()
-       
                 return redirect('document_detail',  slug = document.slug)
             except ValueError:
                 return render(request, self.template_name, {
@@ -324,47 +307,7 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     @csrf_exempt
     def dispatch(self, *args, **kwargs):
         return super(DocumentUpdateView, self).dispatch(*args, **kwargs)
-# def testajax(request): 
-#     data = 'fff'
-#     # if request.GET:
-#     data = request.GET.get('data')
-#     return JsonResponse({
-#             'data': data,
-#         })
 
-def testajax98(request):
-    form = DocumentForm()
-    if request.method == "POST" and request.is_ajax():
-        print('fdf11')
-        form = DocumentForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data['data']
-            form.save()
-            return JsonResponse({"data": data}, status=200)
-        else:
-            errors = form.errors.as_json()
-            return JsonResponse({"errors": errors}, status=400)
-
-    # return render(request, "contact.html", {"form": form})
-
-def testajax(request):
-    # data = 'ds'
-    # data2 = 'gg'  
-    # if request.GET:
-    # if request.is_ajax():
-    #     print('+++++++++++')
-    # else:
-    #     print('999999999999999')
-    data = request.POST.getlist("data")
-    data2 = request.GET.getlist("data")
-    # data2 = '34' + data
-    print('================ ', data)
-    print('333 ', data2)
-    return JsonResponse({
-            'data': data,
-            'data2': data2,
-        })
-    
     
 class DocumentDelete(LoginRequiredMixin, DeleteView):
     model = Document
@@ -381,6 +324,7 @@ class SearchView(ListView):
     model = Document
     template_name = 'base/search_result.html'
     paginate_by = 3
+    form_class = DocumentForm
     
     def get(self, request, *args, **kwargs):
         context = {}
@@ -388,7 +332,10 @@ class SearchView(ListView):
         if q:
             query_sets = []  # Общий QuerySet
             query_sets.append(Document.objects.filter(
-                Q(title__icontains=q) | Q(text__icontains=q)))
+                Q(title__icontains=q) | Q(text__icontains=q) |
+                Q(departament__title__icontains=q) | Q(law__title__icontains=q) |
+                Q(category__title__icontains=q) | Q(status__title__icontains=q)  
+                ))
             final_set = list(chain(*query_sets))
             context['last_question'] = '?q=%s' % q
             current_page = Paginator(final_set, 10)
@@ -400,105 +347,4 @@ class SearchView(ListView):
             except EmptyPage:
                 context['object_list'] = current_page.page(
                     current_page.num_pages)
-
-        context['category'] = Category.objects.all()
-        context['laws'] = Law.objects.all()
         return render(request=request, template_name=self.template_name, context=context)
-
-
-
-# def deletefile(request):
-#     form = DocumentForm
-#     print('1111')
-    # if request.user.is_authenticated() and request.is_ajax():
-    #     form = DocumentForm(request.POST)
-    #     if form.is_valid():
-    #         data = {'file': form.cleaned_data['files']}
-    #         return JsonResponse({'good': data})
-    # else:
-    #     return JsonResponse({'error': 'Only authenticated users'}, status=404)
-
-
-# ++
-# @login_required
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     print('!!!!!!file', file.pk)
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         # file.delete()
-#         form = DocumentForm(instance=document)
-#         # files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'file': file,
-#             'form': form
-#         })
-        
-        
-        
-            # return render(request, 'base/viewdocument.html', {
-            #     'document': document,
-            #     'files': files,
-            #     'form': form
-            # })   
-    
-
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })  
-
-# class FileDelete(DeleteView):
-#     model = DocumentFile
-#     template_name = 'base/viewdocument.html'
-#     success_url = '/'
-
-#     def post(self, *args, **kwargs):
-#         file =  Document.objects.get(pk=self.kwargs['pk'])
-#         files = DocumentFile.objects.filter(document__slug=self.kwargs['slug'])
-#       
-#         file.delete()
-#         return redirect(self.get_success_url(), pk = file.pk)
-
-# @login_required
-# def deletefile(request, pk):
-#     files = DocumentFile.objects.filter(file__pk=pk)
-#   
-#     if request.method == "POST":
-#        
-#         file = get_object_or_404(DocumentFile, pk=pk)
-
-#         # file.delete()
-#         return redirect('/')
-#     elif request.method == "GET":
-#        
-#         # return render(request, 'base/viewdocument.html')
-#     else:
-#        
-#         return redirect('/')
-
-# @login_required
-# def deletefile(request, pk):
-#     file = get_object_or_404(DocumentFile, pk=pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     if request.method == 'GET':
-#         file.delete()
-#         form = DocumentForm(instance=document)
-#         files = DocumentFile.objects.filter(document=document)
-#         return render(request, 'base/viewdocument.html', {
-#             'document': document,
-#             'files': files,
-#             'form': form
-#         })

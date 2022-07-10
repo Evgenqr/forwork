@@ -40,13 +40,6 @@ class LawForm(ModelForm):
         fields = ['shorttitle']
 
 
-
-
-# class FileForm(ModelForm):
-#     class Meta:
-#         model = File
-#         fields = ['title', 'file']
-
 class DocumentForm(ModelForm):
 
     title = forms.CharField(
@@ -98,6 +91,12 @@ class DocumentForm(ModelForm):
                 "multiple": True
             }))
     
+    class Meta:
+        model = Document
+        fields = ['title', 'category', 'departament', 'status', 'law', 'text']
+        
+        
+class ExtendedSearchForm(ModelForm):
     class Meta:
         model = Document
         fields = ['title', 'category', 'departament', 'status', 'law', 'text']

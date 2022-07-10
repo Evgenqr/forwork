@@ -22,7 +22,6 @@
                 <div class="col-sm-6">Приложения:<br>
                     <input name="files" type="file" multiple class="form-control">         
                  </div>
-                 
                 <div class="description col-sm-12">Максимальный размер файла: <strong>50 МБ</strong>.
                     <br>Разрешённые типы файлов: 
                     <strong>txt doc docx xls xlsx pdf png jpg bmp rar zip ppt pptx rtf gif</strong>.</div>
@@ -37,63 +36,3 @@
     </div>
 </div>
 {% endblock content %} 
-
-
-
-{% comment %}
-    <h1> Создание документа</h1>
-    <h2>{{error}}</h2>
-    <form enctype="multipart/form-data" method="POST" >
-        {% csrf_token %}
-        <div class="col-sm-3">
-           Заголовок: <br>{{form.title}}  </div>
-            <div class="col-sm-3">Категория:<br> {{form.category}}  </div>
-            <div class="col-sm-3">Закон: <br>{{form.law}}  </div>
-            <div class="col-sm-3">Текст: <br> {{form.text}}  </div>
-             11<div class="col-sm-3">Приложения44:<br>вв
-            <input name="files" type="file" multiple class="form-control" >         
-        </div>22
-        <br>
-        <div class="col-sm-3">
-        <button type="submit" class="btn btn-primary m-3">Создать</button></div>
-    </form>
-
-   
-
-        <form enctype="multipart/form-data" method="POST" >
-            {% csrf_token %}
-            
-            {{ form.as_p }}
-            <div class="col-sm-3">
-                <input type="text"  placeholder="Заголовок" maxlength="100" required class="form-control"></p>
-
-                <input  type="text"  placeholder="Категория" maxlength="100" required class="form-control"></p>
-
-                <input type="text" placeholder="Закон" maxlength="100" required class="form-control"></p>
-            </div>
-            <div class="col-sm-8">  
-                <textarea name="text" placeholder="Тест" required class="form-control"></textarea></p>
-            </div>
-            <div class="col-sm-3">  
-                <p><label for="files">Приложения:</label>
-                <input name="files" type="file" multiple class="form-control" > 
-            </div>
-            <div class="col-sm-3">
-                <button type="submit">Создать</button> 
-            </div>
-        </form>
-        
-  
-
-        <form enctype="multipart/form-data" method="POST" >
-            {% csrf_token %}
-                <p>{{ form.as_p }}</p>
-                
-            <button type="submit">Создать</button> 
-        </form>
-        
-     <br>
-
-    
-{% endblock content %} 
-{% endcomment %}

@@ -1,5 +1,5 @@
 from django.urls import path # type: ignore
-from . import views, signals
+from . import views #, signals
 from django.conf.urls.static import static # type: ignore
 from django.conf import settings # type: ignore
 
@@ -17,11 +17,10 @@ urlpatterns = [
     # -----> Category
     path('category/<str:slug>/', views.CategoryListView.as_view(), name='category'),
     path('departament/<str:slug>/', views.DepartamentListView.as_view(), name='departament'),
+    path('status/<str:slug>/', views.StatusListView.as_view(), name='status'),
     #  <---- End Category
 
     # -----> Document
-    path('testajax/', views.testajax,
-         name='testajax'),
     path('document/<str:slug>/', views.DocumentDetailView.as_view(),
          name='document_detail'),
     path('create/',
