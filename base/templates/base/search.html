@@ -1,0 +1,20 @@
+{% extends 'base.html' %}  
+{% load crispy_forms_tags %}
+{% block title %}
+Создание документа
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <h3>Расширенный поиск</h3>
+            <hr>
+            <form action="" method="POST" enctype="multipart/form-data">
+                <div class="col-sm-6">{{form.as_p}}</div>
+                {% csrf_token %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %} 

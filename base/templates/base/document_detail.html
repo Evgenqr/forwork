@@ -33,8 +33,8 @@
             {{documents.status}}
         </a>
     {% endif %}
-   
-    {% if document.law %}
+   <br>
+    {% if documents.law.all %}
     <b> Закон: </b>
     {% for l in documents.law.all %}
         <a class="text-decoration-none" href="/laws/{{l.slug}}/"> 
@@ -46,8 +46,9 @@
     <div class="col-sm-9">
        {{documents.text}}   
     </div>
-    <b>Приложения: </b>
+ 
     {% if files %}
+    <b>Приложения: </b>
         {% for f in files %}
             <div class="file" id="documents_{{documents.id}}_{{f.id}}">
                 <p class="filelogo">

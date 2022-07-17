@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required # type: ignore
 from django.views import View # type: ignore
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView # type: ignore
 from .models import Category, Document, Law, DocumentFile, Departament, Status
-from .forms import CategoryForm, DocumentForm, AuthForm
+from .forms import CategoryForm, DocumentForm, SearchForm
 from django.utils.text import slugify # type: ignore
 from transliterate import translit # type: ignore
 import os
@@ -217,11 +217,11 @@ class DocumentDetailView(DetailView):
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
     
-    def get_context_data(self, **kwargs):
-        context = super(DocumentDetailView, self).get_context_data(**kwargs)
-        context['title'] = self.document
-        context['files'] = DocumentFile.objects.filter(document=self.document)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     context = super(DocumentDetailView, self).get_context_data(**kwargs)
+    #     context['title'] = self.document
+    #     context['files'] = DocumentFile.objects.filter(document=self.document)
+    #     return context
     
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
@@ -320,11 +320,51 @@ class DocumentDelete(LoginRequiredMixin, DeleteView):
         return redirect('home')       
 #  ---- Document END
 
+class DocumentFilter:
+    
+    def get_category(self):
+        return Category.objects.all()
+
+class ExtSearch(DocumentFilter, ListView):
+    model = Document
+    template_name = 'base/ext_search.html'
+    form_class = DocumentForm
+    extra_context = {'documents': Document.objects.all()}
+    success_url = 'base/search_result.html'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        # queryset = Document.objects.filter(
+        #     Q(category__in=self.request.GET.getlist("category")),
+        #     Q(departament__in=self.request.GET.getlist("departament")),
+        #     Q(status__in=self.request.GET.getlist("status")),
+        #     Q(law__in=self.request.GET.getlist("law")) 
+        # )
+        queryset = Document.objects.filter(
+            Q(category__in=self.request.GET.getlist("category")) |
+            Q(departament__in=self.request.GET.getlist("departament")) |
+            Q(status__in=self.request.GET.getlist("status")) |
+            Q(law__in=self.request.GET.getlist("law")) 
+        )
+        return queryset
+        
+      
+        # -------------------
+        # return query_sets.filter(id=0)
+    
+    # def get_context_data(self, **kwargs):
+    #     context = super(ExtSearch, self).get_context_data(**kwargs)
+    #     return context
+    
+
+
+
+
 class SearchView(ListView):
     model = Document
     template_name = 'base/search_result.html'
+    # form_class = DocumentForm
     paginate_by = 3
-    form_class = DocumentForm
     
     def get(self, request, *args, **kwargs):
         context = {}
@@ -338,7 +378,7 @@ class SearchView(ListView):
                 ))
             final_set = list(chain(*query_sets))
             context['last_question'] = '?q=%s' % q
-            current_page = Paginator(final_set, 10)
+            current_page = Paginator(final_set, 100)
             page = request.GET.get('page')
             try:
                 context['object_list'] = current_page.page(page)

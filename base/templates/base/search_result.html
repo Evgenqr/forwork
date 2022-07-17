@@ -1,6 +1,3 @@
-
-
-
 {% extends 'base.html' %} 
 {% load static %}
 {% block title %}
@@ -31,9 +28,8 @@
                 </div>
             </div>
         {% endfor %}
-        
     </div>
     <span class="pagination justify-content-center">
         Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
     </span>
-{% endblock %}
+{% endblock content %}

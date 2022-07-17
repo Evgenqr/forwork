@@ -55,8 +55,8 @@ $(document).ready(function (e) {
         });
     });
 
-    $('.ext-search-btn').click(function(){
-        $('.ext-search').slideToggle(300);      
+    $('.ext-search-btn1').click(function(){
+        $('.ext-search1').slideToggle(300);      
         return false;
     });
 

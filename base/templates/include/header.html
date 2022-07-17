@@ -50,13 +50,13 @@
                 <button class="btn btn-outline-success" type="submit">Поиск</button>
             </form>
             {% comment %}{% endcomment %}
-            <a class="btn ext-search-btn" href="#" role="button" aria-expanded="false" >
+            <a class="btn ext-search-btn" href="{% url 'ext_search' %}" role="button" aria-expanded="false" >
                 Расширенный поиск 
             </a>
         </div>
         <div class="col-sm-12 ext-search" style="display: none;">
             <p>Блок скрытого текста...</p>
-            {% include 'include/ext-search.html' %} 
+  
         </div>
     </div>
 

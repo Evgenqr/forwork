@@ -1,0 +1,104 @@
+{% extends 'base.html' %}  
+{% load crispy_forms_tags %}
+{% block title %}
+Расширенный поиск
+{% endblock %}
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 mx-auto">
+            <h3>Расширенный поиск</h3>
+            <hr>
+
+            <form action="{% url 'ext_search' %}" method="get">
+                <div class="col-sm-6">
+                    <input class="form-control me-2" name="q" type="search" placeholder="Поиск" aria-label="Поиск">
+                </div>
+                <div class="row">
+                    <div class="col-sm-6">
+                        <b> Категория: </b> 
+                        {% for cat in  category %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="category"  value="{{cat.id}}" id="{{cat.slug}}">
+                                <label class="form-check-label" for="{{cat.slug}}">
+                                    {{cat}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-6">
+                        <b> Отдел: </b>
+                        {% for dep in  departament %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="departament" value="{{dep.id}}" id="{{dep.slug}}">
+                                <label class="form-check-label" for="{{dep.slug}}">
+                                    {{dep}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-6">
+                        <b> Статус: </b>
+                        {% for stat in  status %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="status" value="{{stat.id}}" id="{{stat.slug}}">
+                                <label class="form-check-label" for="{{stat.slug}}">
+                                    {{stat}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="col-sm-6">
+                        <b> Закон: </b>
+                        {% for law in  laws %}
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="law" value="{{law.id}}" id="{{law.slug}}">
+                                <label class="form-check-label" for="{{law.slug}}">
+                                    {{law}}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <b>Дата создания:</b>
+                    <div class="col-sm-2">
+                        <input type="date" class="form-control" class="datecreate" name="startdate" placeholder="Дата">
+                    </div> - 
+                    <div class="col-sm-2">
+                        <input type="date" class="form-control" class="datecreate" name="enddate" placeholder="Дата">
+                    </div>
+                </div>
+                <button class="btn btn-outline-success" type="submit">Поиск</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<h2>Результаты поиска</h2>
+
+<div class="grey-card">
+    {% for document in document_list %}
+        <div class="row" style="padding-bottom: 1rem;">
+            <div class="col-sm-10">
+                <b style="font-size: 12pt;">
+                    <a href="/document/{{document.slug}}/"> {{ document.title }}</a>
+                </b>
+            </div>
+            <div class="col-sm-2 text-right">
+                {{document.date_create.date}}
+            </div>
+            <div class="row">
+                <div class="col-sm-9">
+                    <a href="/category/{{document.category.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;">
+                        {{ document.category }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+<span class="pagination justify-content-center">
+    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
+</span>
+
+{% endblock content %} 

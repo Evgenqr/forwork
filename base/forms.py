@@ -96,7 +96,7 @@ class DocumentForm(ModelForm):
         fields = ['title', 'category', 'departament', 'status', 'law', 'text']
         
         
-class ExtendedSearchForm(ModelForm):
+class SearchForm(ModelForm):
     class Meta:
         model = Document
         fields = ['title', 'category', 'departament', 'status', 'law', 'text']
