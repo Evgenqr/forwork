@@ -324,6 +324,8 @@ class DocumentFilter:
     
     def get_category(self):
         return Category.objects.all()
+    
+import datetime
 
 class ExtSearch(DocumentFilter, ListView):
     model = Document
@@ -340,11 +342,34 @@ class ExtSearch(DocumentFilter, ListView):
         #     Q(status__in=self.request.GET.getlist("status")),
         #     Q(law__in=self.request.GET.getlist("law")) 
         # )
+        #         queryset = Document.objects.filter(
+        #     Q(category__in=self.request.GET.getlist("category")) |
+        #     Q(departament__in=self.request.GET.getlist("departament")) |
+        #     Q(status__in=self.request.GET.getlist("status")) |
+        #     Q(law__in=self.request.GET.getlist("law")) 
+        # )
+        category = self.request.GET.getlist("category")
+        departament = self.request.GET.getlist("departament")
+        status = self.request.GET.getlist("status")
+        law = self.request.GET.getlist("law")
+        startdate = datetime.date.today()
+        enddate = datetime.date.today()
+        startdate = self.request.GET.get("startdate")
+        enddate = self.request.GET.get("enddate")
+        
+        if startdate == "":
+            startdate = "2000-01-01"
+        if enddate == "":
+            enddate = datetime.date.today()
+
         queryset = Document.objects.filter(
-            Q(category__in=self.request.GET.getlist("category")) |
-            Q(departament__in=self.request.GET.getlist("departament")) |
-            Q(status__in=self.request.GET.getlist("status")) |
-            Q(law__in=self.request.GET.getlist("law")) 
+            Q(category__in=category) |
+            Q(departament__in=departament) |
+            Q(status__in=status) |
+            Q(law__in=law) |
+            # Q(date_create__gte=startdate) |
+            # Q(date_create__lte=enddate) 
+            Q(date_create__range=[startdate, enddate])
         )
         return queryset
         
