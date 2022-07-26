@@ -382,10 +382,47 @@ class ExtSearch(DocumentFilter, ListView):
     #     return context
     
 
-
-
-
 class SearchView(ListView):
+    model = Document
+    template_name = 'base/search_result.html'
+    # form_class = DocumentForm
+    paginate_by = 3
+    
+    def get(self, request, *args, **kwargs):
+        context = {}
+        q = request.GET.get('q')
+        if q:
+            # query_sets = []  # Общий QuerySet
+            document_list = Document.objects.filter(
+                Q(title__icontains=q) | Q(text__icontains=q))
+            category_list = Document.objects.filter(Q(category__title__icontains=q))
+            departament_list = Document.objects.filter(Q(departament__title__icontains=q))
+            law_list = Document.objects.filter(Q(law__title__icontains=q))
+            status_list = Document.objects.filter(Q(status__title__icontains=q))
+            final_set = list(chain(document_list, category_list, departament_list, law_list,status_list))
+
+            # query_sets.append(Document.objects.filter(
+            #     Q(title__icontains=q) | Q(text__icontains=q) |
+            #     Q(departament__title__icontains=q) | Q(law__title__icontains=q) |
+            #     Q(category__title__icontains=q) | Q(status__title__icontains=q)  
+            #     ))
+            # final_set = list(chain(*query_sets))
+            
+            context['last_question'] = '?q=%s' % q
+            current_page = Paginator(final_set, 100)
+            page = request.GET.get('page')
+            try:
+                context['object_list'] = current_page.page(page)
+            except PageNotAnInteger:
+                context['object_list'] = current_page.page(1)
+            except EmptyPage:
+                context['object_list'] = current_page.page(
+                    current_page.num_pages)
+        return render(request=request, template_name=self.template_name, context=context)
+
+
+
+class SearchView22(ListView):
     model = Document
     template_name = 'base/search_result.html'
     # form_class = DocumentForm

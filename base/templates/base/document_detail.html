@@ -51,7 +51,7 @@
     <b>Приложения: </b>
         {% for f in files %}
             <div class="file" id="documents_{{documents.id}}_{{f.id}}">
-                <p class="filelogo">
+                <p class="filelogo" id="filelogo1">
                     <a class="text-decoration-none del-file" download href="{{f.file.url}}"  style="font-weight: bold;">
                     {{ f.filename }} 
                     </a>

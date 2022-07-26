@@ -1,23 +1,42 @@
-// $('.datecreate').daterangepicker({
-//     singleDatePicker: true,
-//     locale: {
-//    format: 'YYYY.MM.DD'
-//     }
-//    });
 
-// var date = new Date();
 
-// var day = date.getDate();
-// var month = date.getMonth() + 1;
-// var year = date.getFullYear();
 
-// if (month < 10) month = "0" + month;
-// if (day < 10) day = "0" + day;
+function changeBgImg(){
+    var elems = document.getElementsByClassName('filelogo');
+    for (var i = 0; i < elems.length; i++) {
 
-// var today = year + "-" + month + "-" + day;
-// var yes = year + "-" + month + "-" + (day-1);
-// console.log('1111 ', yes)
-// document.getElementById('startdate').value = yes;
-// document.getElementById('enddate').value = today;
+        elem = elems[i].innerText.split(' ')[0].split('.')
+        // console.log('+++ ', elem);
+        file_ext = elem[elem.length-1]
+        if (file_ext=='pdf'){
+            elems[i].style.backgroundImage = "url('/static/img/pdf.svg')";
+        }
+        else if (file_ext=='txt'){
+            elems[i].style.backgroundImage = "url('/static/img/text.svg')";
+        }
+        else if (file_ext=='doc' || file_ext=='docx' || file_ext=='rtf') {
+            elems[i].style.backgroundImage = "url('/static/img/word.svg')";
+        }
+        else if (file_ext=='xls' || file_ext=='xlsx') {
+            elems[i].style.backgroundImage = "url('/static/img/excel.svg')";
+        }
+        else if (file_ext=='ppt' || file_ext=='pptx') {
+            elems[i].style.backgroundImage = "url('/static/img/power-point.svg')";
+        }
+        else if (file_ext=='png' || file_ext=='bmp' || file_ext=='gif' || file_ext=='jpg') {
+            elems[i].style.backgroundImage = "url('/static/img/image-picture.svg')";
+        }
+        else if (file_ext=='zip' || file_ext=='zip') {
+            elems[i].style.backgroundImage = "url('/static/img/power-point.svg')";
+        }
+
+        else {
+            elems[i].style.backgroundImage = "url('/static/img/power-point.svg')";
+        }
+	}
+}
+
+
+changeBgImg();
 
 

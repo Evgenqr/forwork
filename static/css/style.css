@@ -110,12 +110,10 @@ h1 {
 }
 
 .filelogo{
-    background-image:url('/static/img/pdf.svg');
+    background-image:url('/static/img/word.svg');
     background-repeat: no-repeat;
     background-size: contain;
     padding-left: 30px;
-
-
 }
 
   /* !!!!!!!!! */
