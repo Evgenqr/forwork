@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth.models import User
 from django.core.validators import FileExtensionValidator, validate_image_file_extension
 from django.core import validators
+import uuid
 
 
 
@@ -76,24 +77,25 @@ class Status(models.Model):
     
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
-    slug = models.SlugField("Ссылка", max_length=250, unique=True)
+    # slug = models.SlugField("Ссылка", max_length=250, unique=True)
+    slug = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     user = models.ForeignKey(User,
                              verbose_name="Пользователь",
                              on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        Category, verbose_name="Категория", related_name="categories",
+        on_delete=models.CASCADE)
+    law = models.ManyToManyField(
+        Law, verbose_name="Закон",
+        blank=True)
     departament = models.ForeignKey(
         Departament, verbose_name="Отдел", related_name="departaments",
         blank=True, null=True,
-        on_delete=models.CASCADE)
-    category = models.ForeignKey(
-        Category, verbose_name="Категория", related_name="categories",
         on_delete=models.CASCADE)
     status = models.ForeignKey(
         Status, verbose_name="Статус", related_name="status",
         blank=True, null=True,
         on_delete=models.CASCADE)
-    law = models.ManyToManyField(
-        Law, verbose_name="Закон",
-        blank=True)
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
     # file = models.FileField(verbose_name="Вложения", blank=True,
     #                         null=True, upload_to=file_directory_path)

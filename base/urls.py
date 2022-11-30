@@ -1,15 +1,15 @@
-from django.urls import path # type: ignore
-from . import views #, signals
-from django.conf.urls.static import static # type: ignore
-from django.conf import settings # type: ignore
+from django.urls import path
+from . import views
+from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
     path('', views.DocumentListView.as_view(), name="home"),
-        # -----> Search
+    #  -----> Search
     path('search/', views.SearchView.as_view(), name='search'),
     path('ext_search/', views.ExtSearch.as_view(), name='ext_search'),
-    
+
     #  <---- End Search
 
     # -----> For User
@@ -19,8 +19,10 @@ urlpatterns = [
     path('login_form/', views.LoginView.as_view(), name="login_form"),
     #  <---- End For User
     # -----> Category
-    path('category/<str:slug>/', views.CategoryListView.as_view(), name='category'),
-    path('departament/<str:slug>/', views.DepartamentListView.as_view(), name='departament'),
+    path('category/<str:slug>/', views.CategoryListView.as_view(),
+         name='category'),
+    path('departament/<str:slug>/', views.DepartamentListView.as_view(),
+         name='departament'),
     path('status/<str:slug>/', views.StatusListView.as_view(), name='status'),
     #  <---- End Category
     # -----> Document

@@ -9,8 +9,8 @@
             <li class="page-item"><a class="page-link" href="?page={{p}}">{{p}}</a></li>
         {% endfor %}
         {% if page_obj.has_next %}
-            <a class="page-link"  href="?page={{ page_obj.next_page_number }}">следующая</a>
-            <a class="page-link"  href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a>
+        <li class="page-item">    <a class="page-link"  href="?page={{ page_obj.next_page_number }}">следующая</a></li>
+            <li class="page-item">    <a class="page-link"  href="?page={{ page_obj.paginator.num_pages }}">последняя &raquo;</a></li>
         {% endif %}
     </ul>
 </nav>

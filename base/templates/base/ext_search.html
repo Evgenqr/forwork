@@ -88,18 +88,11 @@
             <div class="col-sm-2 text-right">
                 {{document.date_create.date}}
             </div>
-            <div class="row">
-                <div class="col-sm-9">
-                    <a href="/category/{{document.category.slug}}/" class="badge badge-disabled" style="margin: 2px 0; padding: 6px 10px;">
-                        {{ document.category }}
-                    </a>
-                </div>
-            </div>
+     
         </div>
     {% endfor %}
 </div>
 <span class="pagination justify-content-center">
     Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}.
 </span>
-
 {% endblock content %} 
