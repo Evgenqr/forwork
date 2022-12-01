@@ -44,9 +44,15 @@
     <br>
     {% endif %}
     <div class="col-sm-9">
-       {{documents.text}}   
+            {{documents.text}} 
     </div>
- 
+
+    <b> Теги: </b>
+    {% for tag in documents.tags.all %}
+        <a class="text-decoration-none" href="/tags/{{tag.slug}}/"> 
+            {{tag.name}}  
+        </a>
+    {% endfor %}
     {% if files %}
     <b>Приложения: </b>
         {% for f in files %}

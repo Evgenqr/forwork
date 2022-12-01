@@ -1,13 +1,14 @@
-from venv import create
+# from venv import create
 from django.core.exceptions import ValidationError
 import os
 from django.db import models
 from django.urls import reverse
 from django.contrib.auth.models import User
-from django.core.validators import FileExtensionValidator, validate_image_file_extension
-from django.core import validators
+# from django.core.validators import FileExtensionValidator,
+# validate_image_file_extension
+# from django.core import validators
 import uuid
-
+from taggit.managers import TaggableManager
 
 
 def file_directory_path(instance, filename):
@@ -45,6 +46,7 @@ class Law(models.Model):
     def get_absolute_url(self):
         return reverse("law", kwargs={"slug": self.slug})
 
+
 class Departament(models.Model):
     title = models.CharField(verbose_name="Название отдела", max_length=250)
     slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -52,13 +54,13 @@ class Departament(models.Model):
     class Meta:
         verbose_name = "Отдел"
         verbose_name_plural = "Отделы"
-    
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("departament", kwargs={"slug": self.slug})
-    
+
 
 class Status(models.Model):
     title = models.CharField(verbose_name="Статус", max_length=250)
@@ -67,14 +69,14 @@ class Status(models.Model):
     class Meta:
         verbose_name = "Статус"
         verbose_name_plural = "Статус"
-    
+
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
         return reverse("status", kwargs={"slug": self.slug})
 
-    
+
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     # slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -103,6 +105,7 @@ class Document(models.Model):
         auto_now_add=True, verbose_name="Дата создания")
     date_update = models.DateTimeField(
         auto_now=True, verbose_name="Дата обновления")
+    tags = TaggableManager(blank=True, verbose_name="Теги")
 
     class Meta:
         verbose_name = "Документ"
@@ -110,7 +113,7 @@ class Document(models.Model):
 
     def save(self, *args, **kwargs):
         return super().save(*args, **kwargs)
-    
+
     def __str__(self):
         return self.title
 
@@ -119,17 +122,18 @@ class Document(models.Model):
 
     def validate_file_type(value):
         FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
-                            '.xls', '.xlsx', '.ppt', '.pptx', '.png',
-                            '.bmp', '.jpg', '.gif', '.zip', '.rar']
+                              '.xls', '.xlsx', '.ppt', '.pptx', '.png',
+                              '.bmp', '.jpg', '.gif', '.zip', '.rar']
         extension = os.path.splitext(value.name)[1]
         if extension not in FILE_EXT_WHITELIST:
-            raise ValidationError(u'{} is not an accepted file type'.format(value))
+            raise ValidationError(
+                u'{} is not an accepted file type'.format(value))
 
 
 class DocumentFile(models.Model):
     document = models.ForeignKey(
         Document, verbose_name="Документ", blank=True,
-                            null=True, on_delete=models.CASCADE)
+        null=True, on_delete=models.CASCADE)
     file = models.FileField(verbose_name="Вложения", blank=True,
                             null=True, upload_to=file_directory_path)
 
@@ -162,104 +166,3 @@ class DocumentFile(models.Model):
         if extension == '.txt':
             return 'textfile'
         return 'other'
-
-
-# from django.db.models import signals
-# from django.shortcuts import get_object_or_404 
-
-# def pre_test(sender, instance, *args, **kwargs):
-#     if create:
-#         print('dd')
-#     else:
-#         print('ne')
-#     file = get_object_or_404(DocumentFile, pk=instance.pk)
-#     slug = file.document.slug
-#     document = get_object_or_404(Document, slug=slug)
-#     files = DocumentFile.objects.filter(document=document)
-#     for f in files:
-#         print ("Pre", f.filename)
-#     # print(args, kwargs)
-
-# signals.pre_save.connect(receiver=pre_test, sender=DocumentFile)
-
-
-# def post_test(sender, instance, *args, **kwargs):
-#     if create:
-#         print('dd2')
-#     else:
-#         print('ne2')
-    
-    # file = get_object_or_404(DocumentFile, pk=instance.pk)
-    # slug = file.document.slug
-    # document = get_object_or_404(Document, slug=slug)
-    # files = DocumentFile.objects.filter(document=document)
-    # for f in files:
-    #     print ("Pre", f.filename, f.pk)
-
-# signals.post_save.connect(receiver=post_test, sender=DocumentFile)
-
-
-
-
-
-# class Document(models.Model):
-#     title = models.CharField(verbose_name="Заголовок", max_length=250)
-#     slug = models.SlugField("Ссылка", max_length=250, unique=True)
-#     user = models.ForeignKey(User,
-#                              verbose_name="Пользователь",
-#                              on_delete=models.CASCADE)
-#     category = models.ForeignKey(Category,
-#                                  verbose_name="Категория",
-#                                  on_delete=models.CASCADE)
-#     law = models.ManyToManyField(Law,
-#                                  verbose_name="Закон",
-#                                  related_name="document_law", blank=True)
-#     text = models.TextField(verbose_name="Текст", blank=True, null=True)
-#     date_create = models.DateTimeField(auto_now_add=True,
-#                                        verbose_name="Дата создания")
-#     date_update = models.DateTimeField(auto_now=True,
-#                                        verbose_name="Дата обновления")
-#     file = models.ForeignKey(File, verbose_name="Файл", blank=True,
-#                              null=True,
-#                              on_delete=models.CASCADE)
-    # file = models.FileField(verbose_name="Вложения", blank=True,
-    #                         null=True, upload_to=category_directory_path)
-    # file_name = models.CharField(verbose_name="Заголовок", max_length=250)
-    # category = models.ForeignKey(Category,
-    #                              verbose_name="Категория",
-    #                              on_delete=models.CASCADE)
-
-    # def filename(self):
-    #     return os.path.basename(self.file.name)
-
-    # class Meta:
-    #     verbose_name = "Документ"
-    #     verbose_name_plural = "Документы"
-
-    # def __str__(self):
-    #     return self.title
-
-    # def get_absolute_url(self):
-    #     return reverse("document_detail", kwargs={"slug": self.slug})
-
-
-
-# class File(models.Model):
-#     title = models.CharField(verbose_name="Название файла", max_length=100,
-#                              blank=True, null=True)
-#     file = models.FileField(verbose_name="Вложения", blank=True,
-#                             null=True, max_length=200,
-#                             upload_to=file_directory_path,
-#                             validators=[validate_image_file_extension])
-#     # validators=[FileExtensionValidator(
-#     #     allowed_extensions=['pdf'])])
-
-#     def filename(self):
-#         return os.path.basename(self.file.name)
-
-#     class Meta:
-#         verbose_name = "Вложение"
-#         verbose_name_plural = "Вложения"
-
-#     def __str__(self):
-#         return self.title
