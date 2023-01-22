@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 # from django.core import validators
 import uuid
 from taggit.managers import TaggableManager
+from pytils.translit import slugify
 
 
 def file_directory_path(instance, filename):
@@ -75,6 +76,11 @@ class Status(models.Model):
 
     def get_absolute_url(self):
         return reverse("status", kwargs={"slug": self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)[:100]
+        super().save(*args, **kwargs)
 
 
 class Document(models.Model):
