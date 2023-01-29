@@ -30,6 +30,11 @@ class Category(models.Model):
     def get_absolute_url(self):
         return reverse("category", kwargs={"slug": self.slug})
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)[:100]
+        super().save(*args, **kwargs)
+
 
 class Law(models.Model):
     title = models.CharField(verbose_name="Закон", max_length=250)
@@ -47,6 +52,11 @@ class Law(models.Model):
     def get_absolute_url(self):
         return reverse("law", kwargs={"slug": self.slug})
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.shorttitle)[:20]
+        super().save(*args, **kwargs)
+
 
 class Departament(models.Model):
     title = models.CharField(verbose_name="Название отдела", max_length=250)
@@ -61,6 +71,11 @@ class Departament(models.Model):
 
     def get_absolute_url(self):
         return reverse("departament", kwargs={"slug": self.slug})
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)[:100]
+        super().save(*args, **kwargs)
 
 
 class Status(models.Model):
@@ -81,6 +96,7 @@ class Status(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)[:100]
         super().save(*args, **kwargs)
+
 
 
 class Document(models.Model):
