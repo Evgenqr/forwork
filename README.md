@@ -4,23 +4,23 @@
 
 *# В проекте используются следующие технологии:*
 
-- Python
+    - Python
 
 *# О проекте*<br>
-Проект предназначен для сбора и хранения полезных статей/документов организации, разбитых по категориям.
+    Проект предназначен для сбора и хранения полезных статей/документов организации, разбитых по категориям.
 
 *# Примечание*<br>
 
 *# Запуск проекта:*
 
-git clone https://github.com/Evgenqr/forwork
+    git clone https://github.com/Evgenqr/forwork
 
-cd forwork
+    cd forwork
 
-python -m venv venv
+    python -m venv venv
 
-venv\scripts\activate
+    venv\scripts\activate
 
-pip install -r requirements.txt
+    pip install -r requirements.txt
 
-python manage.py runserver
+    python manage.py runserver
