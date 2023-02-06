@@ -98,7 +98,6 @@ class Status(models.Model):
         super().save(*args, **kwargs)
 
 
-
 class Document(models.Model):
     title = models.CharField(verbose_name="Заголовок", max_length=250)
     # slug = models.SlugField("Ссылка", max_length=250, unique=True)
@@ -121,8 +120,6 @@ class Document(models.Model):
         blank=True, null=True,
         on_delete=models.CASCADE)
     text = models.TextField(verbose_name="Текст", blank=True, null=True)
-    # file = models.FileField(verbose_name="Вложения", blank=True,
-    #                         null=True, upload_to=file_directory_path)
     date_create = models.DateTimeField(
         auto_now_add=True, verbose_name="Дата создания")
     date_update = models.DateTimeField(
@@ -172,7 +169,6 @@ class DocumentFile(models.Model):
 
     def css_class(self):
         extension = os.path.splitext(self.file.name)[1]
-        # print('-------', extension)
         if extension == '.pdf':
             return 'pdf'
         if extension == '.doc' or extension == '.docx' or extension == '.rtf':

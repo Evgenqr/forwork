@@ -69,8 +69,6 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'forwork.context_processors.get_context_data',
-                # 'apps.core.context_processors.appointment_form',
-                # 'apps.forwork.context_processors.courses_categories',
             ],
         },
     },
