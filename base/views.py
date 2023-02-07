@@ -1,24 +1,13 @@
-# from audioop import reverse
-# from http.client import HTTPResponse
-# import json
-# import re
-# from urllib import request
-# from django.urls import reverse
-# from multiprocessing import context
-# from unicodedata import category
 from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
-# from django.contrib.auth.models import User
-# from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-# from django.db import IntegrityError
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.views import View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.views.generic import (
+    ListView, DetailView, CreateView, UpdateView, DeleteView
+    )
 from .models import Category, Document, Law, DocumentFile, Departament, Status
 from .forms import DocumentForm
-# from django.utils.text import slugify
-# from transliterate import translit
 import os
 from django.db.models import Q
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
@@ -44,7 +33,9 @@ class LoginView(View):
                 return JsonResponse(
                     data={'error': 'Пароль и/или логин не верны'},
                     status=400)
-        return JsonResponse(data={'error': 'Введите логин и пароль'}, status=400)
+        return (
+            JsonResponse(data={'error': 'Введите логин и пароль'}, status=400)
+            )
 
 
 @login_required
@@ -133,8 +124,9 @@ class LawListView(ListView):
         self.law = Law.objects.get(slug=self.kwargs['slug'])
         slug = self.law
         if slug:
-            return Document.objects.filter(law=slug).prefetch_related('category')
-        # .prefetch_related('law')
+            return (
+                Document.objects.filter(law=slug).prefetch_related('category')
+                )
 
     def get_context_data(self, **kwargs):
         context = super(LawListView, self).get_context_data(**kwargs)
@@ -180,10 +172,6 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
         if files == []:
             newdocument = form.save(commit=False)
             newdocument.user = request.user
-            # newdocument.slug = translit(newdocument.title,
-            #                             language_code='ru',
-            #                             reversed=True)
-            # newdocument.slug = slugify(newdocument.slug)
             newdocument.save()
 
             return self.form_valid(form)
@@ -202,10 +190,6 @@ class DocumentCreateView(LoginRequiredMixin, CreateView):
                 else:
                     newdocument = form.save(commit=False)
                     newdocument.user = request.user
-                    # newdocument.slug = translit(newdocument.title,
-                    #                             language_code='ru',
-                    #                             reversed=True)
-                    # newdocument.slug = slugify(newdocument.slug)
                     newdocument.save()
                     DocumentFile.objects.create(
                         document=newdocument, file=f)
@@ -216,12 +200,6 @@ class DocumentDetailView(DetailView):
     model = Document
     template_name = 'base/document_detail.html'
     context_object_name = 'documents'
-
-    # def get_context_data(self, **kwargs):
-    #     context = super(DocumentDetailView, self).get_context_data(**kwargs)
-    #     context['title'] = self.document
-    #     context['files'] = DocumentFile.objects.filter(document=self.document)
-    #     return context
 
     def get_context_data(self, **kwargs):
         context = super(DocumentDetailView, self).get_context_data(**kwargs)
@@ -236,10 +214,6 @@ class DocumentUpdateView(LoginRequiredMixin, UpdateView):
     model = Document
     template_name = 'base/viewdocument.html'
     form_class = DocumentForm
-    # extra_context = {
-    #     'documents': Document.objects.all(),
-    #     'files': DocumentFile.objects.all()
-    #     }
     template_name_suffix = '_update'
 
     def get_context_data(self, **kwargs):
@@ -373,7 +347,8 @@ class ExtSearch(ListView):
     #     page = paginator.get_page(page_number)
     #     count = tasks.count()
     #     type = 'Все задачи'
-    #     return render(request, 'base/ext_search.html', context={'tasks': page, 'count': count, 'type': type,})
+    #     return render(request, 'base/ext_search.html',
+    # context={'tasks': page, 'count': count, 'type': type,})
 
 
 class SearchView(ListView):
@@ -408,4 +383,8 @@ class SearchView(ListView):
             except EmptyPage:
                 context['object_list'] = current_page.page(
                     current_page.num_pages)
-        return render(request=request, template_name=self.template_name, context=context)
+        return render(
+            request=request,
+            template_name=self.template_name,
+            context=context
+            )

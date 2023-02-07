@@ -71,7 +71,6 @@ class DocumentForm(ModelForm):
             }))
     law = forms.ModelMultipleChoiceField(
         required=False, label='Закон:',
-        # choices=[(l.pk, l.shorttitle) for l in Law.objects.all()],
         queryset=Law.objects.all(),
         widget=forms.SelectMultiple(
             attrs={
