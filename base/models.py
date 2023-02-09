@@ -110,7 +110,7 @@ class Document(models.Model):
         on_delete=models.CASCADE)
     law = models.ManyToManyField(
         Law, verbose_name="Закон",
-        blank=True)
+        blank=True, related_name="laws")
     departament = models.ForeignKey(
         Departament, verbose_name="Отдел", related_name="departaments",
         blank=True, null=True,
