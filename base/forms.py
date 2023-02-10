@@ -98,7 +98,7 @@ class DocumentForm(ModelForm):
                             "class": "form-control"
                             }),
                     )
-        
+
     class Meta:
         model = Document
         fields = ['title', 'category', 'departament',
