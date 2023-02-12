@@ -38,10 +38,10 @@ def test_document_form():
 @pytest.mark.parametrize(
     'title, category, departament, law, status, text, tags',
     [(
-        'Test title', 'ca 1', 'dep 2', 'law 3',  'stat 4', 'text', 'tags'
-        )]
+        'Test title', 'ca 1', 'dep 2', 'law 3', 'stat 4', 'text', 'tags'
+    )]
     # ['Test title, cat 1, dep 2, law 3,  statt 4, text, tags']
-    )
+)
 def valid_test(title, category, departament, law, status, text, tags):
     form = DocumentForm(data={
         'title': title,
@@ -51,9 +51,6 @@ def valid_test(title, category, departament, law, status, text, tags):
         'status': status,
         'text': text,
         'tags': tags
-        }
+    }
     )
     assert form.is_valid()
-
-
-#  ------------------------

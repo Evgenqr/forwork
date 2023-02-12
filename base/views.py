@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.views import View
 from django.views.generic import (
     ListView, DetailView, CreateView, UpdateView, DeleteView
-    )
+)
 from .models import Category, Document, Law, DocumentFile, Departament, Status
 from .forms import DocumentForm
 import os
@@ -35,7 +35,7 @@ class LoginView(View):
                     status=400)
         return (
             JsonResponse(data={'error': 'Введите логин и пароль'}, status=400)
-            )
+        )
 
 
 @login_required
@@ -126,7 +126,7 @@ class LawListView(ListView):
         if slug:
             return (
                 Document.objects.filter(law=slug).prefetch_related('category')
-                )
+            )
 
     def get_context_data(self, **kwargs):
         context = super(LawListView, self).get_context_data(**kwargs)
@@ -148,7 +148,6 @@ class DocumentListView(ListView):
     def get_context_data(self, **kwargs):
         context = super(DocumentListView, self).get_context_data(**kwargs)
         return context
-
 
 FILE_EXT_WHITELIST = ['.pdf', '.txt', '.doc', '.docx', '.rtf',
                       '.xls', '.xlsx', '.ppt', '.pptx', '.png',
@@ -387,4 +386,4 @@ class SearchView(ListView):
             request=request,
             template_name=self.template_name,
             context=context
-            )
+        )

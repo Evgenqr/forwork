@@ -1,5 +1,6 @@
 from base.forms import AuthForm
-from base.models import Category, Departament, Status, Law, Document, DocumentFile
+from base.models import (
+    Category, Departament, Status, Law, Document, DocumentFile)
 
 
 def get_context_data(request):
