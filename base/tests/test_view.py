@@ -1,12 +1,9 @@
 import os
-from base.models import Status, Category, Document, Departament, Law
+from base.models import Status, Category, Document
 import pytest
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
-from base.views import DocumentListView, LoginView, ExtSearch
-from django.http import HttpRequest
-import datetime
-from django.db.models import Q
+from base.views import DocumentListView
 
 
 # -------------- Тестирование DocumentListView

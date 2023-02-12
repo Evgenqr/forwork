@@ -3,7 +3,7 @@ from base.models import Document
 from .serializers import DocumentSerializer, DocumentDetailSerializer
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly, IsAuthenticated
-    )
+)
 from .permissions import IsAdminOrReadOnly
 
 

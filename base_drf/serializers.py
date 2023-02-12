@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from base.models import Document,  Category, Departament, Law, Status
+from base.models import Document, Category, Departament, Law, Status
 
 
 class DocumentSerializer(serializers.ModelSerializer):
