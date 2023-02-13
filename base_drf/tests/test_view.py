@@ -1,7 +1,6 @@
 import pytest
 from rest_framework.test import APIClient
-from base.models import Status, Category, Document
-from django.contrib.auth.models import User
+from base.models import Document
 from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly, IsAuthenticated,
 )

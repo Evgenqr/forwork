@@ -15,10 +15,7 @@ django-cleanup==6.0.0
 django-crispy-forms==1.14.0
 django-debug-toolbar==3.7.0
 django-filter==22.1
-<<<<<<< HEAD
-=======
 django-pytest==0.2.0
->>>>>>> 81b6d080f7cee0b9ebc166a18ccd0020278015ae
 django-taggit==3.1.0
 django-templated-mail==1.1.1
 django-widget-tweaks==1.4.12
@@ -36,6 +33,7 @@ Jinja2==3.1.2
 Markdown==3.4.1
 MarkupSafe==2.1.1
 mccabe==0.7.0
+mock==5.0.1
 oauthlib==3.2.2
 packaging==23.0
 Pillow==9.3.0
@@ -47,6 +45,7 @@ pyflakes==3.0.1
 PyJWT==2.6.0
 pytest==7.2.1
 pytest-django==4.5.2
+pytest-mock==3.10.0
 python3-openid==3.2.0
 pytils==0.4.1
 pytz==2022.6
