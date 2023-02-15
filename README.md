@@ -6,6 +6,7 @@
 
     - Python 3.9.4
     - Django 3.2.9
+    - PostgreSQL 14
 
 ***О проекте***<br>
 
